@@ -1,0 +1,22 @@
+#!/bin/bash
+
+npm run lint 
+
+if [ "$?" != 0 ]; then 
+  echo "Erro no lint"
+  exit 
+fi
+
+bun test
+
+if [ "$?" != 0 ]; then 
+  echo "Erro nos tests"
+  exit 
+fi
+
+
+cd ..
+
+git add .
+git commit -m "$1"
+git push 
