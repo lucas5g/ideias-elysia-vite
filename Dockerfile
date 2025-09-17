@@ -1,22 +1,26 @@
+# ========================
+# Stage 1: Build
+# ========================
 FROM oven/bun AS build
 
 WORKDIR /app
 
 # Copiar configs básicas
-COPY package.json bun.lock tsconfig.json ./
+COPY package.json bun.lock tsconfig.json bunfig.toml ./
 
 # Instalar dependências
 RUN bun install
 
-# Copiar código e Prisma
+# Copiar código-fonte e diretório Prisma
 COPY ./src ./src
 COPY ./prisma ./prisma
 
-# Gerar o client Prisma (com engines corretas pro ambiente)
+# Gerar Prisma Client (com engines corretas)
 RUN bunx prisma generate
+
 ENV NODE_ENV=production
 
-# Compilar app
+# Compilar o app
 RUN bun build \
     --compile \
     --minify-whitespace \
@@ -25,67 +29,25 @@ RUN bun build \
     --tsconfig-override tsconfig.json \
     src/index.ts
 
-# ---------------------------
-# Stage final (mais simples, vem com libs necessárias)
+# ========================
+# Stage 2: Final
+# ========================
 FROM oven/bun:slim
 
 WORKDIR /app
 
-# Copiar binário do app
+# Copiar binário da aplicação
 COPY --from=build /app/server server
 
 # Copiar Prisma Client + engines
 COPY --from=build /app/node_modules/.prisma /app/node_modules/.prisma
 COPY --from=build /app/node_modules/@prisma /app/node_modules/@prisma
 
+# Copiar o diretório prisma (schema.prisma)
+COPY ./prisma ./prisma
+
 ENV NODE_ENV=production
-
 EXPOSE 3000
+
+# Rodar prisma db push antes do servidor iniciar
 CMD ["sh", "-c", "bunx prisma db push && ./server"]
-
-# CMD ["./server"]
-
-# FROM oven/bun AS build
-
-# WORKDIR /app
-
-# # Cache packages installation
-# COPY package.json package.json
-# COPY bun.lock bun.lock
-# COPY tsconfig.json tsconfig.json
-
-# RUN bun install
-
-# COPY ./src ./src
-# COPY ./prisma ./prisma
-
-# # Gerar o client Prisma
-# RUN bunx prisma generate
-
-# ENV NODE_ENV=production
-
-# RUN bun build \
-# 	--compile \
-# 	--minify-whitespace \
-# 	--minify-syntax \
-# 	--outfile server \
-# 	--tsconfig-override tsconfig.json \
-# 	src/index.ts
-
-# FROM gcr.io/distroless/base
-
-# WORKDIR /app
-
-# COPY --from=build /app/server server
-
-
-# # Copia as libs necessárias do Prisma
-# COPY --from=build /app/node_modules/.prisma /app/node_modules/.prisma
-# COPY --from=build /app/node_modules/@prisma /app/node_modules/@prisma
-
-
-# ENV NODE_ENV=production
-
-# CMD ["./server"]
-
-# EXPOSE 3000
