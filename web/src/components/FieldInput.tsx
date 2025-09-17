@@ -1,12 +1,21 @@
 import { Field, Input, type InputProps } from "@chakra-ui/react";
 
-interface Props extends InputProps {}
+interface Props extends InputProps {
+  label?: string
+}
 
-export function FieldInput(props: Props){
+export function FieldInput(props: Readonly<Props>) {
   return (
     <Field.Root>
-      <Field.Label>Label</Field.Label>
-      <Input {...props} />
+      {props.label &&
+        <Field.Label>
+          {props.label}
+        </Field.Label>
+      }
+      <Input
+        placeholder={props.label}
+        {...props}
+      />
     </Field.Root>
   )
 }

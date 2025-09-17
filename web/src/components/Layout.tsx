@@ -1,9 +1,17 @@
+import { Flex } from '@chakra-ui/react';
 import { Outlet } from 'react-router';
 
 export function Layout() {
   return (
-    <main className="flex flex-col min-h-screen p-5 bg-gray-950 text-white gap-5">
+    <Flex 
+      direction={'column'} 
+      alignItems={'center'}
+      justifyContent={'center'}
+      h={'100vh'}
+      gap={'2rem'}
+      padding={5}
+      >
       <Outlet />
-    </main>
+    </Flex>
   );
 }

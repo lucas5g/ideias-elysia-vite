@@ -1,9 +1,9 @@
-import { prisma } from '@/utils/prisma';
 import { CreatePhraseDto, UpdatePhraseDto, FindAllPhraseDto } from '@/phrase/phrase.model';
 import { Phrase } from '@prisma/client';
 import { elevenLabs } from '@/utils/eleven-labs';
 import { gemini } from '@/utils/gemini';
 import { env } from '@/utils/env';
+import { prisma } from '@/utils/prisma';
 
 export class PhraseService {
   async findAll(where?: FindAllPhraseDto) {

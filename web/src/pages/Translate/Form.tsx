@@ -3,6 +3,7 @@ import { api } from '@/utils/api';
 import { mutate } from 'swr';
 import { useAppContext } from '@/contexts/AppContext';
 import { Button, Card, Flex, Input } from '@chakra-ui/react';
+import { FieldInput } from '@/components/FieldInput';
 
 export function Form() {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,15 +32,16 @@ export function Form() {
   }
 
   return (
-    <Card.Root>
+    <Card.Root width={'100%'}>
       <Card.Header>
         <Card.Title>Form</Card.Title>
       </Card.Header>
       <Card.Body>
         <form onSubmit={handleSubmit}>
           <Flex direction={'column'} gap={5}>
-            <Input name="portuguese" placeholder="Portuguese" />
-            <Input name="tag" placeholder="Tag" />
+            <FieldInput label="Portuguese" name="portuguese" />
+            <FieldInput label="Tag" name="tag" />
+     
             <Button
               variant={'surface'}
             >
@@ -51,11 +53,3 @@ export function Form() {
     </Card.Root>
   );
 }
-// <form onSubmit={handleSubmit}>
-{/* <Card>
-        <Header title="Form" />
-
-        <Input name="portuguese" placeholder="Portuguese" />
-        <Input name="tag" placeholder="Tag" />
-        <Button>{isLoading ? 'Saving...' : 'Save'}</Button>
-      </Card> */}
