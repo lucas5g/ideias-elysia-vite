@@ -4,8 +4,6 @@
 FROM oven/bun AS build
 
 WORKDIR /app
-# Instalar OpenSSL (dependência do Prisma)
-RUN apt-get update -y && apt-get install -y openssl libssl1.1 ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # Copiar configs básicas
 COPY package.json bun.lock tsconfig.json  ./
@@ -37,6 +35,10 @@ RUN bun build \
 FROM oven/bun:slim
 
 WORKDIR /app
+
+# Instalar OpenSSL (dependência do Prisma)
+RUN apt-get update -y && apt-get install -y openssl libssl1.1 ca-certificates && rm -rf /var/lib/apt/lists/*
+
 
 # Copiar binário da aplicação
 COPY --from=build /app/server server
