@@ -17,6 +17,7 @@ RUN bun build \
 	--minify-whitespace \
 	--minify-syntax \
 	--outfile server \
+	--tsconfig-override tsconfig.json \
 	src/index.ts
 
 FROM gcr.io/distroless/base
