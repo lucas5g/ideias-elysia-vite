@@ -77,7 +77,7 @@ export function List() {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {data?.map((phrase) => {
+              {data?.map( phrase => {
                 return (
                   <Table.Row key={phrase.id}>
                     <Table.Cell>
