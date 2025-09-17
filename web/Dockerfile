@@ -8,6 +8,12 @@ COPY package.json ./
 RUN npm install
 
 COPY . .
+
+# Recebe a env no build
+ARG VITE_BASE_URL_API
+ENV VITE_BASE_URL_API=$VITE_BASE_URL_API
+
+
 RUN npm run build
 
 # Etapa 2: Servir com Nginx
