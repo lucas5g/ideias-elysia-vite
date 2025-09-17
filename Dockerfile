@@ -6,7 +6,7 @@ FROM oven/bun AS build
 WORKDIR /app
 
 # Copiar configs básicas
-COPY package.json bun.lock tsconfig.json bunfig.toml ./
+COPY package.json bun.lock tsconfig.json  ./
 
 # Instalar dependências
 RUN bun install
