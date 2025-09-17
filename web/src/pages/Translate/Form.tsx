@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { api } from '@/utils/api';
 import { mutate } from 'swr';
 import { useAppContext } from '@/contexts/AppContext';
-import { Button, Card, Flex, Input } from '@chakra-ui/react';
+import { Button, Card, Flex } from '@chakra-ui/react';
 import { FieldInput } from '@/components/FieldInput';
 
 export function Form() {
