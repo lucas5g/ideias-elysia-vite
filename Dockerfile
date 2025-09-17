@@ -10,6 +10,10 @@ COPY tsconfig.json tsconfig.json
 RUN bun install
 
 COPY ./src ./src
+COPY ./prisma ./prisma
+
+# Gerar o client Prisma
+RUN bunx prisma generate
 
 ENV NODE_ENV=production
 
