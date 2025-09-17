@@ -158,7 +158,50 @@ export const ${modelName.toLowerCase()}Route = (app: Elysia) =>
 `
 }
 
-function getSpecTemplate() {
+function getSpecTemplate(attributes: PrismaAttribute[]) {
+  // Gera os campos do payload com base nos atributos da model
+  const createPayloadFields = attributes
+    .filter(attr => attr.field !== 'id')
+    .map(attr => {
+      switch (attr.type) {
+        case 'String':
+          return `  ${attr.field}: 'Test ${attr.field}',`;
+        case 'Int':
+        case 'Float':
+          return `  ${attr.field}: 123,`;
+        case 'Boolean':
+          return `  ${attr.field}: true,`;
+        case 'DateTime':
+          return `  ${attr.field}: new Date(),`;
+        case 'Json':
+          return `  ${attr.field}: {},`;
+        default:
+          return `  ${attr.field}: null,`;
+      }
+    })
+    .join('\n');
+
+  const updatePayloadFields = attributes
+    .filter(attr => attr.field !== 'id')
+    .map(attr => {
+      switch (attr.type) {
+        case 'String':
+          return `  ${attr.field}: 'Updated ${attr.field}',`;
+        case 'Int':
+        case 'Float':
+          return `  ${attr.field}: 456,`;
+        case 'Boolean':
+          return `  ${attr.field}: false,`;
+        case 'DateTime':
+          return `  ${attr.field}: new Date(),`;
+        case 'Json':
+          return `  ${attr.field}: { updated: true },`;
+        default:
+          return `  ${attr.field}: null,`;
+      }
+    })
+    .join('\n');
+
   return `import { describe, it, beforeAll, afterAll, expect } from 'bun:test'
 import { ${modelName}Service } from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.service'
 import { Create${modelName}Dto, Update${modelName}Dto } from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.model'
@@ -168,9 +211,8 @@ describe('${modelName}Service', () => {
   let createdId: number
 
   beforeAll(async () => {
-    const payload: Create${modelName}Dto = { 
-      // TODO: add actual fields based on model schema
-      name: 'Test ${modelName}',      
+    const payload: Create${modelName}Dto = {
+    ${createPayloadFields}
     }
     const res = await service.create(payload)
     createdId = res.id
@@ -191,9 +233,8 @@ describe('${modelName}Service', () => {
   })
 
   it('update', async () => {
-    const payload: Update${modelName}Dto = { 
-      // TODO: add actual fields based on model schema
-      name: 'Updated ${modelName}'
+    const payload: Update${modelName}Dto = {
+    ${updatePayloadFields}
     }
     const res = await service.update(createdId, payload)
     expect(res).toMatchObject(payload)
@@ -201,6 +242,7 @@ describe('${modelName}Service', () => {
 })
 `
 }
+
 
 // ------------------- UTILS (remaining from cli.ts) -------------------
 interface PrismaAttribute {
@@ -320,7 +362,7 @@ async function generateModule() {
   await createFile(modelPath, getModelTemplate(modelName, modelName, schemaContent)); // Pass modelName for capitalized as well, since modelName is already capitalized
   await createFile(servicePath, getServiceTemplate());
   await createFile(routePath, getRouteTemplate());
-  await createFile(specPath, getSpecTemplate());
+  await createFile(specPath, getSpecTemplate(attributes));
   updateIndex();
 }
 
