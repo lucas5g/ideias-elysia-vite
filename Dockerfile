@@ -36,9 +36,10 @@ FROM oven/bun:slim
 
 WORKDIR /app
 
-# Instalar OpenSSL (dependência do Prisma)
-RUN apt-get update -y && apt-get install -y openssl libssl1.1 ca-certificates && rm -rf /var/lib/apt/lists/*
-
+# Instalar dependências do Prisma
+RUN apt-get update -y && \
+    apt-get install -y libssl3 ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copiar binário da aplicação
 COPY --from=build /app/server server
