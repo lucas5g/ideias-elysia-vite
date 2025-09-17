@@ -4,7 +4,7 @@ FROM node:latest AS build
 WORKDIR /app
 
 # Copiar arquivos principais
-COPY package.json package-lock.json ./ 
+COPY package.json ./ 
 RUN npm install
 
 COPY . .
