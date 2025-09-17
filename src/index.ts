@@ -1,3 +1,5 @@
+import { projectRoute } from '@/project/project.route'
+import { projetcRoute } from '@/projetc/projetc.route'
 import { userRoute } from '@/user/user.route'
 import { Elysia } from 'elysia';
 import cors from '@elysiajs/cors';
@@ -9,6 +11,8 @@ const app = new Elysia()
   .get('/', () => 'Hello Elysia')
   .use(phraseRoute)
   .use(userRoute)
+  .use(projetcRoute)
+  .use(projectRoute)
   .listen(3000);
 
 console.debug(
