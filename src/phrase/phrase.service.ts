@@ -14,7 +14,7 @@ export class PhraseService {
         tags: where?.tags && {
           hasSome: where?.tags
         }
-      }
+      }      
     });
 
     return res.map(this.response);

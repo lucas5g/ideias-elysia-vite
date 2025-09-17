@@ -3,6 +3,7 @@ import cors from '@elysiajs/cors';
 import { phraseRoute } from '@/phrase/phrase.route';
 
 const app = new Elysia()
+  .onError((err) => console.error(err))
   .use(cors())
   .get('/', () => 'Hello Elysia')
   .use(phraseRoute)
@@ -11,3 +12,4 @@ const app = new Elysia()
 console.debug(
   `🦊 Elysia is running at http://${app.server?.hostname}:${app.server?.port}`
 );
+
