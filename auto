@@ -15,8 +15,6 @@ if [ "$?" != 0 ]; then
 fi
 
 
-cd ..
-
 git add .
 git commit -m "$1"
 git push 

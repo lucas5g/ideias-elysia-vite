@@ -1,4 +1,4 @@
-import { describe, it, beforeAll, afterAll, expect, afterEach } from 'bun:test';
+import { describe, it, beforeAll, afterAll, expect } from 'bun:test';
 import { PhraseService } from '@/phrase/phrase.service';
 import { CreatePhraseDto, UpdatePhraseDto } from '@/phrase/phrase.model';
 
@@ -23,16 +23,14 @@ describe('PhraseService', () => {
 
     const dto = {
       tags: ['t2']
-    }
+    };
 
     const res = await service.findAll(dto);
 
-    for (const phrase of res) {
-      // expect(phrase.tags.).toEqual(dto.tags);
-    }
-  })
+    expect(res[0].tags.includes(dto.tags[0])).toBeTruthy();
+    
+  });
 
-  return
   it('findAll', async () => {
     const res = await service.findAll();
     for (const phrase of res) {

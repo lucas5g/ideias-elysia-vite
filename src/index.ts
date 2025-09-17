@@ -4,7 +4,7 @@ import { phraseRoute } from '@/phrase/phrase.route';
 import swagger from '@elysiajs/swagger';
 import { env } from '@/utils/env';
 
-const app = new Elysia()
+new Elysia()
   .onError((err) => console.error(err))
   .use(cors())
   .use(swagger())
