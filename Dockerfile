@@ -31,6 +31,12 @@ WORKDIR /app
 
 COPY --from=build /app/server server
 
+
+# Copia as libs necessárias do Prisma
+COPY --from=build /app/node_modules/.prisma /app/node_modules/.prisma
+COPY --from=build /app/node_modules/@prisma /app/node_modules/@prisma
+
+
 ENV NODE_ENV=production
 
 CMD ["./server"]
