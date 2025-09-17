@@ -3,10 +3,11 @@ import { MagnifyingGlassIcon } from '@phosphor-icons/react';
 import { useSearchParams } from 'react-router';
 import { useAppContext } from '@/contexts/AppContext';
 import { fetcher } from '@/utils/fetcher';
-import { Button, Card, Flex, SkeletonText, Table as ChakraTable } from '@chakra-ui/react';
+import { Button, Flex, SkeletonText, Table as ChakraTable } from '@chakra-ui/react';
 import { Player } from '@/components/Player';
 import { FieldInput } from '@/components/FieldInput';
 import { Table } from '@/components/Table';
+import { Card } from '@/components/Card';
 interface Phrase {
   id: number;
   portuguese: string;
@@ -42,50 +43,43 @@ export function List() {
   }
 
   return (
+    <Card title='List'>
 
-    <Card.Root width={'100%'}>
-      <Card.Header>
-        <Card.Title>
-          List
-        </Card.Title>
-      </Card.Header>
-      <Card.Body gap={3}>
-        <form onSubmit={handleSearch}>
-          <Flex gap={3}>
-            <FieldInput
-              name="search"
-              placeholder="Search portuguese, english or tags"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-            />
+      <form onSubmit={handleSearch}>
+        <Flex gap={3}>
+          <FieldInput
+            name="search"
+            placeholder="Search portuguese, english or tags"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
 
-            <Button variant={'surface'}>
-              <MagnifyingGlassIcon size={23} />
-            </Button>
-          </Flex>
-        </form>
+          <Button variant={'surface'}>
+            <MagnifyingGlassIcon size={23} />
+          </Button>
+        </Flex>
+      </form>
 
-        {isLoading &&
-          <SkeletonText noOfLines={3} gap="4" />
-        }
-        {!isLoading &&
-          <Table headers={['Phrase', 'Audio']}>
-            {data?.map((phrase: Phrase) => {
-              return (
-                <ChakraTable.Row key={phrase.id}>
-                  <ChakraTable.Cell>
-                    {phrase.portuguese} <br />
-                    {phrase.english}
-                  </ChakraTable.Cell>
-                  <ChakraTable.Cell textAlign={'end'}>
-                    <Player audio={phrase.audio} />
-                  </ChakraTable.Cell>
-                </ChakraTable.Row>
-              );
-            })}
-          </Table>
-        }
-      </Card.Body>
-    </Card.Root>
+      {isLoading &&
+        <SkeletonText noOfLines={3} gap="4" />
+      }
+      {!isLoading &&
+        <Table headers={['Phrase', 'Audio']}>
+          {data?.map((phrase: Phrase) => {
+            return (
+              <ChakraTable.Row key={phrase.id}>
+                <ChakraTable.Cell>
+                  {phrase.portuguese} <br />
+                  {phrase.english}
+                </ChakraTable.Cell>
+                <ChakraTable.Cell textAlign={'end'}>
+                  <Player audio={phrase.audio} />
+                </ChakraTable.Cell>
+              </ChakraTable.Row>
+            );
+          })}
+        </Table>
+      }
+    </Card>
   );
 }
