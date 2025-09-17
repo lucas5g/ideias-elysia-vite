@@ -14,7 +14,6 @@ COPY ./prisma ./prisma
 
 # Gerar o client Prisma (com engines corretas pro ambiente)
 RUN bunx prisma generate
-RUN bunx prisma migrate deploy
 ENV NODE_ENV=production
 
 # Compilar app
