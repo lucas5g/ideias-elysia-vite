@@ -3,7 +3,7 @@ import { MagnifyingGlassIcon } from '@phosphor-icons/react';
 import { useSearchParams } from 'react-router';
 import { useAppContext } from '@/contexts/AppContext';
 import { fetcher } from '@/utils/fetcher';
-import { Button, Card, Flex,  Input,   SkeletonText,  Table } from '@chakra-ui/react';
+import { Button, Card, Flex, Input, SkeletonText, Table } from '@chakra-ui/react';
 import { Player } from '@/components/Player';
 interface Phrase {
   id: number;
@@ -77,7 +77,7 @@ export function List() {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {data?.map( phrase => {
+              {data?.map((phrase: Phrase) => {
                 return (
                   <Table.Row key={phrase.id}>
                     <Table.Cell>
