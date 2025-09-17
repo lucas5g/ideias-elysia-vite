@@ -14,7 +14,7 @@ COPY ./prisma ./prisma
 
 # Gerar o client Prisma (com engines corretas pro ambiente)
 RUN bunx prisma generate
-
+RUN bunx prisma migrate deploy
 ENV NODE_ENV=production
 
 # Compilar app
@@ -42,7 +42,9 @@ COPY --from=build /app/node_modules/@prisma /app/node_modules/@prisma
 ENV NODE_ENV=production
 
 EXPOSE 3000
-CMD ["./server"]
+CMD ["sh", "-c", "bunx prisma db push && ./server"]
+
+# CMD ["./server"]
 
 # FROM oven/bun AS build
 
