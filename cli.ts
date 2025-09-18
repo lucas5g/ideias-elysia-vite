@@ -37,51 +37,8 @@ const attributes = match[1]
 
 console.log(`📦 Atributos da model '${modelName}':\n`);
 attributes.forEach(({ field, type }) => console.log(` - ${field}: ${type}`));
+console.log('\n')
 
-const elysiaSchemaFields = attributes
-  .filter(attr => !['id', 'createdAt', 'updatedAt'].includes(attr.field))
-  .map(({ field, type }) => {
-    let elysiaType;
-    switch (type) {
-      case 'String':
-        elysiaType = 't.String()';
-        break;
-      case 'Int':
-      case 'Float':
-        elysiaType = 't.Number()';
-        break;
-      case 'Boolean':
-        elysiaType = 't.Boolean()';
-        break;
-      case 'DateTime':
-        elysiaType = 't.Date()'; // Assuming Elysia has a Date type, or string for ISO dates
-        break;
-      case 'Json':
-        elysiaType = 't.Any()'; // Or a more specific JSON schema if available
-        break;
-      default:
-        elysiaType = 't.Any()'; // Fallback for unknown types
-    }
-    return `  ${field}: ${elysiaType},`;
-  })
-  .join('\n');
-
-const elysiaSchema = `import { t, Static } from 'elysia';
-
-export const create${modelName}Schema = t.Object({
-${elysiaSchemaFields}
-});
-
-export const update${modelName}Schema = t.Partial(create${modelName}Schema);
-export const findAll${modelName}Schema = t.Partial(create${modelName}Schema);
-
-export type Create${modelName}Dto = Static<typeof create${modelName}Schema>;
-export type Update${modelName}Dto = Static<typeof update${modelName}Schema>;
-export type FindAll${modelName}Dto = Static<typeof findAll${modelName}Schema>;
-`;
-
-console.log(`\n📦 Elysia Schema para a model '${modelName}':\n`);
-console.log(elysiaSchema);
 
 // TODO: Generate Elysia schemas based on 'attributes'
 
@@ -102,10 +59,10 @@ const specPath = path.join(basePath, `${modelName.toLowerCase()}.spec.ts`)
 // ------------------- TEMPLATES (remaining from cli.ts) -------------------
 function getServiceTemplate() {
   return `import { prisma } from '@/utils/prisma'
-import { Create${modelName}Dto, Update${modelName}Dto, FindAll${modelName}Dto } from "@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.model"
+import { ${modelName}Model } from "@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.model"
 
 export class ${modelName}Service {
-  findAll(where?: FindAll${modelName}Dto) {
+  findAll(where?: ${modelName}Model.findAllQuery) {
     return prisma.${modelName.toLowerCase()}.findMany({
       where,
     })
@@ -115,11 +72,11 @@ export class ${modelName}Service {
     return prisma.${modelName.toLowerCase()}.findUniqueOrThrow({ where: { id } })
   }
 
-  create(data: Create${modelName}Dto) {
+  create(data: ${modelName}Model.createBody) {
     return prisma.${modelName.toLowerCase()}.create({ data })
   }
 
-  update(id: number, data: Update${modelName}Dto) {
+  update(id: number, data: ${modelName}Model.updateBody) {
     return prisma.${modelName.toLowerCase()}.update({ where: { id }, data })
   }
 
@@ -134,18 +91,18 @@ function getRouteTemplate() {
   return `import { Elysia } from 'elysia'
 import { paramsSchema } from '@/utils/params.schema'
 import { ${modelName}Service } from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.service'
-import { create${modelName}Schema, update${modelName}Schema } from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.model'
+import { ${modelName}Model } from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.model'
 
 export const ${modelName.toLowerCase()}Route = new Elysia({ prefix: '/${modelName.toLowerCase()}s' })
   .decorate('${modelName.toLowerCase()}Service', new ${modelName}Service())
   .post('/', ({ body, ${modelName.toLowerCase()}Service }) => ${modelName.toLowerCase()}Service.create(body), { 
-    body: create${modelName}Schema 
+    body: ${modelName}Model.createBody
   })
   .get('/', ({ ${modelName.toLowerCase()}Service }) => ${modelName.toLowerCase()}Service.findAll())
   .guard({ params: paramsSchema })
   .get('/:id', ({ params, ${modelName.toLowerCase()}Service }) => ${modelName.toLowerCase()}Service.findOne(params.id))
   .patch('/:id', ({ params, body, ${modelName.toLowerCase()}Service }) => ${modelName.toLowerCase()}Service.update(params.id, body),{
-    body: update${modelName}Schema 
+    body: ${modelName}Model.updateBody 
   })
   .delete('/:id', ({ params, ${modelName.toLowerCase()}Service }) => ${modelName.toLowerCase()}Service.delete(params.id))
 `
@@ -244,7 +201,7 @@ interface PrismaAttribute {
 }
 
 function generateElysiaSchemaContent(modelName: string, attributes: PrismaAttribute[], capitalized: string): string {
-  const elysiaSchemaFields = attributes
+  const fieldLines = attributes
     .filter(attr => !['id', 'createdAt', 'updatedAt'].includes(attr.field))
     .map(({ field, type }) => {
       let elysiaType;
@@ -260,13 +217,13 @@ function generateElysiaSchemaContent(modelName: string, attributes: PrismaAttrib
           elysiaType = 't.Boolean()';
           break;
         case 'DateTime':
-          elysiaType = 't.Date()'; 
+          elysiaType = 't.Date()';
           break;
         case 'Json':
-          elysiaType = 't.Any()'; 
+          elysiaType = 't.Any()';
           break;
         default:
-          elysiaType = 't.Any()'; 
+          elysiaType = 't.Any()';
       }
       return `  ${field}: ${elysiaType},`;
     })
@@ -274,17 +231,19 @@ function generateElysiaSchemaContent(modelName: string, attributes: PrismaAttrib
 
   return `import { t, Static } from 'elysia';
 
-export const create${capitalized}Schema = t.Object({
-${elysiaSchemaFields}
-});
+export namespace ${modelName}Model {
+  export const createBody = t.Object({
+  ${fieldLines}
+  })
 
-export const update${capitalized}Schema = t.Partial(create${capitalized}Schema);
-export const findAll${capitalized}Schema = t.Partial(create${capitalized}Schema);
+  export const updateBody = t.Partial(createBody)
+  export const findAllQuery = t.Partial(createBody)
+  
+  export type createBody = typeof createBody.static
+  export type updateBody = typeof updateBody.static
+  export type findAllQuery = typeof findAllQuery.static
 
-export type Create${capitalized}Dto = Static<typeof create${capitalized}Schema>;
-export type Update${capitalized}Dto = Static<typeof update${capitalized}Schema>;
-export type FindAll${capitalized}Dto = Static<typeof findAll${capitalized}Schema>;
-`;
+}`;
 }
 
 function getModelTemplate(modelName: string, capitalized: string, schemaContent: string) {
@@ -332,7 +291,7 @@ function updateIndex() {
 
   let indexContent = readFileSync(indexPath, "utf-8")
   const importLine = `import { ${modelName.toLowerCase()}Route } from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.route'`
-  if (!indexContent.includes(importLine)) { 
+  if (!indexContent.includes(importLine)) {
     indexContent = `${importLine}\n` + indexContent
   }
 
