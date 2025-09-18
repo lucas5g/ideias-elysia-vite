@@ -8,6 +8,9 @@ export async function gemini(text: string) {
   if (text === 'teste') {
     return 'test';
   }
+  if(text === 'água') {
+    return 'water';
+  }
 
   const prompt = `
     Traduza a frase "${text}", de português para inglês, e retorne apenas o texto.
