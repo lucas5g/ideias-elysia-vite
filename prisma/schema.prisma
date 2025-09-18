@@ -26,10 +26,11 @@ model Phrase {
   updatedAt  DateTime @default(now()) @updatedAt
 }
 
-model Project {
+model Game {
   id         Int      @id @default(autoincrement())
   name       String
   description String
+  category   String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
 }
