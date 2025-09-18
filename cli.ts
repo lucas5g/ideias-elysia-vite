@@ -112,7 +112,7 @@ export class ${modelName}Service {
   }
 
   findOne(id: number) {
-    return prisma.${modelName.toLowerCase()}.findUnique({ where: { id } })
+    return prisma.${modelName.toLowerCase()}.findUniqueOrThrow({ where: { id } })
   }
 
   create(data: Create${modelName}Dto) {

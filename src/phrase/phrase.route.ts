@@ -13,16 +13,11 @@ export const phraseRoute = new Elysia({ prefix: '/phrases' })
   .get('/:id', ({ params, phraseService }) => phraseService.findOne(params.id), {
     params: paramsSchema
   })
-  .get('/:id/audio', async ({ params, phraseService }) => {
+  .get('/:id/audio', async ({ params, phraseService, set }) => {
     const audio = await phraseService.findOneAudio(params.id);
-    return new Response(audio, {
-      status: 200,
-      headers: {
-        'Content-Type': 'audio/mpeg',
-        'Content-Length': audio.length.toString()
-      }
-    });
-
+    set.headers['Content-Type'] = 'audio/mpeg';
+    set.headers['Content-Length'] = audio.length.toString();
+    return audio;
   })
   .patch('/:id', ({ params, body, phraseService }) => phraseService.update(params.id, body), {
     body: updatePhraseSchema

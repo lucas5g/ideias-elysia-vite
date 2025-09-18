@@ -62,7 +62,7 @@ export class PhraseService {
       id: phrase.id,
       portuguese: phrase.portuguese,
       english: phrase.english,
-      audio: `${env.BASE_URL_API}/phrases/${phrase.id}/audio.mp3`,
+      audio: `${env.BASE_URL_API}/phrases/${phrase.id}/audio`,
       tags: phrase.tags
     };
   }
