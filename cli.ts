@@ -136,26 +136,18 @@ import { paramsSchema } from '@/utils/params.schema'
 import { ${modelName}Service } from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.service'
 import { create${modelName}Schema, update${modelName}Schema } from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.model'
 
-const ${modelName.toLowerCase()}Service = new ${modelName}Service()
-
-export const ${modelName.toLowerCase()}Route = (app: Elysia) =>
-  app.group('/${modelName.toLowerCase()}s', app =>
-    app
-      .get('/', () => ${modelName.toLowerCase()}Service.findAll())
-      .get('/:id', ({ params }) => ${modelName.toLowerCase()}Service.findOne(params.id), {
-        params: paramsSchema
-      })
-      .post('/', ({ body }) => ${modelName.toLowerCase()}Service.create(body), { 
-        body: create${modelName}Schema 
-      })
-      .patch('/:id', ({ params, body }) => ${modelName.toLowerCase()}Service.update(params.id, body), {
-        params: paramsSchema,
-        body: update${modelName}Schema 
-      })
-      .delete('/:id', ({ params }) => ${modelName.toLowerCase()}Service.delete(params.id), {
-        params: paramsSchema
-      })
-  )
+export const ${modelName.toLowerCase()}Route = new Elysia({ prefix: '/${modelName.toLowerCase()}s' })
+  .decorate('${modelName.toLowerCase()}Service', new ${modelName}Service())
+  .guard({ params: paramsSchema })
+  .get('/', ({ ${modelName.toLowerCase()}Service }) => ${modelName.toLowerCase()}Service.findAll())
+  .get('/:id', ({ params, ${modelName.toLowerCase()}Service }) => ${modelName.toLowerCase()}Service.findOne(params.id))
+  .post('/', ({ body, ${modelName.toLowerCase()}Service }) => ${modelName.toLowerCase()}Service.create(body), { 
+    body: create${modelName}Schema 
+  })
+  .patch('/:id', ({ params, body, ${modelName.toLowerCase()}Service }) => ${modelName.toLowerCase()}Service.update(params.id, body),{
+    body: update${modelName}Schema 
+  })
+  .delete('/:id', ({ params, ${modelName.toLowerCase()}Service }) => ${modelName.toLowerCase()}Service.delete(params.id))
 `
 }
 
@@ -258,7 +250,7 @@ function generateElysiaSchemaContent(modelName: string, attributes: PrismaAttrib
       let elysiaType;
       switch (type) {
         case 'String':
-          elysiaType = 't.String()';
+          elysiaType = 't.String({ minLength: 2 })';
           break;
         case 'Int':
         case 'Float':
@@ -340,7 +332,7 @@ function updateIndex() {
 
   let indexContent = readFileSync(indexPath, "utf-8")
   const importLine = `import { ${modelName.toLowerCase()}Route } from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.route'`
-  if (!indexContent.includes(importLine)) {
+  if (!indexContent.includes(importLine)) { 
     indexContent = `${importLine}\n` + indexContent
   }
 

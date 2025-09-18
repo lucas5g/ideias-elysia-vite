@@ -11,3 +11,4 @@ export const findAllPhraseSchema = t.Partial(createPhraseSchema);
 export type CreatePhraseDto = Static<typeof createPhraseSchema>
 export type UpdatePhraseDto = Static<typeof updatePhraseSchema>
 export type FindAllPhraseDto = Static<typeof findAllPhraseSchema>
+

@@ -21,5 +21,5 @@ export const prismaException = () =>
     }
 
     // Se não for erro do Prisma, deixa o Elysia tratar normalmente
-    return error;
+    // return error;
   });

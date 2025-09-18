@@ -1,16 +1,16 @@
+import { gameRoute } from '@/game/game.route';
 import { Elysia } from 'elysia';
 import cors from '@elysiajs/cors';
-import { phraseRoute } from '@/phrase/phrase.route';
 import swagger from '@elysiajs/swagger';
 import { env } from '@/utils/env';
-import { prismaException } from './utils/prisma-exception';
+import { phrase } from './phrase/phrase';
 
 new Elysia()
-  .get('/', ({ redirect }) => redirect('/swagger'))
   .use(cors())
   .use(swagger())
-  .use(prismaException)
-  .use(phraseRoute)
+  .get('/', ({ redirect }) => redirect('/swagger'))
+  .use(phrase)
+  .use(gameRoute)
   .listen(3000);
 
 console.debug(
