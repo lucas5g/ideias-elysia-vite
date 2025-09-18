@@ -1,15 +1,15 @@
 import { gameRoute } from '@/game/game.route';
 import { Elysia } from 'elysia';
 import cors from '@elysiajs/cors';
-import swagger from '@elysiajs/swagger';
 import { env } from '@/utils/env';
-import { phrase } from './phrase/phrase';
+import { phraseRoute } from './phrase/phrase.route';
 
+import openapi from '@elysiajs/openapi';
 new Elysia()
   .use(cors())
-  .use(swagger())
-  .get('/', ({ redirect }) => redirect('/swagger'))
-  .use(phrase)
+  .use(openapi())
+  .get('/', ({ redirect }) => redirect('/openapi'))
+  .use(phraseRoute)
   .use(gameRoute)
   .listen(3000);
 

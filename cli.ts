@@ -138,12 +138,12 @@ import { create${modelName}Schema, update${modelName}Schema } from '@/${modelNam
 
 export const ${modelName.toLowerCase()}Route = new Elysia({ prefix: '/${modelName.toLowerCase()}s' })
   .decorate('${modelName.toLowerCase()}Service', new ${modelName}Service())
-  .guard({ params: paramsSchema })
-  .get('/', ({ ${modelName.toLowerCase()}Service }) => ${modelName.toLowerCase()}Service.findAll())
-  .get('/:id', ({ params, ${modelName.toLowerCase()}Service }) => ${modelName.toLowerCase()}Service.findOne(params.id))
   .post('/', ({ body, ${modelName.toLowerCase()}Service }) => ${modelName.toLowerCase()}Service.create(body), { 
     body: create${modelName}Schema 
   })
+  .get('/', ({ ${modelName.toLowerCase()}Service }) => ${modelName.toLowerCase()}Service.findAll())
+  .guard({ params: paramsSchema })
+  .get('/:id', ({ params, ${modelName.toLowerCase()}Service }) => ${modelName.toLowerCase()}Service.findOne(params.id))
   .patch('/:id', ({ params, body, ${modelName.toLowerCase()}Service }) => ${modelName.toLowerCase()}Service.update(params.id, body),{
     body: update${modelName}Schema 
   })
