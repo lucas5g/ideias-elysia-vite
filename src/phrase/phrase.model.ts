@@ -3,7 +3,7 @@ import { t } from 'elysia';
 export namespace PhraseModel {
   export const createBody = t.Object({
     portuguese: t.String({ minLength: 2 }),
-    english: t.String({ minLength: 2 }),
+    english: t.Optional(t.String({ minLength: 2 })),
     tags: t.Array(t.String({ minLength: 2 })),
   });
 

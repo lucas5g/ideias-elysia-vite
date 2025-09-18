@@ -23,6 +23,12 @@ describe('Phrase API', () => {
 
   it('GET', async () => {
     const { data } = await api.phrases.get();
+
+    data?.forEach((phrase) => {
+      expect(phrase).toHaveProperty('id');
+      expect(phrase).toHaveProperty('audio');
+    });
+   
     expect(data).toBeArray();
   });
 

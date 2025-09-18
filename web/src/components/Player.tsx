@@ -35,10 +35,6 @@ export function Player({ audio }: Readonly<Props>) {
       >
       {isPlaying ? <PauseIcon size={23} /> : <PlayIcon size={23} />}
     </IconButton>
-    // <button
-    //   className="h-10 w-10 flex items-center justify-center rounded-full bg-gray-600 hover:bg-gray-500 hover:cursor-pointer"
-    //   onClick={handleAudio}
-    // >
-    // </button>
+
   );
 }

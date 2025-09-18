@@ -61,26 +61,26 @@ function getServiceTemplate() {
   return `import { prisma } from '@/utils/prisma'
 import { ${modelName}Model } from "@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.model"
 
-export class ${modelName}Service {
-  findAll(where?: ${modelName}Model.findAllQuery) {
+export abstract class ${modelName}Service {
+  static findAll(where?: ${modelName}Model.findAllQuery) {
     return prisma.${modelName.toLowerCase()}.findMany({
       where,
     })
   }
 
-  findOne(id: number) {
+  static findOne(id: number) {
     return prisma.${modelName.toLowerCase()}.findUniqueOrThrow({ where: { id } })
   }
 
-  create(data: ${modelName}Model.createBody) {
+  static create(data: ${modelName}Model.createBody) {
     return prisma.${modelName.toLowerCase()}.create({ data })
   }
 
-  update(id: number, data: ${modelName}Model.updateBody) {
+  static update(id: number, data: ${modelName}Model.updateBody) {
     return prisma.${modelName.toLowerCase()}.update({ where: { id }, data })
   }
 
-  delete(id: number) {
+  static delete(id: number) {
     return prisma.${modelName.toLowerCase()}.delete({ where: { id } })
   }
 }
@@ -94,17 +94,16 @@ import { ${modelName}Service } from '@/${modelName.toLowerCase()}/${modelName.to
 import { ${modelName}Model } from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.model'
 
 export const ${modelName.toLowerCase()}Route = new Elysia({ prefix: '/${modelName.toLowerCase()}s' })
-  .decorate('${modelName.toLowerCase()}Service', new ${modelName}Service())
-  .post('/', ({ body, ${modelName.toLowerCase()}Service }) => ${modelName.toLowerCase()}Service.create(body), { 
+  .post('/', ({ body }) => ${modelName}Service.create(body), { 
     body: ${modelName}Model.createBody
   })
-  .get('/', ({ ${modelName.toLowerCase()}Service }) => ${modelName.toLowerCase()}Service.findAll())
+  .get('/', () => ${modelName}Service.findAll())
   .guard({ params: paramsSchema })
-  .get('/:id', ({ params, ${modelName.toLowerCase()}Service }) => ${modelName.toLowerCase()}Service.findOne(params.id))
-  .patch('/:id', ({ params, body, ${modelName.toLowerCase()}Service }) => ${modelName.toLowerCase()}Service.update(params.id, body),{
+  .get('/:id', ({ params }) => ${modelName}Service.findOne(params.id))
+  .patch('/:id', ({ params, body }) => ${modelName}Service.update(params.id, body),{
     body: ${modelName}Model.updateBody 
   })
-  .delete('/:id', ({ params, ${modelName.toLowerCase()}Service }) => ${modelName.toLowerCase()}Service.delete(params.id))
+  .delete('/:id', ({ params }) => ${modelName}Service.delete(params.id))
 `
 }
 

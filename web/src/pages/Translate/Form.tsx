@@ -43,6 +43,7 @@ export function Form() {
             <FieldInput label="Tag" name="tag" />
      
             <Button
+              type="submit"
               variant={'surface'}
             >
               {isLoading ? 'Saving...' : 'Save'}
