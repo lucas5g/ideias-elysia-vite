@@ -1,44 +1,26 @@
-import { CreatePhraseDto, UpdatePhraseDto, FindAllPhraseDto } from '@/phrase/phrase.model';
-import { Phrase } from '@prisma/client';
-import { elevenLabs } from '@/utils/eleven-labs';
-import { gemini } from '@/utils/gemini';
-import { env } from '@/utils/env';
 import { prisma } from '@/utils/prisma';
+import { PhraseModel } from '@/phrase/phrase.model';
+import { gemini } from '@/utils/gemini';
+import { elevenLabs } from '@/utils/eleven-labs';
 
 export class PhraseService {
-  async findAll(where?: FindAllPhraseDto) {
-    const res = await prisma.phrase.findMany({
+  findAll(where?: PhraseModel.findAllQuery) {
+    return prisma.phrase.findMany({
       where: {
         portuguese: { contains: where?.portuguese },
         english: { contains: where?.english },
         tags: where?.tags && {
           hasSome: where?.tags
         }
-      }      
-    });
-
-    return res.map(this.response);
-  }
-
-  async findOne(id: number) {
-    const res = await prisma.phrase.findUniqueOrThrow({
-      where: {
-        id
       }
     });
-    return this.response(res);
   }
 
-  async findOneAudio(id: number) {
-    const res = await prisma.phrase.findUniqueOrThrow({
-      where: {
-        id
-      }
-    });
-    return Buffer.from(res.audio);
+  findOne(id: number) {
+    return prisma.phrase.findUniqueOrThrow({ where: { id } });
   }
 
-  async create(data: CreatePhraseDto) {
+  async create(data: PhraseModel.createBody) {
     const english = await gemini(data.portuguese);
     return prisma.phrase.create({
       data: {
@@ -47,23 +29,14 @@ export class PhraseService {
         audio: await elevenLabs(english)
       }
     });
+
   }
 
-  update(id: number, data: UpdatePhraseDto) {
+  update(id: number, data: PhraseModel.updateBody) {
     return prisma.phrase.update({ where: { id }, data });
   }
 
   delete(id: number) {
     return prisma.phrase.delete({ where: { id } });
-  }
-
-  response(phrase: Phrase) {
-    return {
-      id: phrase.id,
-      portuguese: phrase.portuguese,
-      english: phrase.english,
-      audio: `${env.BASE_URL_API}/phrases/${phrase.id}/audio`,
-      tags: phrase.tags
-    };
   }
 }

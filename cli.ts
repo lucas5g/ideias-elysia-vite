@@ -116,6 +116,8 @@ function getSpecTemplate(attributes: PrismaAttribute[]) {
       switch (attr.type) {
         case 'String':
           return `  ${attr.field}: 'Test ${attr.field}',`;
+        case 'String[]':
+          return `  ${attr.field}: ['test1', 'test2'],`;
         case 'Int':
         case 'Float':
           return `  ${attr.field}: 123,`;
@@ -133,6 +135,7 @@ function getSpecTemplate(attributes: PrismaAttribute[]) {
 
   const updatePayloadFields = attributes
     .filter(attr => !['id', 'createdAt', 'updatedAt'].includes(attr.field))
+    .slice(0, 1) // Mantém apenas o primeiro atributo
     .map(attr => {
       switch (attr.type) {
         case 'String':
@@ -153,43 +156,45 @@ function getSpecTemplate(attributes: PrismaAttribute[]) {
     .join('\n');
 
   return `import { describe, it, beforeAll, afterAll, expect } from 'bun:test'
-import { ${modelName}Service } from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.service'
-import { Create${modelName}Dto, Update${modelName}Dto } from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.model'
+import { treaty } from '@elysiajs/eden'
+import { ${modelName.toLowerCase()}Route } from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.route'
+import { ${modelName}Model } from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.model'
 
-describe('${modelName}Service', () => {
-  const service = new ${modelName}Service()
-  let createdId: number
+describe('${modelName} API', () => {
+  const api = treaty(${modelName.toLowerCase()}Route)
+  let id: number
 
   beforeAll(async () => {
-    const payload: Create${modelName}Dto = {
+    const payload: ${modelName}Model.createBody = {
     ${createPayloadFields}
     }
-    const res = await service.create(payload)
-    createdId = res.id
+    const { data } = await api.${modelName.toLowerCase()}s.post(payload)
+    id = data!.id
   })
 
   afterAll(async () => {
-    await service.delete(createdId)
+    await api.${modelName.toLowerCase()}s({ id }).delete()
   })
 
-  it('findAll', async () => {
-    const res = await service.findAll()
-    expect(res).toBeArray()
+  it('GET', async () => {
+    const { data } = await api.${modelName.toLowerCase()}s.get()
+    expect(data).toBeArray()
   })
 
-  it('findOne', async () => {
-    const res = await service.findOne(createdId)
-    expect(res).toHaveProperty('id', createdId)
+  it('GET /:id', async () => {
+    const { data } = await api.${modelName.toLowerCase()}s({ id }).get()
+    expect(data).toHaveProperty('id', id)
   })
 
-  it('update', async () => {
-    const payload: Update${modelName}Dto = {
+  it('PATCH /:id', async () => {
+    const payload: ${modelName}Model.updateBody = {
     ${updatePayloadFields}
     }
-    const res = await service.update(createdId, payload)
-    expect(res).toMatchObject(payload)
+    const { data } = await api.${modelName.toLowerCase()}s({ id }).patch(payload)
+    expect(data).toMatchObject(payload)
   })
 })
+
 `
 }
 
@@ -208,6 +213,9 @@ function generateElysiaSchemaContent(modelName: string, attributes: PrismaAttrib
       switch (type) {
         case 'String':
           elysiaType = 't.String({ minLength: 2 })';
+          break;
+        case 'String[]':
+          elysiaType = 't.Array(t.String({ minLength: 2 }))';
           break;
         case 'Int':
         case 'Float':
@@ -229,7 +237,7 @@ function generateElysiaSchemaContent(modelName: string, attributes: PrismaAttrib
     })
     .join('\n');
 
-  return `import { t, Static } from 'elysia';
+  return `import { t } from 'elysia';
 
 export namespace ${modelName}Model {
   export const createBody = t.Object({

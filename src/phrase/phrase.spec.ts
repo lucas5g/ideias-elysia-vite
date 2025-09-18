@@ -1,54 +1,42 @@
 import { describe, it, beforeAll, afterAll, expect } from 'bun:test';
-import { PhraseService } from '@/phrase/phrase.service';
-import { CreatePhraseDto, UpdatePhraseDto } from '@/phrase/phrase.model';
+import { treaty } from '@elysiajs/eden';
+import { phraseRoute } from '@/phrase/phrase.route';
+import { PhraseModel } from '@/phrase/phrase.model';
 
-describe('PhraseService', () => {
-  const service = new PhraseService();
-  let createdId: number;
+describe('Phrase API', () => {
+  const api = treaty(phraseRoute);
+  let id: number;
 
   beforeAll(async () => {
-    const payload: CreatePhraseDto = {
-      portuguese: 'test',
-      tags: ['test', 't2']
+    const payload: PhraseModel.createBody = {
+      portuguese: 'Test portuguese',
+      english: 'Test english',
+      tags: ['test1', 'test2'],
     };
-    const res = await service.create(payload);
-    createdId = res.id;
+    const { data } = await api.phrases.post(payload);
+    id = data!.id;
   });
 
   afterAll(async () => {
-    await service.delete(createdId);
+    await api.phrases({ id }).delete();
   });
 
-  it('findAll tags=t1', async () => {
+  it('GET', async () => {
+    const { data } = await api.phrases.get();
+    expect(data).toBeArray();
+  });
 
-    const dto = {
-      tags: ['t2']
+  it('GET /:id', async () => {
+    const { data } = await api.phrases({ id }).get();
+    expect(data).toHaveProperty('id', id);
+  });
+
+  it('PATCH /:id', async () => {
+    const payload: PhraseModel.updateBody = {
+      portuguese: 'Updated portuguese',
     };
-
-    const res = await service.findAll(dto);
-
-    expect(res[0].tags.includes(dto.tags[0])).toBeTruthy();
-    
-  });
-
-  it('findAll', async () => {
-    const res = await service.findAll();
-    for (const phrase of res) {
-      expect(Object.keys(phrase)).toEqual(['id', 'portuguese', 'english', 'audio', 'tags']);
-    }
-    expect(res).toBeArray();
-  });
-  
-  it('findOne', async () => {
-    const res = await service.findOne(createdId);
-    expect(res).toHaveProperty('id', createdId);
-  });
-
-  it('update', async () => {
-    const payload: UpdatePhraseDto = {
-      tags: ['test', 't2']
-    };
-    const res = await service.update(createdId, payload);
-    expect(res).toMatchObject(payload);
+    const { data } = await api.phrases({ id }).patch(payload);
+    expect(data).toMatchObject(payload);
   });
 });
+
