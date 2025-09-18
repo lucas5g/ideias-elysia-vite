@@ -4,20 +4,21 @@ import { PhraseService } from '@/phrase/phrase.service';
 import { PhraseModel } from '@/phrase/phrase.model';
 
 export const phraseRoute = new Elysia({ prefix: '/phrases' })
-  .decorate('phraseService', new PhraseService())
-  .post('/', ({ body, phraseService }) => phraseService.create(body), {
+  .post('/', ({ body }) => PhraseService.create(body), {
     body: PhraseModel.createBody
   })
-  .get('/', ({ phraseService }) => phraseService.findAll())
+  .get('/', ({ query }) => PhraseService.findAll(query), {
+    query: PhraseModel.findAllQuery
+  })
   .guard({ params: paramsSchema })
-  .get('/:id/audio', async ({ params, phraseService, set }) => {
-    const { audio } = await phraseService.findOne(params.id);
+  .get('/:id/audio', async ({ params, set }) => {
+    const { audio } = await PhraseService.findOne(params.id);
     set.headers['Content-Type'] = 'audio/mpeg';
     set.headers['Content-Length'] = audio.length.toString();
     return audio;
   })
-  .get('/:id', ({ params, phraseService }) => phraseService.findOne(params.id))
-  .patch('/:id', ({ params, body, phraseService }) => phraseService.update(params.id, body), {
+  .get('/:id', ({ params,  }) => PhraseService.findOne(params.id))
+  .patch('/:id', ({ params, body,  }) => PhraseService.update(params.id, body), {
     body: PhraseModel.updateBody
   })
-  .delete('/:id', ({ params, phraseService }) => phraseService.delete(params.id));
+  .delete('/:id', ({ params }) => PhraseService.delete(params.id));

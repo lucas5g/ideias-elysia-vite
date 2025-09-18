@@ -97,7 +97,9 @@ export const ${modelName.toLowerCase()}Route = new Elysia({ prefix: '/${modelNam
   .post('/', ({ body }) => ${modelName}Service.create(body), { 
     body: ${modelName}Model.createBody
   })
-  .get('/', () => ${modelName}Service.findAll())
+  .get('/', ({ query }) => ${modelName}Service.findAll(query), {
+    query: ${modelName}Model.findAllQuery
+  })
   .guard({ params: paramsSchema })
   .get('/:id', ({ params }) => ${modelName}Service.findOne(params.id))
   .patch('/:id', ({ params, body }) => ${modelName}Service.update(params.id, body),{
