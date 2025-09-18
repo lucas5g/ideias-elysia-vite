@@ -9,7 +9,7 @@ export namespace PhraseModel {
 
   export const updateBody = t.Partial(createBody);
   export const findAllQuery = t.Partial(createBody);
-
+  
   export type createBody = typeof createBody.static
   export type updateBody = typeof updateBody.static
   export type findAllQuery = typeof findAllQuery.static

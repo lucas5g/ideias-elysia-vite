@@ -17,17 +17,19 @@ export function Form() {
 
     const payload = {
       portuguese,
-      tag,
+      tags:[tag],
     };
 
     try {
       setIsLoading(true);
       await api.post('/phrases', payload);
       mutate(uri);
+      event.currentTarget.reset();
     } catch (error) {
       console.log(error);
     } finally {
       setIsLoading(false);
+
     }
   }
 

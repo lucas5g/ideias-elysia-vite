@@ -110,7 +110,6 @@ export const ${modelName.toLowerCase()}Route = new Elysia({ prefix: '/${modelNam
 }
 
 function getSpecTemplate(attributes: PrismaAttribute[]) {
-  // Gera os campos do payload com base nos atributos da model
   const createPayloadFields = attributes
     .filter(attr => !['id', 'createdAt', 'updatedAt'].includes(attr.field))
     .map(attr => {
@@ -136,7 +135,7 @@ function getSpecTemplate(attributes: PrismaAttribute[]) {
 
   const updatePayloadFields = attributes
     .filter(attr => !['id', 'createdAt', 'updatedAt'].includes(attr.field))
-    .slice(0, 1) // Mantém apenas o primeiro atributo
+    .slice(0, 1)
     .map(attr => {
       switch (attr.type) {
         case 'String':
@@ -157,46 +156,42 @@ function getSpecTemplate(attributes: PrismaAttribute[]) {
     .join('\n');
 
   return `import { describe, it, beforeAll, afterAll, expect } from 'bun:test'
-import { treaty } from '@elysiajs/eden'
-import { ${modelName.toLowerCase()}Route } from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.route'
-import { ${modelName}Model } from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.model'
+import { ${modelName}Service } from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.service'
 
-describe('${modelName} API', () => {
-  const api = treaty(${modelName.toLowerCase()}Route)
-  let id: number
+describe('${modelName}Service', () => {
+  let id: number;
 
   beforeAll(async () => {
-    const payload: ${modelName}Model.createBody = {
+    const payload = {
     ${createPayloadFields}
-    }
-    const { data } = await api.${modelName.toLowerCase()}s.post(payload)
-    id = data!.id
-  })
+    };
+    const created = await ${modelName}Service.create(payload);
+    id = created.id;
+  });
 
   afterAll(async () => {
-    await api.${modelName.toLowerCase()}s({ id }).delete()
-  })
+    await ${modelName}Service.delete(id);
+  });
 
-  it('GET', async () => {
-    const { data } = await api.${modelName.toLowerCase()}s.get()
-    expect(data).toBeArray()
-  })
+  it('findAll', async () => {
+    const res = await ${modelName}Service.findAll();
+    expect(res).toBeArray();
+  });
 
-  it('GET /:id', async () => {
-    const { data } = await api.${modelName.toLowerCase()}s({ id }).get()
-    expect(data).toHaveProperty('id', id)
-  })
+  it('findOne', async () => {
+    const record = await ${modelName}Service.findOne(id);
+    expect(record).toHaveProperty('id', id);
+  });
 
-  it('PATCH /:id', async () => {
-    const payload: ${modelName}Model.updateBody = {
+  it('update', async () => {
+    const payload = {
     ${updatePayloadFields}
-    }
-    const { data } = await api.${modelName.toLowerCase()}s({ id }).patch(payload)
-    expect(data).toMatchObject(payload)
-  })
-})
-
-`
+    };
+    const res = await ${modelName}Service.update(id, payload);
+    expect(res).toMatchObject(payload);
+  });
+});
+`;
 }
 
 

@@ -1,48 +1,45 @@
 import { describe, it, beforeAll, afterAll, expect } from 'bun:test';
-import { treaty } from '@elysiajs/eden';
-import { phraseRoute } from '@/phrase/phrase.route';
-import { PhraseModel } from '@/phrase/phrase.model';
+import { PhraseService } from '@/phrase/phrase.service';
 
-describe('Phrase API', () => {
-  const api = treaty(phraseRoute);
+describe('PhraseService', () => {
   let id: number;
 
   beforeAll(async () => {
-    const payload: PhraseModel.createBody = {
-      portuguese: 'Test portuguese',
-      english: 'Test english',
+    const payload = {
+      portuguese: 'test',
+      english: 'test',
       tags: ['test1', 'test2'],
     };
-    const { data } = await api.phrases.post(payload);
-    id = data!.id;
+    const created = await PhraseService.create(payload);
+    id = created.id;
   });
 
   afterAll(async () => {
-    await api.phrases({ id }).delete();
+    await PhraseService.delete(id);
   });
 
-  it('GET', async () => {
-    const { data } = await api.phrases.get();
+  it('findAll search=quero', async () => {
+    const res = await PhraseService.findAll({ portuguese : 'quero' });
 
-    data?.forEach((phrase) => {
-      expect(phrase).toHaveProperty('id');
-      expect(phrase).toHaveProperty('audio');
-    });
-   
-    expect(data).toBeArray();
+    expect(res.every((phrase) => phrase.portuguese.includes('quero'))).toBe(true);
+
   });
 
-  it('GET /:id', async () => {
-    const { data } = await api.phrases({ id }).get();
-    expect(data).toHaveProperty('id', id);
+  it('findAll', async () => {
+    const res = await PhraseService.findAll();
+    expect(res).toBeArray();
   });
 
-  it('PATCH /:id', async () => {
-    const payload: PhraseModel.updateBody = {
+  it('findOne', async () => {
+    const record = await PhraseService.findOne(id);
+    expect(record).toHaveProperty('id', id);
+  });
+
+  it('update', async () => {
+    const payload = {
       portuguese: 'Updated portuguese',
     };
-    const { data } = await api.phrases({ id }).patch(payload);
-    expect(data).toMatchObject(payload);
+    const res = await PhraseService.update(id, payload);
+    expect(res).toMatchObject(payload);
   });
 });
-
