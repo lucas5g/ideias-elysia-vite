@@ -19,7 +19,7 @@ describe('PhraseService', () => {
   });
 
   it('findAll search=quero', async () => {
-    const res = await PhraseService.findAll({ portuguese : 'quero' });
+    const res = await PhraseService.findAll({ search: 'quero' });
 
     expect(res.every((phrase) => phrase.portuguese.includes('quero'))).toBe(true);
 

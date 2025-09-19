@@ -7,14 +7,26 @@ import { env } from '@/utils/env';
 
 export abstract class PhraseService {
   static async findAll(where?: PhraseModel.findAllQuery) {
+
+
     const phrases = await prisma.phrase.findMany({
-      where: {
-        portuguese: { contains: where?.portuguese },
-        english: { contains: where?.english },
-        tags: where?.tags && {
-          hasSome: where?.tags
+      where: where?.search
+        ? {
+          OR: [
+            { portuguese: { contains: where.search } },
+            { english: { contains: where.search } },
+            { tags: { hasSome: [where.search] } }
+          ]
+        } : {
+          portuguese: { contains: where?.portuguese },
+          english: { contains: where?.english },
+          tags: where?.tags && {
+            hasSome: where?.tags
+          }
         }
-      }
+
+
+
     });
     return phrases.map((phrase) => this.response(phrase));
   }
