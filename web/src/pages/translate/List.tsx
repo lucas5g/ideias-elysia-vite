@@ -63,10 +63,6 @@ export function List() {
               onChange={(event) => setSearch(event.target.value)}
             />
           </InputGroup>
-
-          {/* <Button variant={'surface'}>
-            <MagnifyingGlassIcon size={23} />
-          </Button> */}
         </Flex>
       </form>
 
