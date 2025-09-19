@@ -4,6 +4,7 @@ import { mutate } from 'swr';
 import { useAppContext } from '@/contexts/AppContext';
 import { Button, Card, Flex } from '@chakra-ui/react';
 import { FieldInput } from '@/components/FieldInput';
+import TagsInput from '@/components/InputTag';
 
 export function Form() {
   const [isLoading, setIsLoading] = useState(false);
@@ -17,7 +18,7 @@ export function Form() {
 
     const payload = {
       portuguese,
-      tags:[tag],
+      tags: [tag],
     };
 
     try {
@@ -40,10 +41,9 @@ export function Form() {
       </Card.Header>
       <Card.Body>
         <form onSubmit={handleSubmit}>
-          <Flex direction={'column'} gap={5}>
+          <Flex direction={'column'} gap={4}>
             <FieldInput label="Portuguese" name="portuguese" />
             <FieldInput label="Tag" name="tag" />
-     
             <Button
               type="submit"
               variant={'surface'}

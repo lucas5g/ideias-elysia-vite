@@ -3,7 +3,7 @@ import { MagnifyingGlassIcon } from '@phosphor-icons/react';
 import { useSearchParams } from 'react-router';
 import { useAppContext } from '@/contexts/AppContext';
 import { fetcher } from '@/utils/fetcher';
-import { Button, Flex, SkeletonText, Table as ChakraTable } from '@chakra-ui/react';
+import { Button, Flex, SkeletonText, Table as ChakraTable, InputGroup } from '@chakra-ui/react';
 import { Player } from '@/components/Player';
 import { FieldInput } from '@/components/FieldInput';
 import { Table } from '@/components/Table';
@@ -47,16 +47,26 @@ export function List() {
 
       <form onSubmit={handleSearch}>
         <Flex gap={3}>
-          <FieldInput
-            name="search"
-            placeholder="Search portuguese, english or tags"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-          />
+          <InputGroup
+            endElement={
+              <button type='submit'>
+                <MagnifyingGlassIcon
+                  type='submit'
+                  cursor={'pointer'}
+                />
+              </button>
+            }>
+            <FieldInput
+              name="search"
+              label='Search'
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+            />
+          </InputGroup>
 
-          <Button variant={'surface'}>
+          {/* <Button variant={'surface'}>
             <MagnifyingGlassIcon size={23} />
-          </Button>
+          </Button> */}
         </Flex>
       </form>
 
