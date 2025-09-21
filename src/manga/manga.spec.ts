@@ -1,14 +1,31 @@
 import { MangaService } from "@/manga/manga.service";
-import { describe, it } from "bun:test";
-
+import { describe, expect, it } from "bun:test";
+import fs from 'fs/promises'
 describe("MangaService", () => {
 
-  it('test', async () => {
-    const url = 'https://kaijuno8chapters.com/manga/kaiju-no-8-chapter-11/'
+  const url = 'https://kaijuno8chapters.com/manga/kaiju-no-8-chapter-13'
+  const folder = url.split('/').pop();
 
-    const res = await MangaService.test(url)
+  it('createFolders', async () => {
+    const res = await MangaService.createFolders(folder!)
 
-    // console.log(res)
+    expect(res).toBe(folder!)
 
-  }, 6000)
+  })
+
+  it('downloadImages', async () => {
+    await MangaService.downloadImages(url, folder!)
+
+    const images = await fs.readdir(`./images/${folder}`)
+
+    expect(images.length).toEqual(20)
+
+  }, 6400)
+
+
+  it('generateEpub', async () => {
+    await MangaService.generateEpub(folder!)
+  })
+
+
 })
