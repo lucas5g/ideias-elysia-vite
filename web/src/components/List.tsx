@@ -8,6 +8,7 @@ import { Player } from '@/components/Player';
 import { FieldInput } from '@/components/FieldInput';
 import { Table } from '@/components/Table';
 import { Card } from '@/components/Card';
+
 interface Phrase {
   id: number;
   portuguese: string;
@@ -30,7 +31,7 @@ export function List() {
       setUri('/phrases')
     }
 
-  }, [])
+  }, [searchParams, setUri])
 
   const { data, error, isLoading } = fetcher<Phrase[]>(uri)
 
