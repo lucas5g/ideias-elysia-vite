@@ -1,7 +1,7 @@
-import axios from "axios";
+import axios from 'axios';
 import * as cheerio from 'cheerio';
-import fs from 'fs/promises'
-import { execSync } from "child_process";
+import fs from 'fs/promises';
+import { execSync } from 'child_process';
 
 export abstract class MangaService {
 
@@ -23,7 +23,7 @@ export abstract class MangaService {
       await fs.mkdir(`./images/${folder}`);
     }
 
-    return folder
+    return folder;
   }
 
   static async downloadImages(url: string, folder: string) {
@@ -37,16 +37,16 @@ export abstract class MangaService {
 
     images.forEach(async (img, index) => {
 
-      const pathImage = `./images/${folder}/${(index + 1).toString().padStart(2, '0')}.jpg`
+      const pathImage = `./images/${folder}/${(index + 1).toString().padStart(2, '0')}.jpg`;
 
       if (await fs.exists(pathImage)) {
-        return
+        return;
       }
 
       const { data } = await axios.get(img, { responseType: 'arraybuffer' });
 
       await fs.writeFile(pathImage, data);
-    })
+    });
   }
 
   static async generateEpub(folder: string) {
@@ -60,18 +60,6 @@ export abstract class MangaService {
     `;
 
     execSync(command);
-    console.log(`EPUB gerado com capa: ${epubFile}`);
-  }
-
-  static async test(url: string) {
-
-    const folder = url.split('/').pop();
-
-    // return
-
-
-
-
   }
 
 }

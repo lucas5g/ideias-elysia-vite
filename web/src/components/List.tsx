@@ -71,7 +71,7 @@ export function List() {
       }
       {!isLoading &&
         <Table headers={['Phrase', 'Audio']}>
-          {data?.slice(0, 3).map((phrase: Phrase) => {
+          {data?.map((phrase: Phrase) => {
             return (
               <ChakraTable.Row key={phrase.id}>
                 <ChakraTable.Cell>

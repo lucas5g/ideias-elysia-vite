@@ -3,15 +3,23 @@ import { Outlet } from 'react-router';
 
 export function Layout() {
   return (
-    <Flex 
-      direction={'column'} 
-      alignItems={'center'}
-      justifyContent={'center'}
+    <Flex
+      direction={'column'}
+      gap={10}
       h={'100vh'}
-      gap={'2rem'}
-      padding={5}
+    >
+      {/* <div>
+        nav
+      </div> */}
+      <Flex
+        direction={'column'}
+        alignItems={'center'}
+        justifyContent={'center'}
+        gap={'2rem'}
+        padding={5}
       >
-      <Outlet />
+        <Outlet />
+      </Flex>
     </Flex>
   );
 }
