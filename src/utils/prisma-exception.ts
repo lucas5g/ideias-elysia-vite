@@ -14,6 +14,13 @@ export const prismaException = () =>
         });
       }
 
+      if (error.code === 'P2002') { // Unique constraint failed
+        return status(400, {
+          message: `${error.meta?.modelName} already exists.`,
+          status: 400
+        });
+      }
+
       return status(500, {
         message: error,
       });

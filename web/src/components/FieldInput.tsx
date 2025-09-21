@@ -1,7 +1,10 @@
 import { Box, defineStyle, Field, Input, type InputProps } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 
 interface Props extends InputProps {
   label?: string
+  error?: string
+
 }
 const floatingStyles = defineStyle({
   pos: "absolute",
@@ -23,9 +26,10 @@ const floatingStyles = defineStyle({
     insetStart: "2",
   },
 })
-export function FieldInput(props: Readonly<Props>) {
+export function FieldInput({ error, ...props }: Readonly<Props>) {
+  
   return (
-    <Field.Root>
+    <Field.Root invalid={!!error}>
 
       <Box pos="relative" w="full">
         <Input
@@ -37,7 +41,11 @@ export function FieldInput(props: Readonly<Props>) {
           {props.label}
         </Field.Label>
       </Box>
-
+      {error &&
+        <Field.ErrorText>
+          {error}
+        </Field.ErrorText>
+      }
     </Field.Root>
   )
 }

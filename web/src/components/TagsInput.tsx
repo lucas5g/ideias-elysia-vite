@@ -1,20 +1,23 @@
 import { FieldInput } from "@/components/FieldInput";
 import { Flex, Tag } from "@chakra-ui/react";
 
-interface Props{
+interface Props {
   tags: string[];
-  setTags: React.Dispatch<React.SetStateAction<string[]>>;  
+  setTags: React.Dispatch<React.SetStateAction<string[]>>;
+  tag: string;
+  setTag: React.Dispatch<React.SetStateAction<string>>;
+  error?: string;
 }
 
 
-export function TagsInput({ tags, setTags }: Props) {
-
+export function TagsInput({ tags, setTags, tag, setTag, error }: Props) {
   function addTag(event: React.KeyboardEvent<HTMLInputElement>) {
-    const tag = event.currentTarget.value.trim();
 
-    if (event.key !== 'Enter' && event.key !== ' ') {
+
+    if (event.key !== ' ' || tag === '') {
       return event
     }
+
 
     event.preventDefault();
     const newTags = [...new Set([...tags, tag])];
@@ -24,7 +27,14 @@ export function TagsInput({ tags, setTags }: Props) {
   }
   return (
     <Flex direction={'column'} gap={1}>
-      <FieldInput label="Tag" name="tag" onKeyDown={addTag} />
+      <FieldInput
+        label="Tag"
+        name="tag"
+        onKeyDown={addTag}
+        value={tag}
+        onChange={(e) => setTag(e.target.value)}
+        error={error}
+      />
       <Flex gap={2}>
         {tags.map((tag) => (
           <Tag.Root key={tag}>

@@ -4,9 +4,13 @@ import { PhraseService } from '@/phrase/phrase.service';
 import { PhraseModel } from '@/phrase/phrase.model';
 
 export const phraseRoute = new Elysia({ prefix: '/phrases' })
-  .post('/', ({ body }) => PhraseService.create(body), {
-    body: PhraseModel.createBody
-  })
+  .post('/', ({ body, set }) => {
+    set.status = 201;
+    return PhraseService.create(body);
+  },
+    {
+      body: PhraseModel.createBody
+    })
   .get('/', ({ query }) => PhraseService.findAll(query), {
     query: PhraseModel.findAllQuery
   })
@@ -17,8 +21,8 @@ export const phraseRoute = new Elysia({ prefix: '/phrases' })
     set.headers['Content-Length'] = audio.length.toString();
     return audio;
   })
-  .get('/:id', ({ params,  }) => PhraseService.findOne(params.id))
-  .patch('/:id', ({ params, body,  }) => PhraseService.update(params.id, body), {
+  .get('/:id', ({ params, }) => PhraseService.findOne(params.id))
+  .patch('/:id', ({ params, body, }) => PhraseService.update(params.id, body), {
     body: PhraseModel.updateBody
   })
   .delete('/:id', ({ params }) => PhraseService.delete(params.id));

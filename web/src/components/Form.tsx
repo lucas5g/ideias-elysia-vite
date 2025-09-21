@@ -2,13 +2,18 @@ import { useState, type FormEvent } from 'react';
 import { api } from '@/utils/api';
 import { mutate } from 'swr';
 import { useAppContext } from '@/contexts/AppContext';
-import { Button, Card, Flex, Spinner } from '@chakra-ui/react';
+import { Button, Flex, Spinner } from '@chakra-ui/react';
 import { FieldInput } from '@/components/FieldInput';
 import { TagsInput } from '@/components/TagsInput';
+import { AxiosError } from 'axios';
+import { delay } from '@/utils/delay';
+import { Card } from '@/components/Card';
 
 export function Form() {
   const [isLoading, setIsLoading] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
+  const [tag, setTag] = useState<string>('');
+  const [tagError, setTagError] = useState<string>('');
   const [portuguese, setPortuguese] = useState<string>('');
   const { uri } = useAppContext();
 
@@ -17,7 +22,7 @@ export function Form() {
 
     const payload = {
       portuguese,
-      tags,
+      tags: [...new Set([...tags, tag])]
     };
 
     try {
@@ -26,44 +31,48 @@ export function Form() {
       mutate(uri);
       setPortuguese('');
       setTags([]);
-      console.log({ tags })
+
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError) {
+        setTagError(error.response?.data.message || error.message);
+      }
     } finally {
       setIsLoading(false);
-
+      await delay(5000);
+      setTagError('');
     }
   }
 
 
   return (
-    <Card.Root width={'100%'}>
-      <Card.Header>
-        <Card.Title>Form</Card.Title>
-      </Card.Header>
-      <Card.Body>
-        <form onSubmit={handleSubmit}>
-          <Flex direction={'column'} gap={4}>
-            <FieldInput
-              label="Portuguese"
-              name="portuguese"
-              onChange={(event) => setPortuguese(event.target.value)}
-              value={portuguese}
-            />
-            <TagsInput tags={tags} setTags={setTags} />
+    <Card title="Form">
+      <form onSubmit={handleSubmit}>
+        <Flex direction={'column'} gap={4}>
+          <FieldInput
+            label="Portuguese"
+            name="portuguese"
+            onChange={(event) => setPortuguese(event.target.value)}
+            value={portuguese}
+          />
+          <TagsInput
+            tags={tags}
+            setTags={setTags}
+            tag={tag}
+            setTag={setTag}
+            error={tagError}
+          />
 
-            <Button
-              type="submit"
-              variant={'surface'}
-              disabled={isLoading}
-            >
-              {isLoading
-                ? <Spinner />
-                : 'Save'}
-            </Button>
-          </Flex>
-        </form>
-      </Card.Body>
-    </Card.Root>
+          <Button
+            type="submit"
+            variant={'surface'}
+            disabled={isLoading}
+          >
+            {isLoading
+              ? <Spinner />
+              : 'Save'}
+          </Button>
+        </Flex>
+      </form>
+    </Card>
   );
 }
