@@ -1,5 +1,4 @@
 import { Box, defineStyle, Field, Input, type InputProps } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
 
 interface Props extends InputProps {
   label?: string
@@ -27,7 +26,7 @@ const floatingStyles = defineStyle({
   },
 })
 export function FieldInput({ error, ...props }: Readonly<Props>) {
-  
+
   return (
     <Field.Root invalid={!!error}>
 
