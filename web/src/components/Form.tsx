@@ -1,8 +1,8 @@
-import React, { useState, type FormEvent, type InputEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { api } from '@/utils/api';
 import { mutate } from 'swr';
 import { useAppContext } from '@/contexts/AppContext';
-import { Button, Card, Flex, Spinner, Tag } from '@chakra-ui/react';
+import { Button, Card, Flex, Spinner } from '@chakra-ui/react';
 import { FieldInput } from '@/components/FieldInput';
 import { TagsInput } from '@/components/TagsInput';
 
@@ -51,7 +51,7 @@ export function Form() {
               value={portuguese}
             />
             <TagsInput tags={tags} setTags={setTags} />
-           
+
             <Button
               type="submit"
               variant={'surface'}

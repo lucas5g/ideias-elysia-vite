@@ -1,5 +1,4 @@
-import { Button, FileUpload, Input } from "@chakra-ui/react"
-import { HiUpload } from "react-icons/hi"
+import { FileUpload, Input } from "@chakra-ui/react"
 export function TranslateTest() {
 
   return (

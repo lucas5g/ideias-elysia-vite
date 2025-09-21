@@ -1,4 +1,4 @@
-import { Box, HStack, Input, Tag, Textarea } from "@chakra-ui/react";
+import { HStack, Input, Tag } from "@chakra-ui/react";
 import { useState } from "react";
 
 export function Tests() {

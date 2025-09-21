@@ -3,7 +3,7 @@ import { MagnifyingGlassIcon } from '@phosphor-icons/react';
 import { useSearchParams } from 'react-router';
 import { useAppContext } from '@/contexts/AppContext';
 import { fetcher } from '@/utils/fetcher';
-import { Button, Flex, SkeletonText, Table as ChakraTable, InputGroup } from '@chakra-ui/react';
+import { Flex, SkeletonText, Table as ChakraTable, InputGroup } from '@chakra-ui/react';
 import { Player } from '@/components/Player';
 import { FieldInput } from '@/components/FieldInput';
 import { Table } from '@/components/Table';
