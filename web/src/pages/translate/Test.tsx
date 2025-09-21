@@ -1,0 +1,17 @@
+import { Button, FileUpload, Input } from "@chakra-ui/react"
+import { HiUpload } from "react-icons/hi"
+export function TranslateTest() {
+
+  return (
+    <FileUpload.Root gap="1" maxWidth="300px">
+      <FileUpload.HiddenInput />
+      <FileUpload.Label>Upload file</FileUpload.Label>
+      <Input asChild>
+        <FileUpload.Trigger>
+          <FileUpload.FileText />
+        </FileUpload.Trigger>
+      </Input>
+    </FileUpload.Root>
+  )
+
+}
