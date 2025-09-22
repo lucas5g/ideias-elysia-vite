@@ -1,67 +1,133 @@
-import { useState, type FormEvent } from 'react';
-import { api } from '@/utils/api';
-import { mutate } from 'swr';
-import { useAppContext } from '@/contexts/AppContext';
-import { Button, Flex, Spinner } from '@chakra-ui/react';
-import { FieldInput } from '@/components/FieldInput';
-import { TagsInput } from '@/components/TagsInput';
-import { AxiosError } from 'axios';
-import { delay } from '@/utils/delay';
-import { Card } from '@/components/Card';
+import { Card } from "@/components/Card"
+import { FieldInput, floatingStyles } from "@/components/FieldInput";
+import { Button, Field, FileUpload, Flex, NativeSelect, Spinner } from "@chakra-ui/react"
+import { useRef, useState } from "react"
+import { UploadSimpleIcon } from '@phosphor-icons/react'
+import { api } from "@/utils/api";
+import { AxiosError } from "axios";
+import { useAppContext } from "@/contexts/AppContext";
+import { mutate } from "swr";
+
+const options = [
+  'TRANSLATION',
+  'NEGATIVE',
+  'INTERROGATIVE'
+]
+
 
 export function Form() {
   const [isLoading, setIsLoading] = useState(false);
-  const [tags, setTags] = useState<string[]>([]);
-  const [tag, setTag] = useState<string>('');
-  const [tagError, setTagError] = useState<string>('');
+  const [type, setType] = useState<string>(options[0]);
+  const [audio, setAudio] = useState<File | null>(null);
   const [portuguese, setPortuguese] = useState<string>('');
+  const [tag, setTag] = useState<string>('');
   const { uri } = useAppContext();
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const payload = {
-      portuguese,
-      tags: [...new Set([...tags, tag])]
-    };
+    const form = new FormData()
+
+    form.append('type', type)
+
+    if (type !== 'TRANSLATION') {
+      form.append('audio', audio as Blob)
+    }
+    if (type === 'TRANSLATION') {
+      form.append('portuguese', portuguese)
+    }
+    if (tag) {
+      form.append('tag', tag)
+    }
 
     try {
       setIsLoading(true);
-      await api.post('/phrases', payload);
+      await api.post('/phrases', form);
       mutate(uri);
       setPortuguese('');
-      setTags([]);
-
+      setTag('');
+      setAudio(null);
+      setType(options[0])
     } catch (error) {
       if (error instanceof AxiosError) {
-        setTagError(error.response?.data.message || error.message);
+
+        const property = error.response?.data.property
+        const message = error.response?.data.message
+        alert(`${property ? property.toUpperCase() + ' -' : ''}  ${message}`)
+        return
       }
+      console.error(error);
     } finally {
       setIsLoading(false);
-      await delay(5000);
-      setTagError('');
+
     }
+
   }
 
-
   return (
-    <Card title="Form">
+
+    <Card title='Form'>
       <form onSubmit={handleSubmit}>
         <Flex direction={'column'} gap={4}>
-          <FieldInput
-            label="Portuguese"
-            name="portuguese"
-            onChange={(event) => setPortuguese(event.target.value)}
-            value={portuguese}
-          />
-          <TagsInput
-            tags={tags}
-            setTags={setTags}
-            tag={tag}
-            setTag={setTag}
-            error={tagError}
-          />
+          <Field.Root>
 
+
+            <NativeSelect.Root>
+              <NativeSelect.Field
+                onChange={(e) => setType(e.target.value)}
+                value={type}
+              >
+                {options.map((option) => (
+                  <option key={option} value={option}>{option.toLowerCase()}</option>
+                ))}
+              </NativeSelect.Field>
+            </NativeSelect.Root>
+            <Field.Label css={floatingStyles}>
+              Type
+            </Field.Label>
+          </Field.Root>
+          {type === 'TRANSLATION' &&
+            <FieldInput
+              label="Portuguese"
+              name="portuguese"
+              onChange={(e) => setPortuguese(e.target.value)}
+              value={portuguese}
+
+            />
+          }
+
+          {type !== 'TRANSLATION' &&
+
+            <FileUpload.Root>
+              <FileUpload.HiddenInput
+                ref={inputRef}
+                accept=".mp3, .ogg"
+                onChange={event => setAudio((event.target as HTMLInputElement).files?.[0] || null)}
+
+              />
+              <FileUpload.Trigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  width={'full'}
+                >
+                  <UploadSimpleIcon /> Select Audio
+                </Button>
+              </FileUpload.Trigger>
+              {/* <FileUpload.ItemDeleteTrigger /> */}
+              <FileUpload.List />
+            </FileUpload.Root>
+
+          }
+
+          < FieldInput
+            name="tag"
+            label="Tag"
+            onChange={(e) => setTag(e.target.value)}
+            value={tag}
+          />
           <Button
             type="submit"
             variant={'surface'}
@@ -73,6 +139,7 @@ export function Form() {
           </Button>
         </Flex>
       </form>
-    </Card>
-  );
+    </Card >
+  )
+
 }
