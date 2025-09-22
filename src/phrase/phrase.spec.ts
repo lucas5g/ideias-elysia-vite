@@ -1,14 +1,27 @@
 import { describe, it, expect, beforeAll, afterAll } from 'bun:test';
 import { PhraseService } from '@/phrase/phrase.service';
+import { PhraseModel } from '@/phrase/phrase.model';
+import fs from 'fs/promises';
+import { Type } from '@prisma/client';
+
 describe('PhraseService', () => {
+
   let id: number;
 
+  // it('crete NEGATIVE', async () => {
+  //   await createTranslate('NEGATIVE');
+  // }, 8000);
+
+  // it('crete INTERROGATIVE', async () => {
+  //   await createTranslate('INTERROGATIVE');
+  // }, 8000);
+
+
   beforeAll(async () => {
-    const payload = {
-      type: 'TRANSLATE',
+    const payload: PhraseModel.createBody = {
+      type: 'TRANSLATION',
       portuguese: 'test',
-      english: 'test',
-      tags: ['test1', 'test2'],
+      tag: 't1',
     };
     const created = await PhraseService.create(payload);
     id = created.id;
@@ -43,42 +56,28 @@ describe('PhraseService', () => {
     expect(res).toMatchObject(payload);
   });
 
-
-  // it('createV2 translate', async () => {
-  //   const paylaod: PhraseModel.createBodyV2 = {
-  //     type: 'TRANSLATE',
-  //     portuguese: 'teste',
-  //     tags: ['test1', 'test2'],
-  //   };
-
-  //   const res = await PhraseService.createV2(paylaod);
-
-  //   expect(res.english).toBe('test');
-
-  //   await PhraseService.delete(res.id);
-
-  // });
-
-
-  // it('createV2 negative', async () => {
-
-  //   const file = __dirname + '/phrase.ogg';
-
-  //   const fileBuffer = await fs.readFile(file);
-
-
-  //   const paylaod: PhraseModel.createBodyV2 = {
-  //     type: 'NEGATIVE',
-  //     tags: ['test1', 'test2'],
-  //     audio: new File([new Uint8Array(fileBuffer)], 'phrase.ogg', { type: 'audio/mpeg' })
-  //   };
-
-  //   // console.log({ paylaod })
-
-  //   const res = await PhraseService.createV2(paylaod);
-
-  //   console.log(res);
-
-  //   // await PhraseService.delete(res.id);
-  // }, 15_000);
 });
+
+export async function createTranslate(type: Type) {
+
+  const file = __dirname + '/phrase.ogg';
+
+  const fileBuffer = await fs.readFile(file);
+
+
+  const paylaod: PhraseModel.createBody = {
+    type,
+    tag: 'test1',
+    audio: new File([new Uint8Array(fileBuffer)], 'phrase.ogg', { type: 'audio/mpeg' })
+  };
+
+  const res = await PhraseService.create(paylaod);
+
+  expect(res.english).toBe(
+    type === 'NEGATIVE'
+      ? 'The church is not far from here.'
+      : 'Is the church far from here?'
+  );
+  await PhraseService.delete(res.id);
+
+}

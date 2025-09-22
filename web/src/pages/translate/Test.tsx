@@ -6,9 +6,9 @@ import { UploadSimpleIcon } from '@phosphor-icons/react'
 import { api } from "@/utils/api";
 
 const options = [
-  'Translation',
-  'Negative',
-  'Interrogative'
+  'TRANSLATION',
+  'NEGATIVE',
+  'INTERROGATIVE'
 ]
 
 
@@ -22,16 +22,22 @@ export function TranslateTest() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const payload = {
-      type,
-      portuguese: type === 'translation' ? portuguese : undefined,
-      audio: type !== 'translation' ? audio : undefined,
-      tags: [tag]
-    };
+    const form = new FormData()
 
+    form.append('type', type)
+
+    if (type !== 'TRANSLATION') {
+      form.append('file', audio as Blob)
+    }
+    if (type === 'TRANSLATION') {
+      form.append('portuguese', portuguese)
+    }
+    form.append('tags', JSON.stringify([tag]))
+
+    console.log({ form })
     try {
       setIsLoading(true);
-      await api.post('/phrases', payload);
+      await api.post('/phrases', form);
       //  mutate(uri);
       setPortuguese('');
       setTag('');
@@ -41,11 +47,6 @@ export function TranslateTest() {
     } finally {
       setIsLoading(false);
     }
-
-    console.log({ type })
-    console.log({ portuguese })
-    console.log({ audio })
-    console.log({ tag })
 
   }
 
@@ -62,7 +63,7 @@ export function TranslateTest() {
                 onChange={(e) => setType(e.target.value)}
               >
                 {options.map((option) => (
-                  <option key={option} value={option.toLowerCase()}>{option}</option>
+                  <option key={option} value={option}>{option.toLowerCase()}</option>
                 ))}
               </NativeSelect.Field>
             </NativeSelect.Root>

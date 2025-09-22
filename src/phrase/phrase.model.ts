@@ -1,35 +1,43 @@
 import { Type } from '@prisma/client';
 import { t } from 'elysia';
+import z from 'zod';
 
 export namespace PhraseModel {
-  export const createBody = t.Object({
+  export const createBodyOld = t.Object({
     portuguese: t.String({ minLength: 2 }),
     english: t.Optional(t.String({ minLength: 2 })),
     tags: t.Array(t.String({ minLength: 2 }), { minItems: 1 }),
   });
 
-  export const createBodyV2 = t.Object({
-    type: t.Enum(Type),
-    audio: t.Optional(t.File({ maxSize: 3 * 1024 })),
-    portuguese: t.Optional(t.String({ minLength: 2 })),
-    tags: t.Array(t.String({ minLength: 2 }), { minItems: 1 }),
+  export const createBody = z
+    .object({
+      type: z.enum(Type),
+      tag: z.string().min(2),
+      portuguese: z.string().min(2).optional(),
+      audio: z.file().mime('audio/ogg').optional(),
+    })
+    .refine((data) => data.type !== 'TRANSLATION' || data.portuguese, {
+      message: 'Portuguese text is required',
+      path: ['portuguese'],
+    })
+    .refine((data) => data.type === 'TRANSLATION' || data.audio, {
+      message: 'Audio file is required',
+      path: ['audio'],
+    });
+
+
+
+
+  export const updateBody = createBody.partial().extend({
+    english: z.string().optional(),
   });
-  // .custom((value: strng) => {
-  //   if (value.type === 'TRANSLATE' && !value.portuguese) {
-  //     throw new Error('Portuguese is required when type is TRANSLATE');
-  //   }
-  //   return value;
-  // })
-
-
-  export const updateBody = t.Partial(createBody);
-  export const findAllQuery = t.Object({
-    ...updateBody.properties,
-    search: t.Optional(t.String()),
+  export const findAllQuery = createBody.partial().extend({
+    search: z.string().optional(),
+    english: z.string().optional(),
   });
 
-  export type createBody = typeof createBody.static
-  export type updateBody = typeof updateBody.static
-  export type findAllQuery = typeof findAllQuery.static
-  export type createBodyV2 = typeof createBodyV2.static
+  export type createBody = z.infer<typeof createBody>;
+  export type updateBody = z.infer<typeof updateBody>;
+  export type findAllQuery = z.infer<typeof findAllQuery>;
+
 } 

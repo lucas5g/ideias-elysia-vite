@@ -1,10 +1,9 @@
 import { prisma } from '@/utils/prisma';
 import { PhraseModel } from '@/phrase/phrase.model';
-import { translate } from '@/utils/translate';
 import { elevenLabs } from '@/utils/eleven-labs';
 import { Phrase } from '@prisma/client';
 import { env } from '@/utils/env';
-import { transcribe } from '@/utils/transcribe';
+import { Gemini } from '@/utils/gemini';
 
 export abstract class PhraseService {
   static async findAll(where?: PhraseModel.findAllQuery) {
@@ -21,9 +20,9 @@ export abstract class PhraseService {
         } : {
           portuguese: { contains: where?.portuguese },
           english: { contains: where?.english },
-          tags: where?.tags && {
-            hasSome: where?.tags
-          }
+          tags: where?.tag ? {
+            has: where?.tag
+          } : undefined
         }
 
 
@@ -36,49 +35,39 @@ export abstract class PhraseService {
     return prisma.phrase.findUniqueOrThrow({ where: { id } });
   }
 
-  static async createOld(data: PhraseModel.createBody) {
-    const english = await translate(data.portuguese);
-    return prisma.phrase.create({
+  static async create(data: PhraseModel.createBody) {
+
+    const english = data.type === 'TRANSLATION'
+      ? await Gemini.translate(data.portuguese!)
+      : await Gemini.transcribe({ file: data.audio!, type: data.type });
+
+    const portuguese = data.type === 'TRANSLATION'
+      ? data.portuguese!
+      : await Gemini.translate(english, 'portuguese');
+
+
+    const res = await prisma.phrase.create({
       data: {
-        ...data,
+        audio: await elevenLabs(english),
         english,
-        audio: await elevenLabs(english)
+        portuguese,
+        tags: [data.tag],
       }
     });
 
+    return this.response(res);
   }
 
-  static async create(data: PhraseModel.createBodyV2) {
 
-    if (data.type === 'TRANSLATE') {
-
-      const english = await translate(data.portuguese!);
-
-      return prisma.phrase.create({
-        data: {
-          audio: await elevenLabs(english),
-          english,
-          portuguese: data.portuguese!,
-          tags: data.tags,
-        }
-      });
-    }
-
-    const audioTranscribe = await transcribe({ file: data.audio!, type: data.type });
-
-    return audioTranscribe;
-    // console.log({ audioTranscribe });
-
-    // return prisma.phrase.create({
-    //   data: {
-    //     portuguese: await transla
-    //     audio: , 
-    //   }
-    // });
-
-  }
   static update(id: number, data: PhraseModel.updateBody) {
-    return prisma.phrase.update({ where: { id }, data });
+    return prisma.phrase.update({
+      where: { id },
+      data: {
+        portuguese: data.portuguese,
+        english: data.english,
+        tags: data?.tag ? [data?.tag] : undefined
+      }
+    });
   }
 
   static delete(id: number) {

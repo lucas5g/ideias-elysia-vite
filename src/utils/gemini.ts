@@ -1,4 +1,49 @@
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, File as File_2, createPartFromUri, createUserContent } from '@google/genai';
 import { env } from './env';
-export const gemini = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
+import { Type } from '@prisma/client';
+export const ai = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
+
+
+export abstract class Gemini {
+
+  static async translate(text: string, language: 'english' | 'portuguese' = 'english') {
+    const prompt = `Translate the following text "${text}", to ${language}, and return only the text.`;
+
+    return this.generateContent(prompt);
+  }
+
+  static async transcribe(data: { file: File, type: Type }) {
+
+    const file = await ai.files.upload({
+      file: data.file,
+      config: {
+        mimeType: 'audio/ogg',
+      }
+    });
+
+    const prompt = `Transcribe the audio into ${data.type} form`;
+
+    return this.generateContent(prompt, file);
+  }
+
+  private static async generateContent(prompt: string, file?: File_2) {
+    const contents = file
+      ? createUserContent([
+        createPartFromUri(file.uri!, file.mimeType!),
+        prompt
+      ])
+      : prompt;
+
+    const res = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents,
+      config: {
+        temperature: 0,
+      },
+    });
+
+    return res.text ?? 'no translation';
+  }
+}
+
 
