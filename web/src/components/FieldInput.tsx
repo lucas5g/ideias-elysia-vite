@@ -5,7 +5,7 @@ interface Props extends InputProps {
   error?: string
 
 }
-const floatingStyles = defineStyle({
+export const floatingStyles = defineStyle({
   pos: "absolute",
   bg: "gray.950",
   px: "0.5",

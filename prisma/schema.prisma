@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider      = "prisma-client-js"
+  provider = "prisma-client-js"
   // binaryTargets = ["native", "debian-openssl-3.0.x"]
   // binaryTargets = "native"
   // output   = "../generated/prisma"
@@ -16,21 +16,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Type {
+  TRANSLATE
+  NEGATIVE
+  INTERROGATIVE
+}
+
 model Phrase {
   id         Int      @id @default(autoincrement())
   portuguese String   @unique
   english    String
   tags       String[]
+  type       Type     @default(TRANSLATE)
   audio      Bytes
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
 }
 
 model Game {
-  id         Int      @id @default(autoincrement())
-  name       String
+  id          Int      @id @default(autoincrement())
+  name        String
   description String
-  category   String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
+  category    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
 }

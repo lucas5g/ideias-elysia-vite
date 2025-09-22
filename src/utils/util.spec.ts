@@ -1,9 +1,9 @@
+import { translate } from '@/utils/translate';
 import { describe, expect, it } from 'bun:test';
-import { gemini } from './gemini';
 
 describe('Utils', () => {
-  it('gemini', async () => {
-    const res = await gemini('água');
+  it('translate', async () => {
+    const res = await translate('água');
     expect(res).toBe('water');
   });
 });
