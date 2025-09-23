@@ -18,6 +18,10 @@ export namespace PhraseModel {
       path: ['audio'],
     });
 
+  export const createHistoryBody = z
+    .object({
+      tag: z.string().min(2),
+    });
 
 
 
@@ -32,5 +36,6 @@ export namespace PhraseModel {
   export type createBody = z.infer<typeof createBody>;
   export type updateBody = z.infer<typeof updateBody>;
   export type findAllQuery = z.infer<typeof findAllQuery>;
+  export type createHistoryBody = z.infer<typeof createHistoryBody>;
 
 } 

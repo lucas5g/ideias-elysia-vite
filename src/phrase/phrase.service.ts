@@ -63,6 +63,7 @@ export abstract class PhraseService {
         english,
         portuguese,
         tags: data.tags,
+        type: data.type
       }
     });
 
@@ -91,7 +92,24 @@ export abstract class PhraseService {
       portuguese: phrase.portuguese,
       english: phrase.english,
       audio: `${env.BASE_URL_API}/phrases/${phrase.id}/audio`,
-      tags: phrase.tags
+      tags: phrase.tags,
+      type: phrase.type
     };
+  }
+
+  static async createHistory(data: PhraseModel.createHistoryBody) {
+    const phrases = await prisma.phrase.findMany({
+      where:{
+        tags: {
+          has: data.tag
+        }
+      }
+    });
+       
+    
+
+    return phrases.map((phrase) => this.response(phrase));
+
+    
   }
 }

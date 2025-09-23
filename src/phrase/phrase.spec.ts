@@ -30,6 +30,14 @@ describe('PhraseService', () => {
   afterAll(async () => {
     await PhraseService.delete(id);
   });
+  it('createHistory', async () => {
+    const payload = {
+      tag: 'homem-aranha',
+    };
+    const res = await PhraseService.createHistory(payload);
+
+    expect(res).toBeArray();
+  });
 
   it('findAll search=quero', async () => {
     const res = await PhraseService.findAll({ search: 'quero' });

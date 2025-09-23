@@ -7,6 +7,11 @@ import tsconfigPaths from "vite-tsconfig-paths"
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   base:'./',
+  server: {
+    allowedHosts:[
+      "hatty-towns-tell.loca.lt", "chatty-towns-tell.loca.lt"
+    ]
+  },
   build: {
     rollupOptions: {
       output: {

@@ -7,7 +7,7 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined)
 
-export function AppProvider(props: { children: React.ReactNode }) {
+export function AppProvider(props: Readonly<{ children: React.ReactNode }>) {
 
   const [uri, setUri] = useState('');
 

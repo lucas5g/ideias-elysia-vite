@@ -43,6 +43,7 @@ export function List() {
     setUri(`/phrases?search=${search}`)
   }
 
+
   return (
     <Card title='List'>
 
@@ -74,7 +75,10 @@ export function List() {
         <Table headers={['Phrase', 'Audio']}>
           {data?.map((phrase: Phrase) => {
             return (
-              <ChakraTable.Row key={phrase.id}>
+              <ChakraTable.Row
+                key={phrase.id}
+                // onClick={} 
+                 >
                 <ChakraTable.Cell>
                   {phrase.portuguese} <br />
                   {phrase.english}

@@ -6,6 +6,13 @@ export const ai = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
 
 export abstract class Gemini {
 
+  static async createHistory(phrases: string[]) {
+
+    const prompt = `Create a history of "${phrases.join(', ')}" and return only the text.`;
+
+    return this.generateContent(prompt);
+  }
+
   static async translate(text: string, language: 'english' | 'portuguese' = 'english') {
     const prompt = `Translate the following text "${text}", to ${language}, and return only the text.`;
 
