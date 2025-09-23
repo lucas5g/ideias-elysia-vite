@@ -9,15 +9,16 @@ import { useAppContext } from "@/contexts/AppContext";
 import { mutate } from "swr";
 
 const options = [
-  'TRANSLATION',
+  'INTERROGATIVE',
   'NEGATIVE',
-  'INTERROGATIVE'
-]
+  'STORY',
+  'TRANSLATION',
+].sort((a, b) => a.localeCompare(b))
 
 
 export function Form() {
   const [isLoading, setIsLoading] = useState(false);
-  const [type, setType] = useState<string>(options[0]);
+  const [type, setType] = useState<string>(options[3]);
   const [audio, setAudio] = useState<File | null>(null);
   const [portuguese, setPortuguese] = useState<string>('');
   const [tag, setTag] = useState<string>('');
@@ -38,9 +39,10 @@ export function Form() {
     if (type === 'TRANSLATION') {
       form.append('portuguese', portuguese)
     }
+
     form.append('tags', tag)
-    form.append('tags', '')
-    
+    form.append('tags', tag)
+
     try {
       setIsLoading(true);
       await api.post('/phrases', form);

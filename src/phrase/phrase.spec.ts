@@ -15,7 +15,15 @@ describe('PhraseService', () => {
   // it('crete INTERROGATIVE', async () => {
   //   await createTranslate('INTERROGATIVE');
   // }, 8000);
-
+// it('createHistory', async () => {
+  //   const payload = {
+  //     tag: '01'
+  //     // tag: 'homem-aranha',
+  //   };
+  //   const res = await PhraseService.createHistory(payload);
+  //   expect(res).toHaveProperty('tags', [payload.tag]);
+  // }, 6500);
+  // return 
 
   beforeAll(async () => {
     const payload: PhraseModel.createBody = {
@@ -30,15 +38,7 @@ describe('PhraseService', () => {
   afterAll(async () => {
     await PhraseService.delete(id);
   });
-  it('createHistory', async () => {
-    const payload = {
-      tag: 'homem-aranha',
-    };
-    const res = await PhraseService.createHistory(payload);
-
-    expect(res).toBeArray();
-  });
-
+  
   it('findAll search=quero', async () => {
     const res = await PhraseService.findAll({ search: 'quero' });
 

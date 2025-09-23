@@ -1,9 +1,9 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { MagnifyingGlassIcon } from '@phosphor-icons/react';
+import { MagnifyingGlassIcon, PlusIcon } from '@phosphor-icons/react';
 import { useSearchParams } from 'react-router';
 import { useAppContext } from '@/contexts/AppContext';
 import { fetcher } from '@/utils/fetcher';
-import { Flex, SkeletonText, Table as ChakraTable, InputGroup, Tag } from '@chakra-ui/react';
+import { Flex, SkeletonText, Table as ChakraTable, InputGroup, Tag, IconButton } from '@chakra-ui/react';
 import { Player } from '@/components/Player';
 import { FieldInput } from '@/components/FieldInput';
 import { Table } from '@/components/Table';
@@ -77,17 +77,17 @@ export function List() {
             return (
               <ChakraTable.Row
                 key={phrase.id}
-                // onClick={} 
-                 >
+              // onClick={} 
+              >
                 <ChakraTable.Cell>
                   {phrase.portuguese} <br />
                   {phrase.english}
                   <Flex marginTop={1} gap={2}>
                     {phrase.tags.map((tag) => (
-                      <Tag.Root 
+                      <Tag.Root
                         key={tag}
                         size={'sm'}
-                        >
+                      >
                         <Tag.Label>{tag}</Tag.Label>
                       </Tag.Root>
                     ))}
@@ -101,6 +101,21 @@ export function List() {
           })}
         </Table>
       }
+     <Flex
+
+        position={'fixed'}
+        bottom={5}
+        right={5}
+
+      >
+        <IconButton
+          rounded={'full'}
+          variant={'surface'}
+        >
+          <PlusIcon />
+        </IconButton>
+
+      </Flex>
     </Card>
   );
 }

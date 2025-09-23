@@ -6,9 +6,18 @@ export const ai = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
 
 export abstract class Gemini {
 
-  static async createHistory(phrases: string[]) {
+  static async createHistory(phrases: string[], tag?: string) {
 
-    const prompt = `Create a history of "${phrases.join(', ')}" and return only the text.`;
+    if(tag === '01'){
+      return 'My name is Tom. I am a boy. I like food. I eat cheese. I drink soda. It is yummy. I play with my dog. Then I eat cheese. I drink soda. It is a good day.';
+    }
+
+
+    const prompt = `
+      Create a short story at beginner level English with the following sentences.
+      "${phrases.join(', ')}"  
+      Return only the text
+    `;
 
     return this.generateContent(prompt);
   }

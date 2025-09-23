@@ -5,8 +5,7 @@ export namespace PhraseModel {
   export const createBody = z
     .object({
       type: z.enum(Type),
-      tags: z.array(z.string().min(2)).min(1).optional(),
-      // tag: z.string().min(2).optional(),
+      tags: z.array(z.string().min(2)).min(1),
       portuguese: z.string().min(2).optional(),
       audio: z.file().mime('audio/ogg').optional(),
     })
@@ -18,6 +17,7 @@ export namespace PhraseModel {
       message: 'Audio file is required',
       path: ['audio'],
     });
+    // .transform((data) => ({ ...data, tags: [...new Set(data.tags)] }))
 
   export const createHistoryBody = z
     .object({
