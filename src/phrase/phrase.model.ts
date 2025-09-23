@@ -1,18 +1,11 @@
 import { Type } from '@prisma/client';
-import { t } from 'elysia';
 import z from 'zod';
-
-export namespace PhraseModel {
-  export const createBodyOld = t.Object({
-    portuguese: t.String({ minLength: 2 }),
-    english: t.Optional(t.String({ minLength: 2 })),
-    tags: t.Array(t.String({ minLength: 2 }), { minItems: 1 }),
-  });
+export namespace PhraseModel {  
 
   export const createBody = z
     .object({
       type: z.enum(Type),
-      tag: z.string().min(2),
+      tags: z.array(z.string().min(2)).min(1),
       portuguese: z.string().min(2).optional(),
       audio: z.file().mime('audio/ogg').optional(),
     })

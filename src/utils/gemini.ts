@@ -13,7 +13,6 @@ export abstract class Gemini {
   }
 
   static async transcribe(data: { file: File, type: Type }) {
-
     const file = await ai.files.upload({
       file: data.file,
       config: {

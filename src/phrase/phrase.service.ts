@@ -20,8 +20,8 @@ export abstract class PhraseService {
         } : {
           portuguese: { contains: where?.portuguese },
           english: { contains: where?.english },
-          tags: where?.tag ? {
-            has: where?.tag
+          tags: where?.tags ? {
+            hasSome: where.tags
           } : undefined
         }
 
@@ -45,13 +45,25 @@ export abstract class PhraseService {
       ? data.portuguese!
       : await Gemini.translate(english, 'portuguese');
 
+    const phraseExist = await prisma.phrase.findFirst({
+      where: {
+        portuguese
+      }
+    });
+
+    if (phraseExist) {
+      throw new Response(
+        JSON.stringify({ message: 'Phrase already exists' }),
+        { status: 400 }
+      );
+    }
 
     const res = await prisma.phrase.create({
       data: {
         audio: await elevenLabs(english),
         english,
         portuguese,
-        tags: [data.tag],
+        tags: data.tags,
       }
     });
 
@@ -62,10 +74,10 @@ export abstract class PhraseService {
   static update(id: number, data: PhraseModel.updateBody) {
     return prisma.phrase.update({
       where: { id },
-      data: {
-        portuguese: data.portuguese,
+      data:{
         english: data.english,
-        tags: data?.tag ? [data?.tag] : undefined
+        portuguese: data.portuguese,
+        tags: data.tags
       }
     });
   }

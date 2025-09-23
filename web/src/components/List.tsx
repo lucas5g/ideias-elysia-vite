@@ -3,7 +3,7 @@ import { MagnifyingGlassIcon } from '@phosphor-icons/react';
 import { useSearchParams } from 'react-router';
 import { useAppContext } from '@/contexts/AppContext';
 import { fetcher } from '@/utils/fetcher';
-import { Flex, SkeletonText, Table as ChakraTable, InputGroup } from '@chakra-ui/react';
+import { Flex, SkeletonText, Table as ChakraTable, InputGroup, Tag } from '@chakra-ui/react';
 import { Player } from '@/components/Player';
 import { FieldInput } from '@/components/FieldInput';
 import { Table } from '@/components/Table';
@@ -78,6 +78,16 @@ export function List() {
                 <ChakraTable.Cell>
                   {phrase.portuguese} <br />
                   {phrase.english}
+                  <Flex marginTop={1} gap={2}>
+                    {phrase.tags.map((tag) => (
+                      <Tag.Root 
+                        key={tag}
+                        size={'sm'}
+                        >
+                        <Tag.Label>{tag}</Tag.Label>
+                      </Tag.Root>
+                    ))}
+                  </Flex>
                 </ChakraTable.Cell>
                 <ChakraTable.Cell textAlign={'end'}>
                   <Player audio={phrase.audio} />

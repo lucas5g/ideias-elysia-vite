@@ -38,10 +38,8 @@ export function Form() {
     if (type === 'TRANSLATION') {
       form.append('portuguese', portuguese)
     }
-    if (tag) {
-      form.append('tag', tag)
-    }
-
+    form.append('tags', tag)
+    
     try {
       setIsLoading(true);
       await api.post('/phrases', form);

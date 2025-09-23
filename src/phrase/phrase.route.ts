@@ -4,8 +4,12 @@ import { PhraseService } from '@/phrase/phrase.service';
 import { PhraseModel } from '@/phrase/phrase.model';
 
 export const phraseRoute = new Elysia({ prefix: '/phrases' })
+  .post('/test', ({ body }) => {
+    return body;
+  })
   .post('/', ({ body, set }) => {
     set.status = 201;
+    
     return PhraseService.create(body);
   },
     {

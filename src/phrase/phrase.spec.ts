@@ -21,7 +21,7 @@ describe('PhraseService', () => {
     const payload: PhraseModel.createBody = {
       type: 'TRANSLATION',
       portuguese: 'test',
-      tag: 't1',
+      tags: ['t1'],
     };
     const created = await PhraseService.create(payload);
     id = created.id;
@@ -67,7 +67,7 @@ export async function createTranslate(type: Type) {
 
   const paylaod: PhraseModel.createBody = {
     type,
-    tag: 'test1',
+    tags: ['test1'],
     audio: new File([new Uint8Array(fileBuffer)], 'phrase.ogg', { type: 'audio/mpeg' })
   };
 

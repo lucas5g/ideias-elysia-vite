@@ -5,10 +5,15 @@ import { env } from '@/utils/env';
 
 import openapi from '@elysiajs/openapi';
 import { prismaException } from './utils/prisma-exception';
+import z from 'zod';
 new Elysia()
   .use(prismaException)
   .use(cors())
-  .use(openapi())
+  .use(openapi({
+    mapJsonSchema:{
+      zod: z.toJSONSchema
+    }
+  }))
   .get('/', ({ redirect }) => redirect('/openapi'))
   .use(phraseRoute)
   .listen(3000);
