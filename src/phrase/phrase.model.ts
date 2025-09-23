@@ -5,7 +5,8 @@ export namespace PhraseModel {
   export const createBody = z
     .object({
       type: z.enum(Type),
-      tags: z.array(z.string()).min(1).transform((tags) => tags.filter((tag) => tag)),
+      tags: z.array(z.string().min(2)).min(1).optional(),
+      // tag: z.string().min(2).optional(),
       portuguese: z.string().min(2).optional(),
       audio: z.file().mime('audio/ogg').optional(),
     })
