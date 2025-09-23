@@ -9,7 +9,6 @@ export const phraseRoute = new Elysia({ prefix: '/phrases' })
   })
   .post('/', ({ body, set }) => {
     set.status = 201;
-    
     return PhraseService.create(body);
   },
     {

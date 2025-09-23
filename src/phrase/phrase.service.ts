@@ -8,7 +8,6 @@ import { Gemini } from '@/utils/gemini';
 export abstract class PhraseService {
   static async findAll(where?: PhraseModel.findAllQuery) {
 
-
     const phrases = await prisma.phrase.findMany({
       where: where?.search
         ? {
@@ -23,10 +22,10 @@ export abstract class PhraseService {
           tags: where?.tags ? {
             hasSome: where.tags
           } : undefined
-        }
-
-
-
+        },
+      orderBy: {
+        createdAt: 'asc'
+      }
     });
     return phrases.map((phrase) => this.response(phrase));
   }
@@ -74,7 +73,7 @@ export abstract class PhraseService {
   static update(id: number, data: PhraseModel.updateBody) {
     return prisma.phrase.update({
       where: { id },
-      data:{
+      data: {
         english: data.english,
         portuguese: data.portuguese,
         tags: data.tags

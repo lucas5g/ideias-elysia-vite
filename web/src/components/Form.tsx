@@ -39,6 +39,7 @@ export function Form() {
       form.append('portuguese', portuguese)
     }
     form.append('tags', tag)
+    form.append('tags', '')
     
     try {
       setIsLoading(true);
