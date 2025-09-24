@@ -7,6 +7,7 @@ import { api } from "@/utils/api";
 import { AxiosError } from "axios";
 import { useAppContext } from "@/contexts/AppContext";
 import { mutate } from "swr";
+import { Toaster, toaster } from "./ui/toaster";
 
 const options = [
   'INTERROGATIVE',
@@ -52,6 +53,11 @@ export function Form() {
       setIsLoading(true);
       await api.post('/phrases', payload);
       mutate(uri);
+     toaster.create({
+        title: 'Success',
+        description: 'Phrase created successfully',
+        type: 'success' 
+      })
       // setPortuguese('');
       // setTag('');
       // setAudio(null);
@@ -61,7 +67,13 @@ export function Form() {
 
         const property = error.response?.data.property
         const message = error.response?.data.message
-        alert(`${property ? property.toUpperCase() + ' -' : ''}  ${message}`)
+
+        toaster.create({
+          title: 'Warning',
+          description: property ? `${property.toUpperCase()} - ${message}` : message,
+          type: 'warning'
+        })
+
         return
       }
       console.error(error);
@@ -145,6 +157,7 @@ export function Form() {
           </Button>
         </Flex>
       </form>
+      <Toaster />
     </Card >
   )
 
