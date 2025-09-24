@@ -29,28 +29,33 @@ export function Form() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const form = new FormData()
+    const createPayload = () => {
+      if (type === 'NEGATIVE' || type === 'INTERROGATIVE') {
+        const form = new FormData()
+        form.append('type', type)
+        form.append('audio', audio as Blob)
+        form.append('tags', tag)
+        form.append('tags', tag)
 
-    form.append('type', type)
+        return form       
+      }
 
-    if (type !== 'TRANSLATION') {
-      form.append('audio', audio as Blob)
-    }
-    if (type === 'TRANSLATION') {
-      form.append('portuguese', portuguese)
-    }
+      return {
+        type,
+        portuguese,
+        tags: [tag]
+      }
+   }
 
-    form.append('tags', tag)
-    form.append('tags', tag)
-
+   const payload = createPayload()
     try {
       setIsLoading(true);
-      await api.post('/phrases', form);
+      await api.post('/phrases', payload);
       mutate(uri);
-      setPortuguese('');
-      setTag('');
-      setAudio(null);
-      setType(options[0])
+      // setPortuguese('');
+      // setTag('');
+      // setAudio(null);
+      // setType(options[0])
     } catch (error) {
       if (error instanceof AxiosError) {
 
@@ -99,7 +104,7 @@ export function Form() {
             />
           }
 
-          {type !== 'TRANSLATION' &&
+          {(type === 'INTERROGATIVE' || type === 'NEGATIVE') &&
 
             <FileUpload.Root>
               <FileUpload.HiddenInput

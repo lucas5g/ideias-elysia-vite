@@ -1,7 +1,7 @@
 import { prisma } from '@/utils/prisma';
 import { PhraseModel } from '@/phrase/phrase.model';
 import { elevenLabs } from '@/utils/eleven-labs';
-import { Phrase } from '@prisma/client';
+import { Phrase, Prisma } from '@prisma/client';
 import { env } from '@/utils/env';
 import { Gemini } from '@/utils/gemini';
 
@@ -34,37 +34,12 @@ export abstract class PhraseService {
     return prisma.phrase.findUniqueOrThrow({ where: { id } });
   }
 
-  static async create(data: PhraseModel.createBody) {
-
-    const english = data.type === 'TRANSLATION'
-      ? await Gemini.translate(data.portuguese!)
-      : await Gemini.transcribe({ file: data.audio!, type: data.type });
-
-    const portuguese = data.type === 'TRANSLATION'
-      ? data.portuguese!
-      : await Gemini.translate(english, 'portuguese');
-
-    const phraseExist = await prisma.phrase.findFirst({
-      where: {
-        portuguese
-      }
-    });
-
-    if (phraseExist) {
-      throw new Response(
-        JSON.stringify({ message: 'Phrase already exists' }),
-        { status: 400 }
-      );
-    }
+  static async create(body: PhraseModel.createBody) {
+   
+    const data = await PhraseService.prepareCreate(body);
 
     const res = await prisma.phrase.create({
-      data: {
-        audio: await elevenLabs(english),
-        english,
-        portuguese,
-        tags: [...new Set(data.tags)],
-        type: data.type
-      }
+      data
     });
 
     return this.response(res);
@@ -132,5 +107,63 @@ export abstract class PhraseService {
         type: 'STORY'
       }
     });    
+  }
+
+  private static async  prepareCreate(data: PhraseModel.createBody):Promise<Prisma.PhraseCreateInput> {
+    //clean tags 
+    data.tags = [...new Set(data.tags)];
+
+    if (data.type === 'TRANSLATION') {
+      const english = await Gemini.translate(data.portuguese!);
+      return {
+        ...data,
+        portuguese: data.portuguese!,
+        english,
+        audio: await elevenLabs(english)
+      };
+    }
+
+    if (data.type === 'INTERROGATIVE' || data.type === 'NEGATIVE') {
+      const english = await Gemini.transcribe({ file: data.audio!, type: data.type });
+
+      const [portuguese, audio] = await Promise.all([
+        Gemini.translate(english, 'portuguese'),
+        elevenLabs(english)
+      ]);
+
+      return {
+        ...data,
+        english,
+        portuguese,
+        audio
+      };
+    }
+
+    if (data.type === 'STORY'){
+      const phrases = await prisma.phrase.findMany({
+        where: {
+          tags: {
+            hasSome: data.tags
+          }
+        }
+      }); 
+
+      const phrasesEnglish  = phrases.map((phrase) => phrase.english);
+
+      const english = await Gemini.createHistory(phrasesEnglish);
+      const portuguese = await Gemini.translate(english, 'portuguese');
+      const audio = await elevenLabs(english);
+
+      return {
+        ...data,
+        english,
+        portuguese,
+        audio
+      };
+
+    }
+
+    throw new Response('Invalid type', { status: 400 });
+
   }
 }

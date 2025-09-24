@@ -8,16 +8,15 @@ export namespace PhraseModel {
       tags: z.array(z.string().min(2)).min(1),
       portuguese: z.string().min(2).optional(),
       audio: z.file().mime('audio/ogg').optional(),
-    })
-    .refine((data) => data.type !== 'TRANSLATION' || data.portuguese, {
+    })    
+    .refine((data) => !(data.type === 'TRANSLATION' && !data.portuguese), {
       message: 'Portuguese text is required',
       path: ['portuguese'],
     })
-    .refine((data) => data.type === 'TRANSLATION' || data.audio, {
+    .refine((data) => !(['INTERROGATIVE', 'NEGATIVE'].includes(data.type) && !data.audio), {
       message: 'Audio file is required',
       path: ['audio'],
     });
-    // .transform((data) => ({ ...data, tags: [...new Set(data.tags)] }))
 
   export const createHistoryBody = z
     .object({
