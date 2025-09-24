@@ -10,11 +10,16 @@ new Elysia()
   .use(prismaException)
   .use(cors())
   .use(openapi({
-    mapJsonSchema:{
+    mapJsonSchema: {
       zod: z.toJSONSchema
     }
   }))
+  // .use(staticPlugin({
+  //   assets: process.cwd() + '/web/dist',
+  //   prefix: '/'
+  // }))
   .get('/', ({ redirect }) => redirect('/openapi'))
+  // .get('*', file(process.cwd() + '/web/dist/index.html'))
   .use(phraseRoute)
   .listen(3000);
 

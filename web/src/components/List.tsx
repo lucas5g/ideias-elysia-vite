@@ -3,7 +3,7 @@ import { MagnifyingGlassIcon, PlusIcon } from '@phosphor-icons/react';
 import { useSearchParams } from 'react-router';
 import { useAppContext } from '@/contexts/AppContext';
 import { fetcher } from '@/utils/fetcher';
-import { Flex, SkeletonText, Table as ChakraTable, InputGroup, Tag, IconButton } from '@chakra-ui/react';
+import { Flex, SkeletonText, Table as ChakraTable, InputGroup, Tag, IconButton, Text } from '@chakra-ui/react';
 import { Player } from '@/components/Player';
 import { FieldInput } from '@/components/FieldInput';
 import { Table } from '@/components/Table';
@@ -79,9 +79,17 @@ export function List() {
                 key={phrase.id}
               // onClick={} 
               >
-                <ChakraTable.Cell>
-                  {phrase.portuguese} <br />
-                  {phrase.english}
+                <ChakraTable.Cell >
+                  <Text marginBottom={1}>
+                    {phrase.english}
+                  </Text>
+                  <Text 
+                    textStyle={'xs'}
+                    fontWeight={'light'}
+                    >
+                    {phrase.portuguese}
+                  </Text>
+                  {/* <br /> */}
                   <Flex marginTop={1} gap={2}>
                     {phrase.tags.map((tag) => (
                       <Tag.Root
@@ -101,7 +109,7 @@ export function List() {
           })}
         </Table>
       }
-     <Flex
+      <Flex
 
         position={'fixed'}
         bottom={5}
