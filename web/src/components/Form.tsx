@@ -1,7 +1,7 @@
 import { Card } from "@/components/Card"
 import { FieldInput, floatingStyles } from "@/components/FieldInput";
 import { Button, Field, FileUpload, Flex, NativeSelect, Spinner } from "@chakra-ui/react"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { UploadSimpleIcon } from '@phosphor-icons/react'
 import { api } from "@/utils/api";
 import { AxiosError } from "axios";
@@ -17,42 +17,53 @@ const options = [
 ].sort((a, b) => a.localeCompare(b))
 
 interface Props {
-  phrase: PhraseInterface;
+  phrase: PhraseInterface
   setPhrase: React.Dispatch<React.SetStateAction<PhraseInterface>>
+  uri: string
 }
-export function Form({ phrase, setPhrase }: Readonly<Props>) {
-  const uri = '/phrases'
+export function Form({ phrase, setPhrase, uri }: Readonly<Props>) {
   const [isLoading, setIsLoading] = useState(false);
+  const [type, setType] = useState<PhraseInterface['type']>('TRANSLATION')
   const [audio, setAudio] = useState<File | null>(null)
+  const phraseRef = useRef<PhraseInterface>({
+    portuguese: '',
+    audioUrl: '',
+    english: '',
+    id: 0,
+    tags: [],
+    type: 'INTERROGATIVE'
+  })
 
-  // const inputRef = useRef<HTMLInputElement | null>(null);
-
+  useEffect(() => {
+    phraseRef.current = phrase
+    setType(phrase.type)
+  }, [phrase.id])
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const createPayload = () => {
-      if (phrase?.type === 'NEGATIVE' || phrase?.type === 'INTERROGATIVE') {
-        const form = new FormData()
-        form.append('type', phrase.type)
-        form.append('audio', audio as Blob)
-        phrase.tags.forEach(tag => form.append('tags', tag))
+    const { portuguese, tags } = phraseRef.current
 
-        return form
-      }
+    const form = new FormData()
+    form.append('type', type)
+    tags.forEach(tag => form.append('tags', tag))
 
-      return {
-        type: phrase.type,
-        portuguese: phrase.portuguese,
-        tags: phrase.tags
-      }
-
+    if (type === 'INTERROGATIVE' || type === 'NEGATIVE') {
+      form.append('audio', audio as Blob)
     }
 
-    const payload = createPayload()
+    if (tags.length === 1) {
+      form.append('tags', tags[0])
+    }
+
+    if (type === 'TRANSLATION') {
+      form.append('portuguese', portuguese)
+    }
+
+
     try {
       setIsLoading(true);
-      await api.post(uri, payload);
+      await api.post(uri, form);
       mutate(uri);
       toaster.create({
         title: 'Success',
@@ -82,9 +93,13 @@ export function Form({ phrase, setPhrase }: Readonly<Props>) {
 
   }
 
+  // console.log('phraseRef => ', phraseRef.current.portuguese)
+  // console.log('phrase => ', phrase.portuguese)
   return (
 
-    <Card title='Form'>
+    <Card
+      key={phrase.id}
+      title='Form'>
       <form onSubmit={handleSubmit}>
         <Flex direction={'column'} gap={4}>
           <Field.Root>
@@ -92,8 +107,11 @@ export function Form({ phrase, setPhrase }: Readonly<Props>) {
 
             <NativeSelect.Root>
               <NativeSelect.Field
-                onChange={(e) => setPhrase({ ...phrase, type: e.target.value })}
-                value={phrase.type}
+                name="type"
+                // onChange={(e) => phraseRef.current.type = e.target.value as PhraseInterface['type']}
+                onChange={(e) => setType(e.target.value as PhraseInterface['type'])}
+                value={type}
+
               >
                 {options.map((option) => (
                   <option key={option} value={option}>{option.toLowerCase()}</option>
@@ -104,21 +122,23 @@ export function Form({ phrase, setPhrase }: Readonly<Props>) {
               Type
             </Field.Label>
           </Field.Root>
-          {phrase.type === 'TRANSLATION' &&
+          {type === 'TRANSLATION' &&
             <FieldInput
+              // key={phrase.id}
               label="Portuguese"
               name="portuguese"
-              onChange={(e) => setPhrase({ ...phrase, portuguese: e.target.value })}
-              value={phrase.portuguese}
+              onChange={(e) => phraseRef.current.portuguese = e.target.value}
+              // value={phraseRef.current.portuguese || phrase.portuguese}
+              // defaultValue={phrase.portuguese}
+              defaultValue={phraseRef.current.portuguese}
 
             />
           }
 
-          {(phrase.type === 'INTERROGATIVE' || phrase.type === 'NEGATIVE') &&
+          {(type === 'INTERROGATIVE' || type === 'NEGATIVE') &&
 
             <FileUpload.Root>
               <FileUpload.HiddenInput
-                // ref={inputRef}
                 accept=".mp3, .ogg"
                 onChange={event => setAudio((event.target as HTMLInputElement).files?.[0] || null)}
 
@@ -132,17 +152,18 @@ export function Form({ phrase, setPhrase }: Readonly<Props>) {
                   <UploadSimpleIcon /> Select Audio
                 </Button>
               </FileUpload.Trigger>
-              {/* <FileUpload.ItemDeleteTrigger /> */}
               <FileUpload.List />
             </FileUpload.Root>
 
           }
 
-          < FieldInput
+          <FieldInput
+            key={phrase.id}
             name="tag"
             label="Tag"
-            onChange={(e) => setPhrase({ ...phrase, tags: [e.target.value] })}
-            value={phrase.tags}
+            onChange={(e) => phraseRef.current.tags = e.target.value.split(/[,\s]/g).filter(Boolean)}
+            value={phrase.tags.join(', ')}
+          // defaultValue={phraseRef.current.tags.join(', ')}
           />
           <Flex
             gap={4}

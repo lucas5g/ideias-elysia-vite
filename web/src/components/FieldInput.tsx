@@ -1,9 +1,8 @@
 import { Box, defineStyle, Field, Input, type InputProps } from "@chakra-ui/react";
-
+import React, { forwardRef } from "react";
 interface Props extends InputProps {
   label?: string
   error?: string
-
 }
 export const floatingStyles = defineStyle({
   pos: "absolute",
@@ -25,27 +24,30 @@ export const floatingStyles = defineStyle({
     insetStart: "2",
   },
 })
-export function FieldInput({ error, ...props }: Readonly<Props>) {
+// export function FieldInput({ error, ...props }: Readonly<Props>) {
+export const FieldInput = forwardRef<HTMLInputElement, Props>(
+  ({ error, ...props }, ref) => {
+    return (
+      <Field.Root invalid={!!error}>
 
-  return (
-    <Field.Root invalid={!!error}>
-
-      <Box pos="relative" w="full">
-        <Input
-          className="peer"
-          placeholder=""
-          id={props.name}
-          {...props}
-        />
-        <Field.Label css={floatingStyles}>
-          {props.label}
-        </Field.Label>
-      </Box>
-      {error &&
-        <Field.ErrorText>
-          {error}
-        </Field.ErrorText>
-      }
-    </Field.Root>
-  )
-}
+        <Box pos="relative" w="full">
+          <Input
+            className="peer"
+            placeholder=""
+            ref={ref}
+            id={props.name}
+            {...props}
+          />
+          <Field.Label css={floatingStyles}>
+            {props.label}
+          </Field.Label>
+        </Box>
+        {error &&
+          <Field.ErrorText>
+            {error}
+          </Field.ErrorText>
+        }
+      </Field.Root>
+    )
+  }
+);

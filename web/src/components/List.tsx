@@ -1,4 +1,4 @@
-import { useEffect, type FormEvent } from 'react';
+import { useEffect, useRef, type FormEvent } from 'react';
 import { MagnifyingGlassIcon, PlusIcon } from '@phosphor-icons/react';
 import { useSearchParams } from 'react-router';
 import { fetcher } from '@/utils/fetcher';
@@ -17,6 +17,7 @@ interface Props {
 }
 export function List({ uri, setUri, setPhrase }: Readonly<Props>) {
   const [searchParams, setSearchParams] = useSearchParams()
+  const searchRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const search = searchParams.get('search')
@@ -36,10 +37,10 @@ export function List({ uri, setUri, setPhrase }: Readonly<Props>) {
 
   function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const search = event.currentTarget.search.value
-
-    setUri(`/phrases?search=${search}`)
-    setSearchParams({ search })
+    const value = searchRef.current?.value || ''
+    setUri(`/phrases?search=${value}`)
+    setSearchParams({ search: value })
+    
   }
 
 
@@ -60,7 +61,7 @@ export function List({ uri, setUri, setPhrase }: Readonly<Props>) {
             <FieldInput
               name="search"
               label='Search'
-             
+              ref={searchRef}
             />
           </InputGroup>
         </Flex>

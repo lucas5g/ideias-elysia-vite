@@ -28,6 +28,7 @@ export function Translate() {
       <Form
         phrase={phrase}
         setPhrase={setPhrase}
+        uri={uri}
       />
       <List
         uri={uri}
