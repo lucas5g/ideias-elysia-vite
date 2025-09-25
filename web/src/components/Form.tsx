@@ -1,13 +1,13 @@
 import { Card } from "@/components/Card"
 import { FieldInput, floatingStyles } from "@/components/FieldInput";
 import { Button, Field, FileUpload, Flex, NativeSelect, Spinner } from "@chakra-ui/react"
-import { useRef, useState } from "react"
+import {  useState } from "react"
 import { UploadSimpleIcon } from '@phosphor-icons/react'
 import { api } from "@/utils/api";
 import { AxiosError } from "axios";
-import { useAppContext } from "@/contexts/AppContext";
 import { mutate } from "swr";
 import { Toaster, toaster } from "./ui/toaster";
+import type { PhraseInterface } from "@/pages/translate/Index";
 
 const options = [
   'INTERROGATIVE',
@@ -16,52 +16,50 @@ const options = [
   'TRANSLATION',
 ].sort((a, b) => a.localeCompare(b))
 
-
-export function Form() {
+interface Props {
+  phrase: PhraseInterface;
+  setPhrase: React.Dispatch<React.SetStateAction<PhraseInterface>>
+}
+export function Form({ phrase, setPhrase }: Readonly<Props>) {
+  const uri = '/phrases'
   const [isLoading, setIsLoading] = useState(false);
-  const [type, setType] = useState<string>(options[3]);
-  const [audio, setAudio] = useState<File | null>(null);
-  const [portuguese, setPortuguese] = useState<string>('');
-  const [tag, setTag] = useState<string>('');
-  const { uri } = useAppContext();
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [audio, setAudio] = useState<File | null>(null)
+
+  // const inputRef = useRef<HTMLInputElement | null>(null);
 
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const createPayload = () => {
-      if (type === 'NEGATIVE' || type === 'INTERROGATIVE') {
+      if (phrase?.type === 'NEGATIVE' || phrase?.type === 'INTERROGATIVE') {
         const form = new FormData()
-        form.append('type', type)
+        form.append('type', phrase.type)
         form.append('audio', audio as Blob)
-        form.append('tags', tag)
-        form.append('tags', tag)
+        phrase.tags.forEach(tag => form.append('tags', tag))
 
-        return form       
+        return form
       }
 
       return {
-        type,
-        portuguese,
-        tags: [tag]
+        type: phrase.type,
+        portuguese: phrase.portuguese,
+        tags: phrase.tags
       }
-   }
 
-   const payload = createPayload()
+    }
+
+    const payload = createPayload()
     try {
       setIsLoading(true);
-      await api.post('/phrases', payload);
+      await api.post(uri, payload);
       mutate(uri);
-     toaster.create({
+      toaster.create({
         title: 'Success',
         description: 'Phrase created successfully',
-        type: 'success' 
+        type: 'success'
       })
-      // setPortuguese('');
-      // setTag('');
-      // setAudio(null);
-      // setType(options[0])
+
     } catch (error) {
       if (error instanceof AxiosError) {
 
@@ -94,8 +92,8 @@ export function Form() {
 
             <NativeSelect.Root>
               <NativeSelect.Field
-                onChange={(e) => setType(e.target.value)}
-                value={type}
+                onChange={(e) => setPhrase({ ...phrase, type: e.target.value })}
+                value={phrase.type}
               >
                 {options.map((option) => (
                   <option key={option} value={option}>{option.toLowerCase()}</option>
@@ -106,21 +104,21 @@ export function Form() {
               Type
             </Field.Label>
           </Field.Root>
-          {type === 'TRANSLATION' &&
+          {phrase.type === 'TRANSLATION' &&
             <FieldInput
               label="Portuguese"
               name="portuguese"
-              onChange={(e) => setPortuguese(e.target.value)}
-              value={portuguese}
+              onChange={(e) => setPhrase({ ...phrase, portuguese: e.target.value })}
+              value={phrase.portuguese}
 
             />
           }
 
-          {(type === 'INTERROGATIVE' || type === 'NEGATIVE') &&
+          {(phrase.type === 'INTERROGATIVE' || phrase.type === 'NEGATIVE') &&
 
             <FileUpload.Root>
               <FileUpload.HiddenInput
-                ref={inputRef}
+                // ref={inputRef}
                 accept=".mp3, .ogg"
                 onChange={event => setAudio((event.target as HTMLInputElement).files?.[0] || null)}
 
@@ -143,8 +141,8 @@ export function Form() {
           < FieldInput
             name="tag"
             label="Tag"
-            onChange={(e) => setTag(e.target.value)}
-            value={tag}
+            onChange={(e) => setPhrase({ ...phrase, tags: [e.target.value] })}
+            value={phrase.tags}
           />
           <Button
             type="submit"

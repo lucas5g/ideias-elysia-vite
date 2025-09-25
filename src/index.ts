@@ -2,6 +2,7 @@ import { Elysia } from 'elysia';
 import cors from '@elysiajs/cors';
 import { phraseRoute } from '@/phrase/phrase.route';
 import { env } from '@/utils/env';
+import { version } from '../package.json';
 
 import openapi from '@elysiajs/openapi';
 import { prismaException } from './utils/prisma-exception';
@@ -24,6 +25,6 @@ new Elysia()
   .listen(3000);
 
 console.debug(
-  `🦊 Elysia is running at ${env.BASE_URL_API}`
+  `🦊 Elysia is running at ${env.BASE_URL_API} v${version}`
 );
 

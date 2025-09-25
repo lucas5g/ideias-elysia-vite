@@ -66,7 +66,7 @@ export abstract class PhraseService {
       id: phrase.id,
       portuguese: phrase.portuguese,
       english: phrase.english,
-      audio: `${env.BASE_URL_API}/phrases/${phrase.id}/audio`,
+      audioUrl: `${env.BASE_URL_API}/phrases/${phrase.id}/audio`,
       tags: phrase.tags,
       type: phrase.type
     };
