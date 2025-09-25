@@ -34,6 +34,7 @@ export function FieldInput({ error, ...props }: Readonly<Props>) {
         <Input
           className="peer"
           placeholder=""
+          id={props.name}
           {...props}
         />
         <Field.Label css={floatingStyles}>

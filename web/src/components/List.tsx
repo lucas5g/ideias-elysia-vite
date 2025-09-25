@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, type FormEvent } from 'react';
 import { MagnifyingGlassIcon, PlusIcon } from '@phosphor-icons/react';
 import { useSearchParams } from 'react-router';
 import { fetcher } from '@/utils/fetcher';
@@ -16,7 +16,6 @@ interface Props {
   setPhrase: React.Dispatch<React.SetStateAction<PhraseInterface>>
 }
 export function List({ uri, setUri, setPhrase }: Readonly<Props>) {
-  const [search, setSearch] = useState<string>('');
   const [searchParams, setSearchParams] = useSearchParams()
 
   useEffect(() => {
@@ -24,12 +23,12 @@ export function List({ uri, setUri, setPhrase }: Readonly<Props>) {
 
     if (search) {
       setUri(`/phrases?search=${search}`)
-      setSearch(search)
+      document.querySelector('#search')?.setAttribute('value', search)
     } else {
       setUri('/phrases')
     }
 
-  }, [searchParams, setUri])
+  }, [setUri, searchParams])
 
   const { data, error, isLoading } = fetcher<PhraseInterface[]>(uri)
 
@@ -37,8 +36,10 @@ export function List({ uri, setUri, setPhrase }: Readonly<Props>) {
 
   function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSearchParams({ search })
+    const search = event.currentTarget.search.value
+
     setUri(`/phrases?search=${search}`)
+    setSearchParams({ search })
   }
 
 
@@ -59,8 +60,7 @@ export function List({ uri, setUri, setPhrase }: Readonly<Props>) {
             <FieldInput
               name="search"
               label='Search'
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
+             
             />
           </InputGroup>
         </Flex>
