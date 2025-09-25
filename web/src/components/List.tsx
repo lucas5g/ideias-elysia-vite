@@ -1,25 +1,21 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { MagnifyingGlassIcon, PlusIcon } from '@phosphor-icons/react';
 import { useSearchParams } from 'react-router';
-import { useAppContext } from '@/contexts/AppContext';
 import { fetcher } from '@/utils/fetcher';
 import { Flex, SkeletonText, Table as ChakraTable, InputGroup, Tag, IconButton, Text } from '@chakra-ui/react';
 import { Player } from '@/components/Player';
 import { FieldInput } from '@/components/FieldInput';
 import { Table } from '@/components/Table';
 import { Card } from '@/components/Card';
+import type { PhraseInterface } from '@/pages/translate/Index';
 
-interface Phrase {
-  id: number;
-  portuguese: string;
-  english: string;
-  tags: string[];
-  audio: string;
+interface Props {
+  uri: string
+  setUri: React.Dispatch<React.SetStateAction<string>>
 }
-export function List() {
+export function List({ uri, setUri }: Readonly<Props>) {
   const [search, setSearch] = useState<string>('');
   const [searchParams, setSearchParams] = useSearchParams()
-  const { uri, setUri } = useAppContext();
 
   useEffect(() => {
     const search = searchParams.get('search')
@@ -33,7 +29,7 @@ export function List() {
 
   }, [searchParams, setUri])
 
-  const { data, error, isLoading } = fetcher<Phrase[]>(uri)
+  const { data, error, isLoading } = fetcher<PhraseInterface[]>(uri)
 
   if (error) return <div>failed to load</div>
 
@@ -73,7 +69,7 @@ export function List() {
       }
       {!isLoading &&
         <Table headers={['Phrase', 'Audio']}>
-          {data?.map((phrase: Phrase) => {
+          {data?.map((phrase: PhraseInterface) => {
             return (
               <ChakraTable.Row
                 key={phrase.id}
@@ -102,7 +98,7 @@ export function List() {
                   </Flex>
                 </ChakraTable.Cell>
                 <ChakraTable.Cell textAlign={'end'}>
-                  <Player audio={phrase.audio} />
+                  <Player audio={phrase.audioUrl} />
                 </ChakraTable.Cell>
               </ChakraTable.Row>
             );
