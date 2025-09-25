@@ -9,7 +9,7 @@ export interface PhraseInterface {
   tags: string[];
   audioUrl: string;
   type: 'INTERROGATIVE' | 'NEGATIVE' | 'STORY' | 'TRANSLATION';
-}
+} 
 export function Translate() {
 
   const [phrase, setPhrase] = useState<PhraseInterface>({
@@ -31,7 +31,9 @@ export function Translate() {
       />
       <List
         uri={uri}
-        setUri={setUri}      
+        setUri={setUri}   
+        phrase={phrase}
+        setPhrase={setPhrase}   
         />     
     </>
   );

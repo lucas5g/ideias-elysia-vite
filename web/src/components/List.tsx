@@ -12,8 +12,10 @@ import type { PhraseInterface } from '@/pages/translate/Index';
 interface Props {
   uri: string
   setUri: React.Dispatch<React.SetStateAction<string>>
+  phrase: PhraseInterface
+  setPhrase: React.Dispatch<React.SetStateAction<PhraseInterface>>
 }
-export function List({ uri, setUri }: Readonly<Props>) {
+export function List({ uri, setUri, setPhrase }: Readonly<Props>) {
   const [search, setSearch] = useState<string>('');
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -72,17 +74,20 @@ export function List({ uri, setUri }: Readonly<Props>) {
           {data?.map((phrase: PhraseInterface) => {
             return (
               <ChakraTable.Row
+                cursor={'pointer'}
                 key={phrase.id}
-              // onClick={} 
+                onClick={() => {
+                  setPhrase(phrase)
+                } }
               >
                 <ChakraTable.Cell >
                   <Text marginBottom={1}>
                     {phrase.english}
                   </Text>
-                  <Text 
+                  <Text
                     textStyle={'xs'}
                     fontWeight={'light'}
-                    >
+                  >
                     {phrase.portuguese}
                   </Text>
                   {/* <br /> */}

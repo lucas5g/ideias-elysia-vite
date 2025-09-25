@@ -1,7 +1,7 @@
 import { Card } from "@/components/Card"
 import { FieldInput, floatingStyles } from "@/components/FieldInput";
 import { Button, Field, FileUpload, Flex, NativeSelect, Spinner } from "@chakra-ui/react"
-import {  useState } from "react"
+import { useState } from "react"
 import { UploadSimpleIcon } from '@phosphor-icons/react'
 import { api } from "@/utils/api";
 import { AxiosError } from "axios";
@@ -144,15 +144,46 @@ export function Form({ phrase, setPhrase }: Readonly<Props>) {
             onChange={(e) => setPhrase({ ...phrase, tags: [e.target.value] })}
             value={phrase.tags}
           />
-          <Button
-            type="submit"
-            variant={'surface'}
-            disabled={isLoading}
+          <Flex
+            gap={4}
+            justifyContent={'flex-end'}
           >
-            {isLoading
-              ? <Spinner />
-              : 'Save'}
-          </Button>
+            <Button
+              type="submit"
+              variant={'surface'}
+              disabled={isLoading}
+            >
+              {isLoading
+                ? <Spinner />
+                : 'Save'}
+            </Button>
+            {!!phrase.id &&
+              <Button
+                background={'red'}
+                variant={'outline'}
+                onClick={() => {
+                  setPhrase({
+                    id: 0,
+                    portuguese: '',
+                    english: '',
+                    tags: [],
+                    audioUrl: '',
+                    type: 'INTERROGATIVE'
+                  })
+                  api.delete(`/phrases/${phrase.id}`).then(() => {
+                    mutate(uri);
+                    toaster.create({
+                      title: 'Success',
+                      description: 'Phrase deleted successfully',
+                      type: 'success'
+                    })
+                  })
+                }}
+              >
+                Delete
+              </Button>
+            }
+          </Flex>
         </Flex>
       </form>
       <Toaster />
