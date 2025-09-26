@@ -5,10 +5,9 @@ interface Props {
 }
 export function Card({ title, children }: Readonly<Props>) {
   return (
-    <ChakraCard.Root 
-      // bgColor={'gray.950'}
+    <ChakraCard.Root
       width={'100%'}
-      >
+    >
       <ChakraCard.Header>
         <ChakraCard.Title>{title}</ChakraCard.Title>
       </ChakraCard.Header>

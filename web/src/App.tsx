@@ -11,6 +11,7 @@ export function App() {
         <Route element={<Layout />}>
           <Route path="/" element={<Translate />} />
           <Route path="/translate" element={<Translate />} />
+          <Route path='/translate/phrases/:id' element={<Translate />} />
           <Route path="/tests" element={<Tests />} />
 
         </Route>

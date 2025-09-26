@@ -7,7 +7,7 @@ interface Props {
 }
 export function Table({ headers, children }: Readonly<Props>) {
   return (
-    <ChakraTable.Root>
+    <ChakraTable.Root interactive>
       <ChakraTable.Header>
         <ChakraTable.Row>
           {headers.map((header, index) => (

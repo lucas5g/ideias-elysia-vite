@@ -1,13 +1,14 @@
 import { Card } from "@/components/Card"
 import { FieldInput, floatingStyles } from "@/components/FieldInput";
-import { Button, Field, FileUpload, Flex, NativeSelect, Spinner } from "@chakra-ui/react"
-import { useEffect, useRef, useState } from "react"
-import { UploadSimpleIcon } from '@phosphor-icons/react'
+import { Button, Field, FileUpload, Flex, IconButton, NativeSelect, Spinner } from "@chakra-ui/react"
+import { useEffect, useState } from "react"
+import { TrashIcon, UploadSimpleIcon } from '@phosphor-icons/react'
 import { api } from "@/utils/api";
 import { AxiosError } from "axios";
 import { mutate } from "swr";
 import { Toaster, toaster } from "./ui/toaster";
 import type { PhraseInterface } from "@/pages/translate/Index";
+import { useNavigate, useParams } from "react-router";
 
 const options = [
   'INTERROGATIVE',
@@ -17,32 +18,39 @@ const options = [
 ].sort((a, b) => a.localeCompare(b))
 
 interface Props {
-  phrase: PhraseInterface
-  setPhrase: React.Dispatch<React.SetStateAction<PhraseInterface>>
   uri: string
 }
-export function Form({ phrase, setPhrase, uri }: Readonly<Props>) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [type, setType] = useState<PhraseInterface['type']>('TRANSLATION')
-  const [audio, setAudio] = useState<File | null>(null)
-  const phraseRef = useRef<PhraseInterface>({
-    portuguese: '',
-    audioUrl: '',
-    english: '',
+export function Form({ uri }: Readonly<Props>) {
+  const [phrase, setPhrase] = useState<PhraseInterface>({
     id: 0,
+    portuguese: '',
+    english: '',
     tags: [],
-    type: 'INTERROGATIVE'
-  })
+    audioUrl: '',
+    type: 'TRANSLATION'
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [audio, setAudio] = useState<File | null>(null)
+  const params = useParams()
+  const navigate = useNavigate()
+
 
   useEffect(() => {
-    phraseRef.current = phrase
-    setType(phrase.type)
-  }, [phrase.id])
+    if (!params.id) {
+      return
+    }
+    api.get<PhraseInterface>(`/phrases/${params.id}`)
+      .then(({ data }) => setPhrase(data))
+
+
+  }, [params])
+
+
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const { portuguese, tags } = phraseRef.current
+    const { portuguese, tags, type } = phrase
 
     const form = new FormData()
     form.append('type', type)
@@ -64,6 +72,7 @@ export function Form({ phrase, setPhrase, uri }: Readonly<Props>) {
     try {
       setIsLoading(true);
       await api.post(uri, form);
+
       mutate(uri);
       toaster.create({
         title: 'Success',
@@ -88,54 +97,53 @@ export function Form({ phrase, setPhrase, uri }: Readonly<Props>) {
       console.error(error);
     } finally {
       setIsLoading(false);
-
     }
-
   }
 
-  // console.log('phraseRef => ', phraseRef.current.portuguese)
-  // console.log('phrase => ', phrase.portuguese)
   return (
 
     <Card
-      key={phrase.id}
       title='Form'>
       <form onSubmit={handleSubmit}>
+
         <Flex direction={'column'} gap={4}>
           <Field.Root>
-
 
             <NativeSelect.Root>
               <NativeSelect.Field
                 name="type"
-                // onChange={(e) => phraseRef.current.type = e.target.value as PhraseInterface['type']}
-                onChange={(e) => setType(e.target.value as PhraseInterface['type'])}
-                value={type}
-
+                id="type"
+                onChange={e => setPhrase({ ...phrase, type: e.target.value as PhraseInterface['type'] })}
+                value={phrase?.type}
               >
                 {options.map((option) => (
                   <option key={option} value={option}>{option.toLowerCase()}</option>
                 ))}
               </NativeSelect.Field>
             </NativeSelect.Root>
-            <Field.Label css={floatingStyles}>
+            <Field.Label css={floatingStyles} htmlFor="type">
               Type
             </Field.Label>
           </Field.Root>
-          {type === 'TRANSLATION' &&
+          {phrase.type === 'TRANSLATION' &&
             <FieldInput
-              // key={phrase.id}
               label="Portuguese"
               name="portuguese"
-              onChange={(e) => phraseRef.current.portuguese = e.target.value}
-              // value={phraseRef.current.portuguese || phrase.portuguese}
-              // defaultValue={phrase.portuguese}
-              defaultValue={phraseRef.current.portuguese}
-
+              onChange={e => setPhrase({ ...phrase, portuguese: e.target.value })}
+              value={phrase.portuguese}
             />
           }
 
-          {(type === 'INTERROGATIVE' || type === 'NEGATIVE') &&
+          {!!phrase.id &&
+            <FieldInput
+              label="English"
+              name="english"
+              disabled
+              value={phrase.english}
+            />
+          }
+
+          {(phrase.type === 'INTERROGATIVE' || phrase.type === 'NEGATIVE') &&
 
             <FileUpload.Root>
               <FileUpload.HiddenInput
@@ -158,27 +166,73 @@ export function Form({ phrase, setPhrase, uri }: Readonly<Props>) {
           }
 
           <FieldInput
-            key={phrase.id}
-            name="tag"
+            name="tags"
             label="Tag"
-            onChange={(e) => phraseRef.current.tags = e.target.value.split(/[,\s]/g).filter(Boolean)}
+            onChange={e => setPhrase({ ...phrase, tags: e.target.value.split(/[,\s]/g).filter(Boolean) as string[] })}
             value={phrase.tags.join(', ')}
-          // defaultValue={phraseRef.current.tags.join(', ')}
           />
           <Flex
-            gap={4}
+            gap={3}
             justifyContent={'flex-end'}
           >
             <Button
               type="submit"
               variant={'surface'}
               disabled={isLoading}
+              min-width={'7em'}
             >
               {isLoading
                 ? <Spinner />
                 : 'Save'}
             </Button>
+            <Button
+              min-width={'7em'}
+              variant={'outline'}
+              onClick={() => {
+
+                setPhrase({
+                  id: 0,
+                  portuguese: '',
+                  english: '',
+                  tags: [],
+                  audioUrl: '',
+                  type: 'TRANSLATION'
+                })
+                navigate('/translate')
+              }}
+
+            >
+              Clear
+            </Button>
             {!!phrase.id &&
+              <IconButton
+                bg={'red'} color={'white'} _hover={{ bg: 'red.400' }}
+                onClick={() => {
+                  setPhrase({
+                    id: 0,
+                    portuguese: '',
+                    english: '',
+                    tags: [],
+                    audioUrl: '',
+                    type: 'TRANSLATION'
+                  })
+                  navigate('/translate')
+                  api
+                    .delete(`/phrases/${phrase.id}`)
+                    .then(() => {
+                      mutate(uri);
+                      toaster.create({
+                        title: 'Success',
+                        description: 'Phrase deleted successfully',
+                        type: 'success'
+                      })
+                    })
+                }}
+              >
+                <TrashIcon />
+              </IconButton>
+            }
+            {/* {!!phrase.id &&
               <Button
                 background={'red'}
                 variant={'outline'}
@@ -203,7 +257,7 @@ export function Form({ phrase, setPhrase, uri }: Readonly<Props>) {
               >
                 Delete
               </Button>
-            }
+            } */}
           </Flex>
         </Flex>
       </form>

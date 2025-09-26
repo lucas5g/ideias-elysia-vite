@@ -38,7 +38,7 @@ export const FieldInput = forwardRef<HTMLInputElement, Props>(
             id={props.name}
             {...props}
           />
-          <Field.Label css={floatingStyles}>
+          <Field.Label css={floatingStyles} htmlFor={props.name}>
             {props.label}
           </Field.Label>
         </Box>

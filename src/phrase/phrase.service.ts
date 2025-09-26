@@ -24,7 +24,7 @@ export abstract class PhraseService {
           } : undefined
         },
       orderBy: {
-        createdAt: 'asc'
+        createdAt: 'desc'
       }
     });
     return phrases.map((phrase) => this.response(phrase));
@@ -70,43 +70,6 @@ export abstract class PhraseService {
       tags: phrase.tags,
       type: phrase.type
     };
-  }
-
-  static async createHistory(data: PhraseModel.createHistoryBody) {
-
-    const [, phrases] = await prisma.$transaction([
-      prisma.phrase.deleteMany({
-        where: {
-          type: 'STORY',
-          tags: {
-            has: data.tag
-          }
-        }
-      }),
-      prisma.phrase.findMany({
-        where: {
-          tags: {
-            has: data.tag
-          }
-        }
-      })
-    ]);
-
-    const phraseEnglish = phrases.map((phrase) => phrase.english);
-
-    const english = await Gemini.createHistory(phraseEnglish, data.tag);
-    const portuguese = await Gemini.translate(english, 'portuguese');
-    const audio = await elevenLabs(english);
-
-    return await prisma.phrase.create({
-      data: {
-        audio,
-        english,
-        portuguese,
-        tags: [data.tag],
-        type: 'STORY'
-      }
-    });    
   }
 
   private static async  prepareCreate(data: PhraseModel.createBody):Promise<Prisma.PhraseCreateInput> {

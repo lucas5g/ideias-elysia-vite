@@ -9,33 +9,24 @@ export interface PhraseInterface {
   tags: string[];
   audioUrl: string;
   type: 'INTERROGATIVE' | 'NEGATIVE' | 'STORY' | 'TRANSLATION';
-} 
+}
 export function Translate() {
-
-  const [phrase, setPhrase] = useState<PhraseInterface>({
-    id: 0,
-    portuguese: '',
-    english: '',
-    tags: [],
-    audioUrl: '',
-    type: 'INTERROGATIVE'
-  });
 
   const [uri, setUri] = useState('/phrases');
 
   return (
     <>
       <Form
-        phrase={phrase}
-        setPhrase={setPhrase}
+        // phrase={phrase}
+        // setPhrase={setPhrase}
         uri={uri}
       />
       <List
         uri={uri}
-        setUri={setUri}   
-        phrase={phrase}
-        setPhrase={setPhrase}   
-        />     
+        setUri={setUri}
+      // phrase={phrase}
+      // setPhrase={setPhrase}
+      />
     </>
   );
 }

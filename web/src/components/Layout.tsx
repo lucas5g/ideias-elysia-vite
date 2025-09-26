@@ -8,15 +8,20 @@ export function Layout() {
       gap={10}
       h={'100vh'}
     >
-      {/* <div>
-        nav
-      </div> */}
+
       <Flex
-        direction={'column'}
-        alignItems={'center'}
+        direction={{
+          base: 'column',
+          md: 'row'
+        }}
+        alignItems={{
+          base: 'center',
+          md: 'flex-start'
+        }}
         justifyContent={'center'}
-        gap={'2rem'}
+        gap={'1.5rem'}
         padding={5}
+
       >
         <Outlet />
       </Flex>

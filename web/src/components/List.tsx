@@ -1,8 +1,8 @@
-import { useEffect, useRef, type FormEvent } from 'react';
-import { MagnifyingGlassIcon, PlusIcon } from '@phosphor-icons/react';
-import { useSearchParams } from 'react-router';
+import { useEffect,  useState, type FormEvent } from 'react';
+import { MagnifyingGlassIcon } from '@phosphor-icons/react';
+import { useNavigate, useSearchParams } from 'react-router';
 import { fetcher } from '@/utils/fetcher';
-import { Flex, SkeletonText, Table as ChakraTable, InputGroup, Tag, IconButton, Text } from '@chakra-ui/react';
+import { Flex, SkeletonText, Table as ChakraTable, InputGroup, Tag, Text } from '@chakra-ui/react';
 import { Player } from '@/components/Player';
 import { FieldInput } from '@/components/FieldInput';
 import { Table } from '@/components/Table';
@@ -12,19 +12,19 @@ import type { PhraseInterface } from '@/pages/translate/Index';
 interface Props {
   uri: string
   setUri: React.Dispatch<React.SetStateAction<string>>
-  phrase: PhraseInterface
-  setPhrase: React.Dispatch<React.SetStateAction<PhraseInterface>>
 }
-export function List({ uri, setUri, setPhrase }: Readonly<Props>) {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const searchRef = useRef<HTMLInputElement>(null)
+export function List({ uri, setUri }: Readonly<Props>) {
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const [search, setSearch] = useState<string>('')
+
 
   useEffect(() => {
     const search = searchParams.get('search')
 
     if (search) {
       setUri(`/phrases?search=${search}`)
-      document.querySelector('#search')?.setAttribute('value', search)
+      setSearch(search)
     } else {
       setUri('/phrases')
     }
@@ -37,10 +37,9 @@ export function List({ uri, setUri, setPhrase }: Readonly<Props>) {
 
   function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const value = searchRef.current?.value || ''
-    setUri(`/phrases?search=${value}`)
-    setSearchParams({ search: value })
-    
+    setUri(`/phrases?search=${search}`)
+    navigate(`/translate?search=${search}`)
+
   }
 
 
@@ -61,7 +60,9 @@ export function List({ uri, setUri, setPhrase }: Readonly<Props>) {
             <FieldInput
               name="search"
               label='Search'
-              ref={searchRef}
+              onChange={(e) => setSearch(e.target.value)}
+              value={search}
+
             />
           </InputGroup>
         </Flex>
@@ -78,8 +79,14 @@ export function List({ uri, setUri, setPhrase }: Readonly<Props>) {
                 cursor={'pointer'}
                 key={phrase.id}
                 onClick={() => {
-                  setPhrase(phrase)
-                } }
+                  scrollTo({
+                    behavior: 'smooth',
+                    top: 0
+                  })
+                  navigate(`/translate/phrases/${phrase.id}`)
+
+                }}
+
               >
                 <ChakraTable.Cell >
                   <Text marginBottom={1}>
@@ -111,21 +118,6 @@ export function List({ uri, setUri, setPhrase }: Readonly<Props>) {
           })}
         </Table>
       }
-      <Flex
-
-        position={'fixed'}
-        bottom={5}
-        right={5}
-
-      >
-        <IconButton
-          rounded={'full'}
-          variant={'surface'}
-        >
-          <PlusIcon />
-        </IconButton>
-
-      </Flex>
     </Card>
   );
 }
