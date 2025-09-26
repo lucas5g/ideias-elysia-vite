@@ -1,5 +1,5 @@
 import { Box, defineStyle, Field, Input, type InputProps } from "@chakra-ui/react";
-import React, { forwardRef } from "react";
+import { forwardRef } from "react";
 interface Props extends InputProps {
   label?: string
   error?: string
