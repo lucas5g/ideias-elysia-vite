@@ -4,6 +4,14 @@ import { Elysia } from 'elysia';
 export const prismaException = () =>
   new Elysia().onError(({ error, status }) => {
 
+    if (error instanceof Prisma.PrismaClientInitializationError) {
+      return status(500, {
+        message: 'Database connection error',
+        status: 500
+      });
+    }
+
+
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
 
 
@@ -22,7 +30,7 @@ export const prismaException = () =>
       }
 
       return status(500, {
-        message: error,
+        message: error
       });
 
     }
