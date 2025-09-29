@@ -1,4 +1,4 @@
-import { useEffect,  useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { MagnifyingGlassIcon } from '@phosphor-icons/react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { fetcher } from '@/utils/fetcher';
@@ -76,19 +76,19 @@ export function List({ uri, setUri }: Readonly<Props>) {
           {data?.map((phrase: PhraseInterface) => {
             return (
               <ChakraTable.Row
-                cursor={'pointer'}
                 key={phrase.id}
-                onClick={() => {
-                  scrollTo({
-                    behavior: 'smooth',
-                    top: 0
-                  })
-                  navigate(`/translate/phrases/${phrase.id}`)
-
-                }}
 
               >
-                <ChakraTable.Cell >
+                <ChakraTable.Cell
+                  cursor={'pointer'}
+                  onClick={() => {
+                    scrollTo({
+                      behavior: 'smooth',
+                      top: 0
+                    })
+                    navigate(`/translate/phrases/${phrase.id}`)
+                  }}
+                >
                   <Text marginBottom={1}>
                     {phrase.english}
                   </Text>

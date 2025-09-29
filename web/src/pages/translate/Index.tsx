@@ -17,15 +17,11 @@ export function Translate() {
   return (
     <>
       <Form
-        // phrase={phrase}
-        // setPhrase={setPhrase}
         uri={uri}
       />
       <List
         uri={uri}
-        setUri={setUri}
-      // phrase={phrase}
-      // setPhrase={setPhrase}
+        setUri={setUri}     
       />
     </>
   );
