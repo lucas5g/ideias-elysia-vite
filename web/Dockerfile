@@ -22,6 +22,9 @@ FROM nginx:alpine
 # Copiar build do Vite para o Nginx
 COPY --from=build /app/dist /usr/share/nginx/html
 
+# Copiar config do Nginx (personalizada)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Copiar config do Nginx (opcional)
 # COPY nginx.conf /etc/nginx/conf.d/default.conf
 
