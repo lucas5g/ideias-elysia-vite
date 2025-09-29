@@ -49,9 +49,6 @@ export abstract class Gemini {
       ])
       : prompt;
 
-    console.log('contents', contents);
-
-
     const res = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents,
@@ -59,8 +56,6 @@ export abstract class Gemini {
         temperature: 0,
       },
     });
-
-    console.log('res', res);
 
     return res.text ?? 'no translation';
   }
