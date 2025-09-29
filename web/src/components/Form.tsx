@@ -1,21 +1,16 @@
 import { Card } from "@/components/Card"
-import { FieldInput, floatingStyles } from "@/components/FieldInput";
-import { Button, Field, FileUpload, Flex, IconButton, NativeSelect, Spinner } from "@chakra-ui/react"
+import { FieldInput } from "@/components/FieldInput";
+import { Button, Flex, IconButton, Spinner } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
-import { TrashIcon, UploadSimpleIcon } from '@phosphor-icons/react'
+import { TrashIcon } from '@phosphor-icons/react'
 import { api } from "@/utils/api";
 import { AxiosError } from "axios";
 import { mutate } from "swr";
 import { Toaster, toaster } from "./ui/toaster";
 import type { PhraseInterface } from "@/pages/translate/Index";
 import { useNavigate, useParams } from "react-router";
-
-const options = [
-  'INTERROGATIVE',
-  'NEGATIVE',
-  'STORY',
-  'TRANSLATION',
-].sort((a, b) => a.localeCompare(b))
+import { SelectInput } from "@/components/SelectInput";
+import { FileUploadInput } from "@/components/FileUploadInput";
 
 interface Props {
   uri: string
@@ -107,24 +102,11 @@ export function Form({ uri }: Readonly<Props>) {
       <form onSubmit={handleSubmit}>
 
         <Flex direction={'column'} gap={4}>
-          <Field.Root>
+          <SelectInput
+            onChange={e => setPhrase({ ...phrase, type: e.target.value as PhraseInterface['type'] })}
+            value={phrase.type}
+          />
 
-            <NativeSelect.Root>
-              <NativeSelect.Field
-                name="type"
-                id="type"
-                onChange={e => setPhrase({ ...phrase, type: e.target.value as PhraseInterface['type'] })}
-                value={phrase?.type}
-              >
-                {options.map((option) => (
-                  <option key={option} value={option}>{option.toLowerCase()}</option>
-                ))}
-              </NativeSelect.Field>
-            </NativeSelect.Root>
-            <Field.Label css={floatingStyles} htmlFor="type">
-              Type
-            </Field.Label>
-          </Field.Root>
           {phrase.type === 'TRANSLATION' &&
             <FieldInput
               label="Portuguese"
@@ -145,30 +127,17 @@ export function Form({ uri }: Readonly<Props>) {
 
           {(phrase.type === 'INTERROGATIVE' || phrase.type === 'NEGATIVE') &&
 
-            <FileUpload.Root>
-              <FileUpload.HiddenInput
-                accept=".mp3, .ogg"
-                onChange={event => setAudio((event.target as HTMLInputElement).files?.[0] || null)}
-
-              />
-              <FileUpload.Trigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  width={'full'}
-                >
-                  <UploadSimpleIcon /> Select Audio
-                </Button>
-              </FileUpload.Trigger>
-              <FileUpload.List />
-            </FileUpload.Root>
+            <FileUploadInput
+              onChange={e => setAudio(e.target.files?.[0] ?? null)}
+            />
 
           }
 
           <FieldInput
             name="tags"
             label="Tag"
-            onChange={e => setPhrase({ ...phrase, tags: e.target.value.split(/[,\s]/g).filter(Boolean) as string[] })}
+            // onChange={e => setPhrase({ ...phrase, tags: e.target.value.split(/[,\s]/g).filter(Boolean) as string[] })}
+            onChange={e => setPhrase({ ...phrase, tags: [e.target.value] })}
             value={phrase.tags.join(', ')}
           />
           <Flex

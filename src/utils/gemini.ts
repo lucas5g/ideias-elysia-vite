@@ -8,7 +8,7 @@ export abstract class Gemini {
 
   static async createHistory(phrases: string[], tag?: string) {
 
-    if(tag === '01'){
+    if (tag === '01') {
       return 'My name is Tom. I am a boy. I like food. I eat cheese. I drink soda. It is yummy. I play with my dog. Then I eat cheese. I drink soda. It is a good day.';
     }
 
@@ -49,6 +49,9 @@ export abstract class Gemini {
       ])
       : prompt;
 
+    console.log('contents', contents);
+
+
     const res = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents,
@@ -56,6 +59,8 @@ export abstract class Gemini {
         temperature: 0,
       },
     });
+
+    console.log('res', res);
 
     return res.text ?? 'no translation';
   }
