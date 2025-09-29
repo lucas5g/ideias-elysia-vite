@@ -3,7 +3,7 @@ import { paramsSchema } from '@/utils/params.schema';
 import { PhraseService } from '@/phrase/phrase.service';
 import { PhraseModel } from '@/phrase/phrase.model';
 
-export const phraseRoute = new Elysia({ prefix: '/phrases' })
+export const phrase = new Elysia({ prefix: '/phrases' })
   .post('/', ({ body, set }) => {
     set.status = 201;
     return PhraseService.create(body);

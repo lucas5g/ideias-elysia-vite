@@ -45,7 +45,7 @@ export function Form({ uri }: Readonly<Props>) {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const { portuguese, tags, type } = phrase
+    const { portuguese, tags, type, english } = phrase
 
     const form = new FormData()
     form.append('type', type)
@@ -63,10 +63,18 @@ export function Form({ uri }: Readonly<Props>) {
       form.append('portuguese', portuguese)
     }
 
+    if (phrase.id) {
+      form.append('english', english)
+    }
+
 
     try {
       setIsLoading(true);
-      await api.post(uri, form);
+      const request = phrase.id
+        ? api.patch(`/phrases/${phrase.id}`, form)
+        : api.post(uri, form);
+
+      await request;
 
       mutate(uri);
       toaster.create({
@@ -95,10 +103,20 @@ export function Form({ uri }: Readonly<Props>) {
     }
   }
 
+  function labelButton() {
+    if (isLoading) {
+      return <Spinner />
+    }
+    if (phrase.id) {
+      return 'Update'
+    }
+    return 'Save'
+  }
+
   return (
 
     <Card
-      title='Form'>
+      title={`Form ${phrase.id ? `#${phrase.id}` : 'New Phrase'}`}>
       <form onSubmit={handleSubmit}>
 
         <Flex direction={'column'} gap={4}>
@@ -120,7 +138,6 @@ export function Form({ uri }: Readonly<Props>) {
             <FieldInput
               label="English"
               name="english"
-              disabled
               value={phrase.english}
             />
           }
@@ -136,8 +153,8 @@ export function Form({ uri }: Readonly<Props>) {
           <FieldInput
             name="tags"
             label="Tags"
-            onChange={e => 
-              setPhrase({ ...phrase, tags: e.target.value.split(/\s/g)  })}
+            onChange={e =>
+              setPhrase({ ...phrase, tags: e.target.value.split(/\s/g) })}
             value={phrase.tags.join(' ')}
           />
           <Flex
@@ -150,9 +167,7 @@ export function Form({ uri }: Readonly<Props>) {
               disabled={isLoading}
               min-width={'7em'}
             >
-              {isLoading
-                ? <Spinner />
-                : 'Save'}
+              {labelButton()}
             </Button>
             <Button
               min-width={'7em'}

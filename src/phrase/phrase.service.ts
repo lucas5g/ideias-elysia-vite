@@ -35,7 +35,7 @@ export abstract class PhraseService {
   }
 
   static async create(body: PhraseModel.createBody) {
-   
+
     const data = await PhraseService.prepareCreate(body);
 
     const res = await prisma.phrase.create({
@@ -46,11 +46,12 @@ export abstract class PhraseService {
   }
 
 
-  static update(id: number, data: PhraseModel.updateBody) {
+  static async update(id: number, data: PhraseModel.updateBody) {
     return prisma.phrase.update({
       where: { id },
       data: {
         english: data.english,
+        audio: await elevenLabs(data.english!),
         portuguese: data.portuguese,
         tags: data.tags
       }
@@ -72,7 +73,7 @@ export abstract class PhraseService {
     };
   }
 
-  private static async  prepareCreate(data: PhraseModel.createBody):Promise<Prisma.PhraseCreateInput> {
+  private static async prepareCreate(data: PhraseModel.createBody): Promise<Prisma.PhraseCreateInput> {
     //clean tags 
     data.tags = [...new Set(data.tags)];
 
@@ -102,16 +103,16 @@ export abstract class PhraseService {
       };
     }
 
-    if (data.type === 'STORY'){
+    if (data.type === 'STORY') {
       const phrases = await prisma.phrase.findMany({
         where: {
           tags: {
             hasSome: data.tags
           }
         }
-      }); 
+      });
 
-      const phrasesEnglish  = phrases.map((phrase) => phrase.english);
+      const phrasesEnglish = phrases.map((phrase) => phrase.english);
 
       const english = await Gemini.createHistory(phrasesEnglish);
       const portuguese = await Gemini.translate(english, 'portuguese');
