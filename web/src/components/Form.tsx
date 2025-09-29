@@ -135,10 +135,10 @@ export function Form({ uri }: Readonly<Props>) {
 
           <FieldInput
             name="tags"
-            label="Tag"
-            // onChange={e => setPhrase({ ...phrase, tags: e.target.value.split(/[,\s]/g).filter(Boolean) as string[] })}
-            onChange={e => setPhrase({ ...phrase, tags: [e.target.value] })}
-            value={phrase.tags.join(', ')}
+            label="Tags"
+            onChange={e => 
+              setPhrase({ ...phrase, tags: e.target.value.split(/\s/g)  })}
+            value={phrase.tags.join(' ')}
           />
           <Flex
             gap={3}
@@ -177,6 +177,8 @@ export function Form({ uri }: Readonly<Props>) {
               <IconButton
                 bg={'red'} color={'white'} _hover={{ bg: 'red.400' }}
                 onClick={() => {
+                  const confirm = window.confirm('Are you sure you want to delete this phrase?')
+                  if (!confirm) return
                   setPhrase({
                     id: 0,
                     portuguese: '',

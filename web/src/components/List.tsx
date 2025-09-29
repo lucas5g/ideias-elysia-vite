@@ -8,6 +8,7 @@ import { FieldInput } from '@/components/FieldInput';
 import { Table } from '@/components/Table';
 import { Card } from '@/components/Card';
 import type { PhraseInterface } from '@/pages/translate';
+import { Error } from '@/components/Error';
 
 interface Props {
   uri: string
@@ -32,7 +33,7 @@ export function List({ uri, setUri }: Readonly<Props>) {
 
   const { data, error, isLoading } = fetcher<PhraseInterface[]>(uri)
 
-  if (error) return <div>failed to load</div>
+  if (error) <Error />
 
   function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
