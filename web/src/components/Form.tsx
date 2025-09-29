@@ -138,6 +138,7 @@ export function Form({ uri }: Readonly<Props>) {
             <FieldInput
               label="English"
               name="english"
+              onChange={e => setPhrase({ ...phrase, english: e.target.value })}
               value={phrase.english}
             />
           }

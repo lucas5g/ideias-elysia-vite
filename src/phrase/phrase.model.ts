@@ -1,6 +1,6 @@
 import { Type } from '@prisma/client';
 import z from 'zod';
-export namespace PhraseModel {  
+export namespace PhraseModel {
 
   export const createBody = z
     .object({
@@ -8,7 +8,7 @@ export namespace PhraseModel {
       tags: z.array(z.string().min(2)).min(1),
       portuguese: z.string().min(2).optional(),
       audio: z.file().mime('audio/ogg').optional(),
-    })    
+    })
     .refine((data) => !(data.type === 'TRANSLATION' && !data.portuguese), {
       message: 'Portuguese text is required',
       path: ['portuguese'],

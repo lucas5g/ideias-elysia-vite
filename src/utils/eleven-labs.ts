@@ -14,6 +14,9 @@ export async function elevenLabs(text: string) {
     text: `${text}.`,
     modelId: 'eleven_multilingual_v2',
     outputFormat: 'mp3_44100_128',
+    voiceSettings: {
+      speed: 0.9
+    }
   });
 
   const audioChunks: Uint8Array[] = [];

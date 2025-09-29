@@ -53,7 +53,7 @@ export abstract class PhraseService {
         english: data.english,
         audio: await elevenLabs(data.english!),
         portuguese: data.portuguese,
-        tags: data.tags
+        tags: [...new Set(data.tags || [])]
       }
     });
   }
