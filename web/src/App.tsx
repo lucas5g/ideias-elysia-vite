@@ -1,7 +1,7 @@
 
 import { Layout } from '@/components/Layout';
 import { BrowserRouter, Route, Routes } from 'react-router';
-import { Translate } from '@/pages/translate/Index';
+import { Translate } from '@/pages/translate';
 import { Tests } from '@/pages/tests';
 
 export function App() {

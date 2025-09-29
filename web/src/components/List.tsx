@@ -7,7 +7,7 @@ import { Player } from '@/components/Player';
 import { FieldInput } from '@/components/FieldInput';
 import { Table } from '@/components/Table';
 import { Card } from '@/components/Card';
-import type { PhraseInterface } from '@/pages/translate/Index';
+import type { PhraseInterface } from '@/pages/translate';
 
 interface Props {
   uri: string
@@ -21,7 +21,6 @@ export function List({ uri, setUri }: Readonly<Props>) {
 
   useEffect(() => {
     const search = searchParams.get('search')
-
     if (search) {
       setUri(`/phrases?search=${search}`)
       setSearch(search)
@@ -29,7 +28,7 @@ export function List({ uri, setUri }: Readonly<Props>) {
       setUri('/phrases')
     }
 
-  }, [setUri, searchParams])
+  }, [setUri])
 
   const { data, error, isLoading } = fetcher<PhraseInterface[]>(uri)
 

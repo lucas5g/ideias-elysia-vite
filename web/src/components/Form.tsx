@@ -7,7 +7,7 @@ import { api } from "@/utils/api";
 import { AxiosError } from "axios";
 import { mutate } from "swr";
 import { Toaster, toaster } from "./ui/toaster";
-import type { PhraseInterface } from "@/pages/translate/Index";
+import type { PhraseInterface } from "@/pages/translate";
 import { useNavigate, useParams } from "react-router";
 import { SelectInput } from "@/components/SelectInput";
 import { FileUploadInput } from "@/components/FileUploadInput";
@@ -201,32 +201,6 @@ export function Form({ uri }: Readonly<Props>) {
                 <TrashIcon />
               </IconButton>
             }
-            {/* {!!phrase.id &&
-              <Button
-                background={'red'}
-                variant={'outline'}
-                onClick={() => {
-                  setPhrase({
-                    id: 0,
-                    portuguese: '',
-                    english: '',
-                    tags: [],
-                    audioUrl: '',
-                    type: 'INTERROGATIVE'
-                  })
-                  api.delete(`/phrases/${phrase.id}`).then(() => {
-                    mutate(uri);
-                    toaster.create({
-                      title: 'Success',
-                      description: 'Phrase deleted successfully',
-                      type: 'success'
-                    })
-                  })
-                }}
-              >
-                Delete
-              </Button>
-            } */}
           </Flex>
         </Flex>
       </form>
