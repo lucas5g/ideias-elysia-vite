@@ -53,7 +53,7 @@ import path from "node:path"
 const basePath = path.resolve("src", modelName.toLowerCase())
 const modelPath = path.join(basePath, `${modelName.toLowerCase()}.model.ts`)
 const servicePath = path.join(basePath, `${modelName.toLowerCase()}.service.ts`)
-const routePath = path.join(basePath, `${modelName.toLowerCase()}.route.ts`)
+const routePath = path.join(basePath, `${modelName.toLowerCase()}.ts`)
 const specPath = path.join(basePath, `${modelName.toLowerCase()}.spec.ts`)
 
 // ------------------- TEMPLATES (remaining from cli.ts) -------------------
@@ -93,7 +93,7 @@ import { paramsSchema } from '@/utils/params.schema'
 import { ${modelName}Service } from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.service'
 import { ${modelName}Model } from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.model'
 
-export const ${modelName.toLowerCase()}Route = new Elysia({ prefix: '/${modelName.toLowerCase()}s' })
+export const ${modelName.toLowerCase()} = new Elysia({ prefix: '/${modelName.toLowerCase()}s' })
   .post('/', ({ body }) => ${modelName}Service.create(body), { 
     body: ${modelName}Model.createBody
   })
@@ -205,48 +205,47 @@ function generateElysiaSchemaContent(modelName: string, attributes: PrismaAttrib
   const fieldLines = attributes
     .filter(attr => !['id', 'createdAt', 'updatedAt'].includes(attr.field))
     .map(({ field, type }) => {
-      let elysiaType;
+      let zodType;
       switch (type) {
         case 'String':
-          elysiaType = 't.String({ minLength: 2 })';
+          zodType = 'z.string().min(2)';
           break;
         case 'String[]':
-          elysiaType = 't.Array(t.String({ minLength: 2 }))';
+          zodType = 'z.array(z.string().min(2))';
           break;
         case 'Int':
         case 'Float':
-          elysiaType = 't.Number()';
+          zodType = 'z.number()';
           break;
         case 'Boolean':
-          elysiaType = 't.Boolean()';
+          zodType = 'z.boolean()';
           break;
         case 'DateTime':
-          elysiaType = 't.Date()';
+          zodType = 'z.date()';
           break;
         case 'Json':
-          elysiaType = 't.Any()';
+          zodType = 'z.any()';
           break;
         default:
-          elysiaType = 't.Any()';
+          zodType = 'z.any()';
       }
-      return `  ${field}: ${elysiaType},`;
+      return `  ${field}: ${zodType},`;
     })
     .join('\n');
 
-  return `import { t } from 'elysia';
+  return `import { z } from 'zod';
 
 export namespace ${modelName}Model {
-  export const createBody = t.Object({
+  export const createBody = z.object({
   ${fieldLines}
-  })
+  });
 
-  export const updateBody = t.Partial(createBody)
-  export const findAllQuery = t.Partial(createBody)
+  export const updateBody = createBody.partial();
+  export const findAllQuery = createBody.partial();
   
-  export type createBody = typeof createBody.static
-  export type updateBody = typeof updateBody.static
-  export type findAllQuery = typeof findAllQuery.static
-
+  export type createBody = z.infer<typeof createBody>;
+  export type updateBody = z.infer<typeof updateBody>;
+  export type findAllQuery = z.infer<typeof findAllQuery>;
 }`;
 }
 
@@ -294,12 +293,12 @@ function updateIndex() {
   }
 
   let indexContent = readFileSync(indexPath, "utf-8")
-  const importLine = `import { ${modelName.toLowerCase()}Route } from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}.route'`
+  const importLine = `import { ${modelName.toLowerCase() }} from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}'`
   if (!indexContent.includes(importLine)) {
     indexContent = `${importLine}\n` + indexContent
   }
 
-  const useLine = `.use(${modelName.toLowerCase()}Route)`
+  const useLine = `.use(${modelName.toLowerCase()})`
 
   if (!indexContent.includes(useLine)) {
     indexContent = indexContent.replace(/(^\s*)(\.listen\s*\()/m, (match, indent, listenCall) => {

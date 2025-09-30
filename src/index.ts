@@ -1,3 +1,4 @@
+import { game} from '@/game/game';
 import { Elysia } from 'elysia';
 import cors from '@elysiajs/cors';
 import { env } from '@/utils/env';
@@ -17,6 +18,7 @@ new Elysia()
   }))
   .get('/', ({ redirect }) => redirect('/openapi'))
   .use(phrase)
+  .use(game)
   .listen(3000);
 
 console.debug(
