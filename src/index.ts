@@ -1,3 +1,4 @@
+import { food} from '@/food/food';
 import { game} from '@/game/game';
 import { Elysia } from 'elysia';
 import cors from '@elysiajs/cors';
@@ -19,6 +20,7 @@ new Elysia()
   .get('/', ({ redirect }) => redirect('/openapi'))
   .use(phrase)
   .use(game)
+  .use(food)
   .listen(3000);
 
 console.debug(

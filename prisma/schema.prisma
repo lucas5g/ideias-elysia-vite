@@ -43,3 +43,15 @@ model Game {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
 }
+
+model Food {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  protein   Float
+  fat       Float
+  carbo     Float
+  fiber     Float
+  calorie  Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}

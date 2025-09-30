@@ -1,6 +1,27 @@
 import { elevenLabs } from '@/utils/eleven-labs'
 import { prisma } from '@/utils/prisma'
+import axios from 'axios'
 async function main() {
+
+  const foods = await prisma.food.count()
+
+  if (!foods) {
+    const { data } = await axios('https://n8n.dizelequefez.com.br/webhook/foods')
+
+    const foodsList = data.slice(0,5).map((food: any) => ({
+      name: food.name,
+      protein: food.protein,
+      fat: food.fat,
+      carbo: food.carbo,
+      fiber: food.fiber,
+      calorie: food.calorie,
+    }))
+
+    await prisma.food.createMany({
+      data: foodsList
+    })
+  }
+
 
   const phrases = await prisma.phrase.count()
 
