@@ -1,6 +1,6 @@
 import { Card } from "@/components/Card"
 import { FieldInput } from "@/components/FieldInput";
-import { Button, Flex, IconButton, Spinner } from "@chakra-ui/react"
+import { Button, Flex, Spinner } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 import { TrashIcon } from '@phosphor-icons/react'
 import { api } from "@/utils/api";
@@ -166,12 +166,13 @@ export function Form({ uri }: Readonly<Props>) {
               type="submit"
               variant={'surface'}
               disabled={isLoading}
-              min-width={'7em'}
+              width={'6em'}
             >
               {labelButton()}
             </Button>
             <Button
-              min-width={'7em'}
+              width={'6em'}
+
               variant={'outline'}
               onClick={() => {
 
@@ -190,8 +191,9 @@ export function Form({ uri }: Readonly<Props>) {
               Clear
             </Button>
             {!!phrase.id &&
-              <IconButton
+              <Button
                 bg={'red'} color={'white'} _hover={{ bg: 'red.400' }}
+                width={'6em'}
                 onClick={() => {
                   const confirm = window.confirm('Are you sure you want to delete this phrase?')
                   if (!confirm) return
@@ -217,7 +219,7 @@ export function Form({ uri }: Readonly<Props>) {
                 }}
               >
                 <TrashIcon />
-              </IconButton>
+              </Button>
             }
           </Flex>
         </Flex>
