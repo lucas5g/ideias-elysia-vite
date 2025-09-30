@@ -1,11 +1,23 @@
-import { List } from "@/components/List";
+import { List } from "@/components/food/List";
+import { Form } from "@/components/Form";
 import { useState } from "react";
 
+export interface FoodInterface {
+  id: number;
+  name: string
+  protein: number 
+  fat: number
+  carbo: number
+  fiber: number
+  calorie: number
+}
 export function Food() {
-  const [uri, setUri] = useState('/phrases');
+  const [uri, setUri] = useState('/foods');
   return (
     <>
-      <h1>Foods</h1>
+      <Form
+        uri={uri}
+      />
       <List
         uri={uri}
         setUri={setUri}
