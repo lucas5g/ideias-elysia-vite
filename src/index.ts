@@ -1,5 +1,4 @@
-import { food} from '@/food/food';
-import { game} from '@/game/game';
+import { food } from '@/food/food';
 import { Elysia } from 'elysia';
 import cors from '@elysiajs/cors';
 import { env } from '@/utils/env';
@@ -12,18 +11,23 @@ import { phrase } from '@/phrase/phrase';
 new Elysia()
   .use(prismaException)
   .use(cors())
-  .use(openapi({
+  .use(openapi({    
     mapJsonSchema: {
       zod: z.toJSONSchema
+    },
+    documentation:{
+      info:{
+        title: 'Ideias API',
+        version
+      }
     }
   }))
   .get('/', ({ redirect }) => redirect('/openapi'))
   .use(phrase)
-  .use(game)
   .use(food)
   .listen(3000);
 
 console.debug(
-  `🦊 Elysia is running at ${env.BASE_URL_API} - ${version}`
+  `🦊 Elysia is running at ${env.BASE_URL_API} v${version}`
 );
 

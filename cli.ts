@@ -293,7 +293,7 @@ function updateIndex() {
   }
 
   let indexContent = readFileSync(indexPath, "utf-8")
-  const importLine = `import { ${modelName.toLowerCase() }} from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}'`
+  const importLine = `import { ${modelName.toLowerCase()} } from '@/${modelName.toLowerCase()}/${modelName.toLowerCase()}'`
   if (!indexContent.includes(importLine)) {
     indexContent = `${importLine}\n` + indexContent
   }
