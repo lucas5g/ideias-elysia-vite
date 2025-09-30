@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { MagnifyingGlassIcon } from '@phosphor-icons/react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { fetcher } from '@/utils/fetcher';
 import { Flex, SkeletonText, Table as ChakraTable, InputGroup, Tag, Text } from '@chakra-ui/react';
 import { Player } from '@/components/Player';
@@ -18,6 +18,7 @@ export function List({ uri, setUri }: Readonly<Props>) {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const [search, setSearch] = useState<string>('')
+  const params = useParams()
 
 
   useEffect(() => {
@@ -33,7 +34,12 @@ export function List({ uri, setUri }: Readonly<Props>) {
 
   const { data, error, isLoading } = fetcher<PhraseInterface[]>(uri)
 
-  if (error) <Error />
+  if (error) {
+    return (
+      <Error />
+    )
+  }
+
 
   function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -77,6 +83,7 @@ export function List({ uri, setUri }: Readonly<Props>) {
             return (
               <ChakraTable.Row
                 key={phrase.id}
+                background={params.id === String(phrase.id) ? 'gray.800' : undefined}
 
               >
                 <ChakraTable.Cell
