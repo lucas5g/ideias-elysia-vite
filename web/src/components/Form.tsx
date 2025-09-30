@@ -51,7 +51,7 @@ export function Form({ uri }: Readonly<Props>) {
     form.append('type', type)
     tags.forEach(tag => form.append('tags', tag))
 
-    if (type === 'INTERROGATIVE' || type === 'NEGATIVE') {
+    if (type === 'INTERROGATIVE' || type === 'NEGATIVE' || type === 'AFFIRMATIVE') {
       form.append('audio', audio as Blob)
     }
 
@@ -143,7 +143,7 @@ export function Form({ uri }: Readonly<Props>) {
             />
           }
 
-          {(phrase.type === 'INTERROGATIVE' || phrase.type === 'NEGATIVE') &&
+          {(phrase.type === 'INTERROGATIVE' || phrase.type === 'NEGATIVE' || phrase.type === 'AFFIRMATIVE') &&
 
             <FileUploadInput
               onChange={e => setAudio(e.target.files?.[0] ?? null)}

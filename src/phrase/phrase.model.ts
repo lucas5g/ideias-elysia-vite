@@ -13,7 +13,7 @@ export namespace PhraseModel {
       message: 'Portuguese text is required',
       path: ['portuguese'],
     })
-    .refine((data) => !(['INTERROGATIVE', 'NEGATIVE'].includes(data.type) && !data.audio), {
+    .refine((data) => !(['INTERROGATIVE', 'NEGATIVE', 'AFFIRMATIVE'].includes(data.type) && !data.audio), {
       message: 'Audio file is required',
       path: ['audio'],
     });

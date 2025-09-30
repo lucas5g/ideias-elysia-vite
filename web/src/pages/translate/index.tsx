@@ -8,7 +8,7 @@ export interface PhraseInterface {
   english: string;
   tags: string[];
   audioUrl: string;
-  type: 'INTERROGATIVE' | 'NEGATIVE' | 'STORY' | 'TRANSLATION';
+  type: 'INTERROGATIVE' | 'NEGATIVE' | 'STORY' | 'TRANSLATION' | 'AFFIRMATIVE';
 }
 export function Translate() {
 

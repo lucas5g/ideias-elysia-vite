@@ -6,6 +6,7 @@ const options = [
   'NEGATIVE',
   'STORY',
   'TRANSLATION',
+  'AFFIRMATIVE'
 ].sort((a, b) => a.localeCompare(b))
 
 interface Props extends NativeSelectFieldProps { }

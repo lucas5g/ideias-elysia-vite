@@ -37,7 +37,6 @@ export abstract class PhraseService {
   static async create(body: PhraseModel.createBody) {
 
     const data = await PhraseService.prepareCreate(body);
-
     const res = await prisma.phrase.create({
       data
     });
@@ -87,7 +86,7 @@ export abstract class PhraseService {
       };
     }
 
-    if (data.type === 'INTERROGATIVE' || data.type === 'NEGATIVE') {
+    if (data.type === 'INTERROGATIVE' || data.type === 'NEGATIVE' || data.type === 'AFFIRMATIVE') {
       const english = await Gemini.transcribe({ file: data.audio!, type: data.type });
 
       const [portuguese, audio] = await Promise.all([
@@ -127,7 +126,12 @@ export abstract class PhraseService {
 
     }
 
-    throw new Response('Invalid type', { status: 400 });
+    throw new Response(
+      JSON.stringify({
+        message: 'Invalid type'
+      }),
+      { status: 400 });
+
 
   }
 }
