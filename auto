@@ -15,12 +15,12 @@ if [ "$?" != 0 ]; then
   exit 
 fi
 
-# bun test
+bun test
 
-# if [ "$?" != 0 ]; then 
-#   echo "Erro nos tests"
-#   exit 
-# fi
+if [ "$?" != 0 ]; then 
+  echo "Erro nos tests"
+  exit 
+fi
 
 
 

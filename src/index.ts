@@ -24,6 +24,6 @@ new Elysia()
   .listen(3000);
 
 console.debug(
-  `🦊 Elysia is running at ${env.BASE_URL_API} v${version}`
+  `🦊 Elysia is running at ${env.BASE_URL_API} - ${version}`
 );
 
