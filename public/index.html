@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style type="text/tailwindcss">
+    @layer components {
+      .layout{
+        @apply bg-black text-white flex gap-3 p-10
+      }      
+      .card {
+        @apply bg-gray-900 p-5 rounded w-full h-fit flex flex-col gap-4 border border-gray-700;
+      } 
+      .input{
+        @apply w-full bg-gray-700 p-2 rounded border border-gray-600 border-spacing-4
+      }
+      .header {
+        @apply text-2xl font-bold border-b border-gray-700 pb-2;
+      }
+      .button{
+        @apply bg-gray-950 p-2 rounded border border-gray-700 hover:border-gray-300 hover:transition hover:cursor-pointer hover:bg-gray-900
+      }
+
+    }   
+  </style>
+
+  <title>Document</title>
+</head>
+
+<body class="layout">
+  <!-- <h1 class="header">
+    Foods
+  </h1> -->
+
+
+  <div class="card">
+    <h2 class="header">
+      Form
+    </h2>
+    <input type="text" placeholder="Name" class="input" />
+    <input type="text" placeholder="Protein" class="input" />
+    <input type="text" placeholder="Carb" class="input" />
+    <input type="text" placeholder="Fat" class="input" />
+    <button class="button">
+      Save
+    </button>
+  </div>
+
+  <div class="card">
+    <h2 class="header">
+      List
+    </h2>
+    <div class="flex gap-2">
+      <input type="text" placeholder="Search" class="input" onchange="getList(this.value)" />
+    </div>
+    <table class="w-full">
+      <thead class="border-b">
+        <tr class="text-left">
+          <th>Name</th>
+          <th>Protein</th>
+          <th>Carb</th>
+          <th>Fat</th>
+          <th class="text-end">Calorie</th>
+        </tr>
+      </thead>
+      <tbody class="child:border-b">
+
+      </tbody>
+    </table>
+  </div>
+
+</body>
+<script>
+
+  async function getList(search) {
+    const res = await fetch('https://n8n.dizelequefez.com.br/webhook/foods')
+
+    const data = await res.json()
+
+    const filteredData = search ? data.filter(item => item.name.includes(search)) : data
+
+    document.querySelector('tbody').innerHTML = ''
+    for (const row of filteredData) {
+      const html = `
+      <tr class="border-b border-b-gray-400 h-10">
+        <td>${row.name}</td>
+        <td>${row.protein}</td>
+        <td>${row.carbo}</td>
+        <td>${row.fat}</td>
+        <td class="text-right">${row.calorie}</td>
+      </tr>
+      `
+      document.querySelector('tbody').innerHTML += html
+    }
+
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    await getList()
+  })
+</script>
+
+</html>

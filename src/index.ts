@@ -8,9 +8,13 @@ import openapi from '@elysiajs/openapi';
 import { prismaException } from './utils/prisma-exception';
 import z from 'zod';
 import { phrase } from '@/phrase/phrase';
+import staticPlugin from '@elysiajs/static';
 new Elysia()
   .use(prismaException)
   .use(cors())
+  .use(staticPlugin({
+    prefix: '/'
+  }))
   .use(openapi({    
     mapJsonSchema: {
       zod: z.toJSONSchema
@@ -22,7 +26,7 @@ new Elysia()
       }
     }
   }))
-  .get('/', ({ redirect }) => redirect('/openapi'))
+  // .get('/', ({ redirect }) => redirect('/openapi'))
   .use(phrase)
   .use(food)
   .listen(3000);

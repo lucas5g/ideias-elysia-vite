@@ -44,5 +44,5 @@ with list:
       {tags}
     ''')
     
-    st.audio(row['audio'])
+    st.audio(row['audioUrl'])
     st.divider()

@@ -22,3 +22,7 @@ def create_phrase(payload, audio):
   
   res = requests.post(f'{API_URL}/phrases', json=payload)
   return res.json()
+
+def get_foods(search=None):  
+  res = requests.get('https://n8n.dizelequefez.com.br/webhook/foods')
+  return res.json()
