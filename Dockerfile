@@ -14,7 +14,7 @@ RUN bun install
 # Copiar código-fonte e diretório Prisma
 COPY ./src ./src
 COPY ./prisma ./prisma
-
+COPY ./public ./public
 # Gerar Prisma Client (com engines corretas)
 RUN bunx prisma generate
 
