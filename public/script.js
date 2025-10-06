@@ -52,8 +52,8 @@ export async function getFoodByName(name) {
   document.querySelector('#fiber').value = food.fiber
   document.querySelector('#calorie').value = food.calorie
 
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-
+  // window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.querySelector('.layout').scrollTo({ top: 0, behavior: 'smooth' }); 
 
   const url = new URL(window.location)
   url.searchParams.set('name', name)
