@@ -32,6 +32,8 @@ export async function getFoodByName(name) {
   const foodElement = Array.from(rows)
     .find((tr) => tr.querySelector('td').textContent === name)
 
+  if (!foodElement) return
+
   foodElement.classList.add('bg-gray-800');
   const food = {
     name: foodElement.querySelector('td:nth-child(1)').textContent,
@@ -49,6 +51,8 @@ export async function getFoodByName(name) {
   document.querySelector('#carb').value = food.carbo
   document.querySelector('#fiber').value = food.fiber
   document.querySelector('#calorie').value = food.calorie
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 
 
   const url = new URL(window.location)
