@@ -14,7 +14,7 @@ RUN bun install
 # Copiar código-fonte e diretório Prisma
 COPY ./src ./src
 COPY ./prisma ./prisma
-COPY ./public ./public
+
 # Gerar Prisma Client (com engines corretas)
 RUN bunx prisma generate
 
@@ -50,6 +50,10 @@ COPY --from=build /app/node_modules/@prisma /app/node_modules/@prisma
 
 # Copiar o diretório prisma (schema.prisma)
 COPY ./prisma ./prisma
+
+# Copiar arquivos públicos
+COPY --from=build /app/public ./public
+
 
 ENV NODE_ENV=production
 EXPOSE 3000
