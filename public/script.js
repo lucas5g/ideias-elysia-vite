@@ -8,24 +8,71 @@ function hideLoading() {
   document.querySelector('#card-list').classList.remove('hidden')
 }
 
+function showLoadingButton() {
+  document.querySelector('.button-primary').textContent = 'Saving...'
+  document.querySelector('.button-primary').disabled = true
+}
 
-async function getList(search) {
+function hideLoadingButton() {
+  document.querySelector('.button-primary').textContent = 'Save'
+  document.querySelector('.button-primary').disabled = false
+}
+async function getListAndFilter() {
+  await getList()
+  const search = new URL(window.location).searchParams.get('search') || ''
+  document.querySelector('#search-input').value = search
+  filterList(search)
+}
+
+export async function getFoodByName(name) {
+
+  const rows = document.querySelectorAll('tbody tr')
+  rows.forEach((row) => row.classList.remove('bg-gray-800'));
+
+  const foodElement = Array.from(rows)
+    .find((tr) => tr.querySelector('td').textContent === name)
+
+  foodElement.classList.add('bg-gray-800');
+  const food = {
+    name: foodElement.querySelector('td:nth-child(1)').textContent,
+    protein: foodElement.querySelector('td:nth-child(2)').textContent,
+    fat: foodElement.querySelector('td:nth-child(3)').textContent,
+    carbo: foodElement.querySelector('td:nth-child(4)').textContent,
+    fiber: foodElement.querySelector('td:nth-child(5)').textContent,
+    calorie: foodElement.querySelector('td:nth-child(6)').textContent,
+  }
+
+
+  document.querySelector('#name').value = food.name
+  document.querySelector('#protein').value = food.protein
+  document.querySelector('#fat').value = food.fat
+  document.querySelector('#carb').value = food.carbo
+  document.querySelector('#fiber').value = food.fiber
+  document.querySelector('#calorie').value = food.calorie
+
+
+  const url = new URL(window.location)
+  url.searchParams.set('name', name)
+  window.history.pushState({}, '', url)
+
+}
+async function getList() {
   showLoading()
+
   const res = await fetch('https://n8n.dizelequefez.com.br/webhook/foods')
 
   const data = await res.json()
   hideLoading()
 
-  const filteredData = search ? data.filter(item => item.name.includes(search)) : data
-
   document.querySelector('tbody').innerHTML = ''
-  for (const row of filteredData) {
+  for (const row of data) {
     const html = `
-      <tr data-id="${row.id}">
+      <tr onclick="getFoodByName('${row.name}')">
         <td>${row.name}</td>
         <td>${row.protein}</td>
-        <td>${row.carbo}</td>
         <td>${row.fat}</td>
+        <td>${row.carbo}</td>
+        <td>${row.fiber}</td>
         <td class="text-right">${row.calorie}</td>
       </tr>
       `
@@ -33,6 +80,7 @@ async function getList(search) {
   }
 
 }
+
 
 function filterList(search) {
 
@@ -50,10 +98,10 @@ function filterList(search) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  await getList()
-  const search = new URL(window.location).searchParams.get('search') || ''
-  document.querySelector('#search-input').value = search
-  filterList(search)
+  await getListAndFilter()
+  const nameParam = new URL(window.location).searchParams.get('name') || ''
+  getFoodByName(nameParam)
+
 })
 
 document.addEventListener('submit', async (e) => {
@@ -65,9 +113,9 @@ document.addEventListener('submit', async (e) => {
   const fiber = document.querySelector('#fiber').value
   const calorie = document.querySelector('#calorie').value
 
-  console.log({ name, protein, carbo, fat, fiber, calorie })
+  showLoadingButton()
 
-  const res = await fetch('https://n8n.dizelequefez.com.br/webhook/foods', {
+  await fetch('https://n8n.dizelequefez.com.br/webhook/foods', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -81,6 +129,8 @@ document.addEventListener('submit', async (e) => {
       calorie
     })
   })
+  await getListAndFilter()
+  hideLoadingButton()
 })
 
 document.querySelector('#search-input').addEventListener('input', () => {
@@ -88,4 +138,5 @@ document.querySelector('#search-input').addEventListener('input', () => {
 
   filterList(search)
 })
-// document.addE
+
+window.getFoodByName = getFoodByName

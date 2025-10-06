@@ -64,14 +64,14 @@
     </h1>
     <input type="text" placeholder="Name" id="name" class="input" required />
     <div class="row">
-      <input type="number" placeholder="Protein" id="protein" class="input" required />
-      <input type="number" placeholder="Fat" id="fat" class="input" required />
+      <input type="number" placeholder="Protein" id="protein" class="input" required step="0.01" />
+      <input type="number" placeholder="Fat" id="fat" class="input" required step="0.01"/>
     </div>
     <div class="row">
-      <input type="number" placeholder="Carb" id="carb" class="input" required />
-      <input type="number" placeholder="Fiber" id="fiber" class="input" required />
+      <input type="number" placeholder="Carb" id="carb" class="input" required step="0.01"/>
+      <input type="number" placeholder="Fiber" id="fiber" class="input" required step="0.01"/>
     </div>
-    <input type="number" placeholder="Calorie" id="calorie" class="input" required />
+    <input type="number" placeholder="Calorie" id="calorie" class="input" required step="0.01"/>
     <button class="button-primary">
       Save
     </button>
@@ -94,8 +94,9 @@
         <tr>
           <th>Name</th>
           <th>Protein</th>
-          <th>Carb</th>
           <th>Fat</th>
+          <th>Carb</th>
+          <th>Fiber</th>
           <th>Calorie</th>
         </tr>
       </thead>
