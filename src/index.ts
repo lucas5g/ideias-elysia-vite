@@ -13,9 +13,9 @@ new Elysia()
   .use(prismaException)
   .use(cors())
   .use(staticPlugin({
-    // assets: __dirname + '/../public',
-    assets: process.cwd() + '/public',
-    prefix: '/'
+    // assets: process.cwd() + '/public',
+    prefix: '/',
+
   }))
   .use(openapi({
     mapJsonSchema: {
