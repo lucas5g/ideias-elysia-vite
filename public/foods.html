@@ -8,9 +8,26 @@
     href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <style type="text/tailwindcss">
+
+    @layer base{
+      html,
+      body {
+        @apply h-full m-0 p-0 overflow-hidden;
+      }
+
+    body {
+      height: calc(var(--vh, 1vh) * 100);
+    }
+
+    .layout {
+      @apply h-full overflow-y-auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    }
+
     @layer components {
       body {
-        @apply bg-gray-800 text-white flex flex-col lg:flex-row gap-1 p-1 
+        @apply bg-gray-800 text-white flex flex-col lg:flex-row gap-1 p-1
       }
       .card {
         @apply bg-gray-950 p-5 text-white border border-gray-700 rounded w-full h-fit flex flex-col gap-3
@@ -65,13 +82,13 @@
     <input type="text" placeholder="Name" id="name" class="input" required />
     <div class="row">
       <input type="number" placeholder="Protein" id="protein" class="input" required step="0.01" />
-      <input type="number" placeholder="Fat" id="fat" class="input" required step="0.01"/>
+      <input type="number" placeholder="Fat" id="fat" class="input" required step="0.01" />
     </div>
     <div class="row">
-      <input type="number" placeholder="Carb" id="carb" class="input" required step="0.01"/>
-      <input type="number" placeholder="Fiber" id="fiber" class="input" required step="0.01"/>
+      <input type="number" placeholder="Carb" id="carb" class="input" required step="0.01" />
+      <input type="number" placeholder="Fiber" id="fiber" class="input" required step="0.01" />
     </div>
-    <input type="number" placeholder="Calorie" id="calorie" class="input" required step="0.01"/>
+    <input type="number" placeholder="Calorie" id="calorie" class="input" required step="0.01" />
     <button class="button-primary">
       Save
     </button>
@@ -88,7 +105,7 @@
     <h1>
       List
     </h1>
-    <input type="text" placeholder="Search" class="input" id="search-input"/>
+    <input type="text" placeholder="Search" class="input" id="search-input" />
     <table>
       <thead>
         <tr>
