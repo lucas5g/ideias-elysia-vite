@@ -1,4 +1,6 @@
 #!/bin/bash
+git pull
+
 
 cd web && npm run lint
 if [ "$?" != 0 ]; then 
