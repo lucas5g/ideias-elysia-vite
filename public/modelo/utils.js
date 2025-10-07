@@ -1,15 +1,10 @@
-export const baseUrl = window.location.origin.includes('127.0.0.1') || window.location.origin.includes('[::1]:8109')
-  ? 'https://dev.gerais.mg.def.br'
-  : window.location.origin
-
+export const baseUrl = environments(localStorage.getItem('environment'))
 function showLogin() {
   document.querySelector('#main-login').classList.remove('hidden')
   document.querySelector('#main').classList.add('hidden')
+  document.querySelector('nav').classList.add('hidden')
+
 }
-
-
-
-
 export function disabledButton(button) {
   document.getElementById(button).disabled = true
   document.getElementById(button).innerText = 'Loading'
@@ -30,7 +25,7 @@ function autoResize(el) {
 export async function getModuleById(id) {
 
   window.history.pushState(null, null, `?id=${id}`)
- setTableRowActive(id)
+  setTableRowActive(id)
 
   const response = await fetch(`${baseUrl}/candidato/service/modelos/${id}`, {
     headers: {
@@ -55,21 +50,28 @@ export async function getModuleById(id) {
 }
 
 
-function handleErrors(error) {
-  console.debug('debug ', error)
-  document.querySelector('main').classList.add('hidden')
+async function handleErrors(error) {
+  const data = await error.json()
+  console.debug('debug ', data)
+  // alert(data.message)
+  showLogin()
 }
 
 export async function getModules() {
-  try {
 
-    // const {} = await api.get('/candidato/service/modelos', {)
+  try {
 
     const response = await fetch(`${baseUrl}/candidato/service/modelos`, {
       headers: {
         Authorization: localStorage.getItem('token')
       }
     })
+
+    if (response.status !== 200) {
+      await handleErrors(response)
+      return
+    }
+
     const data = await response.json()
     document.querySelector('tbody').innerHTML = ''
 
@@ -83,15 +85,28 @@ export async function getModules() {
       `
       document.querySelector('tbody').innerHTML += html
     }
-  } catch{
+  }catch{
     showLogin()
   }
 }
 
-export function setTableRowActive(id){
+export function setTableRowActive(id) {
   document.querySelectorAll('tbody>tr').forEach(row => row.classList.remove('bg-gray-700'));
   document.querySelector(`tbody>tr[data-id="${id}"]`).classList.add('bg-gray-700')
 }
+
+export function environments(env) {
+  const envs = {
+    'dev': 'https://dev.gerais.mg.def.br',
+    'tst': 'https://tst.gerais.mg.def.br',
+    'hml': 'https://hml.gerais.mg.def.br',
+    'pre-prod': 'https://pre-prod.gerais.mg.def.br',
+    'prod': 'https://gerais.defensoria.mg.def.br/'
+  }
+
+  return envs[env]
+}
+
 
 window.getModuleById = getModuleById
 window.autoResize = autoResize

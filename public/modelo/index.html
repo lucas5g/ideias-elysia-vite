@@ -77,10 +77,27 @@
 </head>
 
 <body>
+  <nav class="flex justify-between p-5 bg-gray-950 font-bold">
+    <a href="index.html">
+      Modelos
+    </a>
+    <ul>
+      <li class="hover:underline">
+        <a href="?logout=true" id="logout">Logout</a>
+      </li>
+    </ul>
+  </nav>
 
   <main id="main-login" class="hidden">
     <form class="card">
       <h2 class="header">Login</h2>
+
+      <select id="environment" class="input">
+        <option value="dev">DEV</option>
+        <option value="tst">TST</option>
+        <option value="hml">HML</option>              
+        <option value="prod">PROD</option>
+      </select>
 
       <input type="text" id="cpf" placeholder="cpf" class="input" required>
 

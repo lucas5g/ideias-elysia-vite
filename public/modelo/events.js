@@ -1,4 +1,4 @@
-import { getModules, getModuleById, enableButton, disabledButton, baseUrl, setTableRowActive } from './utils.js'
+import { getModules, getModuleById, enableButton, disabledButton, baseUrl, setTableRowActive, environments } from './utils.js'
 
 document.getElementById('ds_conteudo_modelo').addEventListener('input', (event) => {
   document.getElementById('render').innerHTML = event.target.value;
@@ -67,6 +67,9 @@ document.querySelector('#update').addEventListener('click', async () => {
 document.addEventListener('submit', async (event) => {
   event.preventDefault()
 
+  const environment = document.getElementById('environment').value
+  localStorage.setItem('environment', environment)
+
   const cpf = document.getElementById('cpf').value
   const senha = document.getElementById('senha').value
 
@@ -74,7 +77,7 @@ document.addEventListener('submit', async (event) => {
 
     disabledButton('login-button')
 
-    const res = await fetch(`${baseUrl}/scsdp/service/login/interno`, {
+    const res = await fetch(`${environments(environment)}/scsdp/service/login/interno`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -85,15 +88,21 @@ document.addEventListener('submit', async (event) => {
       })
     })
     const data = await res.text()
+   
+
+    if (res.status !== 201) {
+      alert('Usuario ou senha incorretos.')
+      return
+    }
 
     localStorage.setItem('token', `Bearer ${data}`)
     window.location.reload()
 
   } catch (e) {
     console.error(e)
-    alert('Erro ao logar, verifique suas credenciais.')
+    alert('Erro ao logar')   
+  }finally{
     enableButton('login-button', 'Login')
-    return
   }
 })
 
@@ -102,8 +111,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   await getModules()
 
   const id = new URLSearchParams(window.location.search).get('id')
+
   if (id) {
     await getModuleById(id)
+  }
+  const env = localStorage.getItem('environment')
+  if(env){
+    document.querySelector('nav > a').innerText = `Modelos ${env.toUpperCase()}`
   }
 })
 
@@ -133,3 +147,8 @@ document.querySelector('#button-pdf').addEventListener('click', async () => {
   enableButton('button-pdf', 'PDF')
 })
 
+document.querySelector('a#logout').addEventListener('click', () => {
+  localStorage.clear()
+  showLogin()
+  // window.location.reload()
+})
