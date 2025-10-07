@@ -1,5 +1,5 @@
 import { IconButton } from '@chakra-ui/react';
-import { PauseIcon, PlayIcon } from '@phosphor-icons/react';
+import { PauseIcon, PlayIcon, XIcon } from '@phosphor-icons/react';
 import { useRef, useState } from 'react';
 
 interface Props {
@@ -27,12 +27,28 @@ export function Player({ audio }: Readonly<Props>) {
     }
   }
 
+  console.log({ audio });
+
+  if (!audio) {
+    return (
+
+      <IconButton
+        rounded={'full'}
+        variant={'surface'}
+        disabled={true}
+        title='No audio available'
+      >
+        <XIcon size={23} />
+      </IconButton>
+    )
+  };
+
   return (
     <IconButton
       onClick={handleAudio}
       rounded={'full'}
       variant={'surface'}
-      >
+    >
       {isPlaying ? <PauseIcon size={23} /> : <PlayIcon size={23} />}
     </IconButton>
 

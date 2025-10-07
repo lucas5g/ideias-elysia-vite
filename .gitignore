@@ -46,3 +46,4 @@ package-lock.json
 *.jpg
 *.pdf
 *.epub
+server

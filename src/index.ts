@@ -13,20 +13,21 @@ new Elysia()
   .use(prismaException)
   .use(cors())
   .use(staticPlugin({
-    prefix: '/'
+    // assets: process.cwd() + '/public',
+    prefix: '/',
+
   }))
-  .use(openapi({    
+  .use(openapi({
     mapJsonSchema: {
       zod: z.toJSONSchema
     },
-    documentation:{
-      info:{
+    documentation: {
+      info: {
         title: 'Ideias API',
         version
       }
     }
   }))
-  // .get('/', ({ redirect }) => redirect('/openapi'))
   .use(phrase)
   .use(food)
   .listen(3000);

@@ -30,7 +30,7 @@ model Phrase {
   english    String
   tags       String[]
   type       Type     @default(TRANSLATION)
-  audio      Bytes
+  audio      Bytes?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
 }
@@ -51,7 +51,7 @@ model Food {
   fat       Float
   carbo     Float
   fiber     Float
-  calorie  Float
+  calorie   Float
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }

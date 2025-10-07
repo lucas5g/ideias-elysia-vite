@@ -13,7 +13,12 @@ export abstract class PhraseService {
         ? {
           OR: [
             { portuguese: { contains: where.search } },
-            { english: { contains: where.search } },
+            {
+              english: {
+                contains: where.search,
+                mode: 'insensitive'
+              }
+            },
             { tags: { hasSome: [where.search] } }
           ]
         } : {
@@ -25,7 +30,8 @@ export abstract class PhraseService {
         },
       orderBy: {
         createdAt: 'desc'
-      }
+      },
+
     });
     return phrases.map((phrase) => this.response(phrase));
   }
@@ -46,6 +52,7 @@ export abstract class PhraseService {
 
 
   static async update(id: number, data: PhraseModel.updateBody) {
+
     return prisma.phrase.update({
       where: { id },
       data: {
@@ -62,11 +69,15 @@ export abstract class PhraseService {
   }
 
   static response(phrase: Phrase) {
+    const audioUrl = phrase.audio && Buffer.byteLength(phrase.audio!) > 0 
+      ? `${env.BASE_URL_API}/phrases/${phrase.id}/audio`
+      : null;
+
     return {
       id: phrase.id,
       portuguese: phrase.portuguese,
       english: phrase.english,
-      audioUrl: `${env.BASE_URL_API}/phrases/${phrase.id}/audio`,
+      audioUrl,
       tags: phrase.tags,
       type: phrase.type
     };
