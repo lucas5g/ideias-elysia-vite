@@ -1,5 +1,5 @@
 import { food } from '@/food/food';
-import { Elysia } from 'elysia';
+import { Elysia, redirect } from 'elysia';
 import cors from '@elysiajs/cors';
 import { env } from '@/utils/env';
 import { version } from '../package.json';
@@ -28,6 +28,7 @@ new Elysia()
       }
     }
   }))
+  .get('/', () => redirect('/openapi'))
   .use(phrase)
   .use(food)
   .listen(3000);
