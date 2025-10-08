@@ -9,12 +9,14 @@ import { prismaException } from './utils/prisma-exception';
 import z from 'zod';
 import { phrase } from '@/phrase/phrase';
 import staticPlugin from '@elysiajs/static';
+
 new Elysia()
   .use(prismaException)
   .use(cors())
   .use(staticPlugin({
-    // assets: process.cwd() + '/public',
+    assets: process.cwd() + '/public',
     prefix: '/',
+    
 
   }))
   .use(openapi({

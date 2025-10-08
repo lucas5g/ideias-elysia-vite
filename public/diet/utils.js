@@ -1,3 +1,4 @@
+export const baseUrl = 'https://api.dizelequefez.com.br'
 function showLoading() {
   document.querySelector('#card-loading').classList.remove('hidden')
   document.querySelector('#card-list').classList.add('hidden')
@@ -8,7 +9,7 @@ function hideLoading() {
   document.querySelector('#card-list').classList.remove('hidden')
 }
 
-function showLoadingButton() {
+export function showLoadingButton() {
   document.querySelector('.button-primary').textContent = 'Saving...'
   document.querySelector('.button-primary').disabled = true
 }
@@ -17,14 +18,14 @@ function hideLoadingButton() {
   document.querySelector('.button-primary').textContent = 'Save'
   document.querySelector('.button-primary').disabled = false
 }
-async function getListAndFilter() {
+export async function getListAndFilter() {
   await getList()
   const search = new URL(window.location).searchParams.get('search') || ''
   document.querySelector('#search-input').value = search
   filterList(search)
 }
 
-export async function getFoodByName(name) {
+export async function getFoodById(id) {
 
   const rows = document.querySelectorAll('tbody tr')
   rows.forEach((row) => row.classList.remove('bg-gray-800'));
@@ -52,7 +53,6 @@ export async function getFoodByName(name) {
   document.querySelector('#fiber').value = food.fiber
   document.querySelector('#calorie').value = food.calorie
 
-  // window.scrollTo({ top: 0, behavior: 'smooth' });
   document.querySelector('.layout').scrollTo({ top: 0, behavior: 'smooth' }); 
 
   const url = new URL(window.location)
@@ -63,7 +63,7 @@ export async function getFoodByName(name) {
 async function getList() {
   showLoading()
 
-  const res = await fetch('https://n8n.dizelequefez.com.br/webhook/foods')
+  const res = await fetch(baseUrl + '/foods')
 
   const data = await res.json()
   hideLoading()
@@ -71,7 +71,8 @@ async function getList() {
   document.querySelector('tbody').innerHTML = ''
   for (const row of data) {
     const html = `
-      <tr onclick="getFoodByName('${row.name}')">
+      <tr onclick="getFoodById('${row.id}')">
+        <td>${row.id}</td>
         <td>${row.name}</td>
         <td>${row.protein}</td>
         <td>${row.fat}</td>
@@ -86,7 +87,7 @@ async function getList() {
 }
 
 
-function filterList(search) {
+export function filterList(search) {
 
   const url = new URL(window.location)
   url.searchParams.set('search', search)
@@ -101,46 +102,4 @@ function filterList(search) {
   })
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  await getListAndFilter()
-  const nameParam = new URL(window.location).searchParams.get('name') || ''
-  getFoodByName(nameParam)
-
-})
-
-document.addEventListener('submit', async (e) => {
-  e.preventDefault()
-  const name = document.querySelector('#name').value
-  const protein = document.querySelector('#protein').value
-  const carbo = document.querySelector('#carb').value
-  const fat = document.querySelector('#fat').value
-  const fiber = document.querySelector('#fiber').value
-  const calorie = document.querySelector('#calorie').value
-
-  showLoadingButton()
-
-  await fetch('https://n8n.dizelequefez.com.br/webhook/foods', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      name,
-      protein,
-      carbo,
-      fat,
-      fiber,
-      calorie
-    })
-  })
-  await getListAndFilter()
-  hideLoadingButton()
-})
-
-document.querySelector('#search-input').addEventListener('input', () => {
-  const search = document.querySelector('#search-input').value.toLowerCase()
-
-  filterList(search)
-})
-
-window.getFoodByName = getFoodByName
+window.getFoodById = getFoodById
