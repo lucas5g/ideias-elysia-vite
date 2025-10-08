@@ -14,24 +14,35 @@ export function showLoadingButton() {
   document.querySelector('.button-primary').disabled = true
 }
 
-function hideLoadingButton() {
+export function hideLoadingButton() {
   document.querySelector('.button-primary').textContent = 'Save'
   document.querySelector('.button-primary').disabled = false
 }
 export async function getListAndFilter() {
   await getList()
-  const search = new URL(window.location).searchParams.get('search') || ''
+
+  const url = new URL(window.location)
+  
+  const search = url.searchParams.get('search') || ''
   document.querySelector('#search-input').value = search
   filterList(search)
+  const id = url.searchParams.get('id')
+
+  if(id){
+    getFoodById(id)
+  }
 }
 
 export async function getFoodById(id) {
+  console.log({ id })
+
+  document.querySelector('.button-delete').classList.remove('hidden')
 
   const rows = document.querySelectorAll('tbody tr')
   rows.forEach((row) => row.classList.remove('bg-gray-800'));
 
   const foodElement = Array.from(rows)
-    .find((tr) => tr.querySelector('td').textContent === name)
+    .find((tr) => tr.getAttribute('data-id') === id)
 
   if (!foodElement) return
 
@@ -45,7 +56,7 @@ export async function getFoodById(id) {
     calorie: foodElement.querySelector('td:nth-child(6)').textContent,
   }
 
-
+  document.querySelector('#id').value = id
   document.querySelector('#name').value = food.name
   document.querySelector('#protein').value = food.protein
   document.querySelector('#fat').value = food.fat
@@ -53,10 +64,10 @@ export async function getFoodById(id) {
   document.querySelector('#fiber').value = food.fiber
   document.querySelector('#calorie').value = food.calorie
 
-  document.querySelector('.layout').scrollTo({ top: 0, behavior: 'smooth' }); 
+  document.querySelector('.layout').scrollTo({ top: 0, behavior: 'smooth' });
 
   const url = new URL(window.location)
-  url.searchParams.set('name', name)
+  url.searchParams.set('id', id)
   window.history.pushState({}, '', url)
 
 }
@@ -71,8 +82,7 @@ async function getList() {
   document.querySelector('tbody').innerHTML = ''
   for (const row of data) {
     const html = `
-      <tr onclick="getFoodById('${row.id}')">
-        <td>${row.id}</td>
+      <tr data-id="${row.id}" onclick="getFoodById('${row.id}')">
         <td>${row.name}</td>
         <td>${row.protein}</td>
         <td>${row.fat}</td>
@@ -89,9 +99,7 @@ async function getList() {
 
 export function filterList(search) {
 
-  const url = new URL(window.location)
-  url.searchParams.set('search', search)
-  window.history.pushState({}, '', url)
+  pushState('search', search)
 
   const rows = document.querySelectorAll('tbody tr')
 
@@ -100,6 +108,14 @@ export function filterList(search) {
     const matches = cells.some(cell => cell.textContent.toLowerCase().includes(search))
     row.style.display = matches ? '' : 'none' // Mostra ou oculta a linha
   })
+}
+
+export function pushState(name, value) {
+  if(!value) return
+
+  const url = new URL(window.location)
+  url.searchParams.set(name, value)
+  window.history.pushState({}, '', url)
 }
 
 window.getFoodById = getFoodById
