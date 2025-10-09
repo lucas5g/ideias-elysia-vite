@@ -1,6 +1,6 @@
 import type { FieldInterface } from '@/utils/interfaces';
 import { Input } from "./Input";
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useEffect } from 'react';
 import { api } from '@/utils/api';
 
@@ -9,6 +9,8 @@ interface Props {
 }
 export function Form({ fields }: Readonly<Props>) {
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const headers = Object.keys(fields).map(field => field.toLowerCase())
 
 
@@ -27,6 +29,13 @@ export function Form({ fields }: Readonly<Props>) {
 
   }, [id])
 
+  function handleReset(){
+    headers.forEach((header) => {
+      document.getElementById(header)?.setAttribute('value', '')
+    })
+
+    navigate('/foods')
+  }
 
 
 
@@ -45,7 +54,11 @@ export function Form({ fields }: Readonly<Props>) {
         <button className="button-primary" type="submit">
           {id ? 'Update' : 'Create'}
         </button>
-        <button className="button-secondary" type="reset">
+        <button 
+          className="button-secondary" 
+          type="reset"
+          onClick={handleReset}
+          >
           Cancel
         </button>
       </div>
