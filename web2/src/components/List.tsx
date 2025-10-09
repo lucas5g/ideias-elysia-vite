@@ -63,6 +63,7 @@ export function List({ fields, resource }: Readonly<Props>) {
       <Input
         name='Search'
         value={searchParams.get('search') || ''}
+        doesntHaveLabel
         onChange={(e) => {
           setSearchParams({ search: e.target.value, id: String(id) });
         }}
