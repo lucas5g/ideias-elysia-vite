@@ -7,9 +7,9 @@ import { TrashIcon } from '@phosphor-icons/react'
 
 interface Props {
   fields: FieldInterface
-  uri: string
+  resource: string
 }
-export function Form({ fields, uri }: Readonly<Props>) {
+export function Form({ fields, resource }: Readonly<Props>) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id')
@@ -23,7 +23,7 @@ export function Form({ fields, uri }: Readonly<Props>) {
       return
     }
 
-    api.get(`${uri}/${id}`).then(response => {
+    api.get(`${resource}/${id}`).then(response => {
       const { data } = response
 
       headers.forEach((header) => {
@@ -38,7 +38,7 @@ export function Form({ fields, uri }: Readonly<Props>) {
       document.getElementById(header)?.setAttribute('value', '')
     })
 
-    navigate(uri)
+    navigate(resource)
   }
 
   async function handleDelete() {
@@ -47,8 +47,12 @@ export function Form({ fields, uri }: Readonly<Props>) {
     if (!confirm) {
       return
     }
-    await api.delete(`${uri}/${id}`)
+    await api.delete(`${resource}/${id}`)
     handleReset()
+  }
+
+  function isFieldGroup(value: any): value is FieldInterface {
+    return typeof value === "object" && value !== null && !("type" in value)
   }
 
   return (
@@ -58,21 +62,33 @@ export function Form({ fields, uri }: Readonly<Props>) {
           Form
         </h2>
         {id &&
-          <TrashIcon 
-            size={20} 
-            className='cursor-pointer rounded-full hover:bg-red-500' 
-            onClick={handleDelete} 
-            // color='white'
-            />
-          // <button
-          //   type='button'
-          //   className='bg-red-500 hover:bg-red-600 hover:border hover:border-red-700 w-8 h-8 rounded-full flex items-center justify-center'>
-          // </button>
+          <TrashIcon
+            size={20}
+            className='cursor-pointer rounded-full hover:bg-red-500'
+            onClick={handleDelete}
+          />
         }
       </div>
-      {Object.keys(fields).map((field) => (
-        <Input key={field} name={field} {...fields[field]} />
-      ))}
+      {Object.keys(fields).map((field) => {
+
+        if(field === 'row') {
+          // console.log(Object.keys(fields[field]))
+          const [a, b] = Object.keys(fields[field])
+          return (
+            <Input key={field} name={field} {...fields[field]} />
+          )
+          // return (
+          //   <div className="row" key={field}>
+          //     {Object.keys(field[field]).map((subfield) => {
+          //       return <Input key={subfield} name={subfield} {...fields[field][subfield]} />
+          //     })}
+          //   </div>
+          // )
+        }
+        
+        return <Input key={field} name={field} {...fields[field]} />
+      })}
+      
 
       <div className="row">
         <button className="button-primary" type="submit">

@@ -26,16 +26,16 @@ export function Food() {
     },
   }
 
-  const uri = '/foods'
+  const resource = '/foods'
 
   return (
     <>
       <Form
         fields={fields}
-        uri={uri} />
+        resource={resource} />
       <List
         fields={fields}
-        uri={uri}
+        resource={resource}
       />
     </>
   )

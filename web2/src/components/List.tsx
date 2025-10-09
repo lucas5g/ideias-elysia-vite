@@ -8,13 +8,13 @@ import { Input } from './Input';
 
 interface Props {
   fields: FieldInterface
-  uri: string
+  resource: string
 }
 interface ItemInterface {
   id: number;
   [key: string]: string | number;
 }
-export function List({ fields, uri }: Readonly<Props>) {
+export function List({ fields, resource }: Readonly<Props>) {
 
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,7 +26,7 @@ export function List({ fields, uri }: Readonly<Props>) {
 
   useEffect(() => {
 
-    api.get(uri).then(response => {
+    api.get(resource).then(response => {
       setList(response.data)
     })
 
