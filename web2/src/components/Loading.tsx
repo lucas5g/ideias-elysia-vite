@@ -1,6 +1,6 @@
 export function Loading() {
   return (
-    <div className="card">
+    <div>
       Loading...
     </div>
   )

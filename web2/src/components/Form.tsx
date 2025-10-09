@@ -51,10 +51,6 @@ export function Form({ fields, resource }: Readonly<Props>) {
     handleReset()
   }
 
-  function isFieldGroup(value: any): value is FieldInterface {
-    return typeof value === "object" && value !== null && !("type" in value)
-  }
-
   return (
     <form className="card">
       <div className='row justify-between border-b border-gray-600'>

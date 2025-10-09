@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { api } from "@/utils/api"
 import type { FieldInterface } from '@/utils/interfaces';
-import {  useSearchParams } from 'react-router';
+import { useSearchParams } from 'react-router';
 import { Loading } from './Loading';
 import { Input } from './Input';
 
@@ -46,13 +46,9 @@ export function List({ fields, resource }: Readonly<Props>) {
     })
   }
 
-  if (!list) {
-    return <Loading />
-  }
-
   const search = searchParams.get('search') || ''
 
-  const filteredList = list.filter(item =>
+  const filteredList = list?.filter(item =>
     Object.values(item).some(value =>
       String(value).toLowerCase().includes(search)
     )
@@ -68,37 +64,41 @@ export function List({ fields, resource }: Readonly<Props>) {
         name='Search'
         value={searchParams.get('search') || ''}
         onChange={(e) => {
-          setSearchParams({ search: e.target.value, id: String(id) });          
+          setSearchParams({ search: e.target.value, id: String(id) });
         }}
-
       />
-      <table>
-        <thead>
-          <tr>
-            {headers.map((head) => (
-              <th key={head}>{head}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {filteredList?.map((row) => (
-
-            <tr
-              onClick={() => handleSelect(row.id)}
-              key={row.id}
-              className={row.id === Number(id) ? 'bg-gray-600' : ''}
-            >
+      {!list?.length && 
+        <Loading />
+      }
+      {list?.length  &&
+        <table>
+          <thead>
+            <tr>
               {headers.map((head) => (
-                <td key={head}>
-
-                  {row[head.toLowerCase()]}
-                </td>
+                <th key={head}>{head}</th>
               ))}
             </tr>
-          ))}
+          </thead>
+          <tbody>
+            {filteredList?.map((row) => (
 
-        </tbody>
-      </table>
+              <tr
+                onClick={() => handleSelect(row.id)}
+                key={row.id}
+                className={row.id === Number(id) ? 'bg-gray-600' : ''}
+              >
+                {headers.map((head) => (
+                  <td key={head}>
+
+                    {row[head.toLowerCase()]}
+                  </td>
+                ))}
+              </tr>
+            ))}
+
+          </tbody>
+        </table>
+      }
     </div >
   )
 }
