@@ -2,7 +2,7 @@ import { use, useEffect, useState } from "react"
 
 import { api } from "@/utils/api"
 import type { FieldInterface } from '@/utils/interfaces';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { Loading } from './Loading';
 
 
@@ -15,16 +15,17 @@ interface ItemInterface {
 }
 export function List({ fields }: Readonly<Props>) {
 
+  const { id } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [list, setList] = useState<ItemInterface[]>()
+
   const headers = Object.keys(fields)
   let navigate = useNavigate();
-  const { id } = useParams();
 
 
   useEffect(() => {
 
     api.get('/foods').then(response => {
-      // localStorage.setItem('foods', JSON.stringify(response.data))
       setList(response.data)
     })
 
@@ -38,6 +39,14 @@ export function List({ fields }: Readonly<Props>) {
     return <Loading />
   }
 
+  const search = searchParams.get('search') || ''
+
+  const filteredList = list.filter(item =>
+    Object.values(item).some(value =>
+      String(value).toLowerCase().includes(search)
+    )
+  );
+
   return (
     <div className="card">
       <h1>
@@ -46,15 +55,7 @@ export function List({ fields }: Readonly<Props>) {
       <input
         placeholder="Search"
         className="input"
-        onChange={(e) => {
-
-          // const rows = document.querySelectorAll('tbody tr')
-          // rows.forEach(row => {
-          //   const cells = Array.from(row.querySelectorAll('td'))
-          //   const matches = cells.some(cell => cell.textContent.toLowerCase().includes(e.target.value.toLowerCase()))
-
-          //   row.style.display = matches ? '' : 'none' // Mostra ou oculta a linha
-        }}
+        onChange={(e) => setSearchParams({ search: e.target.value })}
       />
       <table>
         <thead>
@@ -65,13 +66,13 @@ export function List({ fields }: Readonly<Props>) {
           </tr>
         </thead>
         <tbody>
-          {list?.map((row) => (
+          {filteredList?.map((row) => (
 
             <tr
               onClick={() => handleSelect(row.id)}
               key={row.id}
               className={row.id === Number(id) ? 'bg-gray-600' : ''}
-              >
+            >
               {headers.map((head) => (
                 <td key={head}>
 
