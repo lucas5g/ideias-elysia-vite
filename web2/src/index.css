@@ -53,6 +53,8 @@
     @apply border-b border-gray-700 h-12 hover:bg-gray-700 hover:cursor-pointer hover:transition-all
   }
 
+ 
+
   .button-primary {
     @apply bg-blue-500 hover:bg-blue-700 font-bold py-3 rounded cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
   }

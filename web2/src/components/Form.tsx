@@ -19,14 +19,12 @@ export function Form({ fields }: Readonly<Props>) {
 
     api.get(`/foods/${id}`).then(response => {
       const { data } = response
-      console.log('headers ', headers)
-      console.log('data ', data)
 
       headers.forEach((header) => {
         document.getElementById(header)?.setAttribute('value', data[header])
       })
     })
-    
+
   }, [id])
 
 
@@ -41,14 +39,16 @@ export function Form({ fields }: Readonly<Props>) {
       ))}
 
       <button className="button-primary" type="submit">
-        Save
+        {id ? 'Update' : 'Create'}        
       </button>
       <button className="button-secondary" type="reset">
         Cancel
       </button>
-      <button type="button" className="button-delete">
-        Delete
-      </button>
+      {id &&
+        <button type="button" className="button-delete">
+          Delete
+        </button>
+      }
     </form>
   )
 }

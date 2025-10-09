@@ -2,7 +2,7 @@ import { use, useEffect, useState } from "react"
 
 import { api } from "@/utils/api"
 import type { FieldInterface } from '@/utils/interfaces';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { Loading } from './Loading';
 
 
@@ -18,6 +18,8 @@ export function List({ fields }: Readonly<Props>) {
   const [list, setList] = useState<ItemInterface[]>()
   const headers = Object.keys(fields)
   let navigate = useNavigate();
+  const { id } = useParams();
+
 
   useEffect(() => {
 
@@ -67,7 +69,9 @@ export function List({ fields }: Readonly<Props>) {
 
             <tr
               onClick={() => handleSelect(row.id)}
-              key={row.id}>
+              key={row.id}
+              className={row.id === Number(id) ? 'bg-gray-600' : ''}
+              >
               {headers.map((head) => (
                 <td key={head}>
 
