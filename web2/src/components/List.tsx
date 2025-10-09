@@ -1,21 +1,20 @@
-import { use, useEffect, useState } from "react"
-
+import { useEffect, useState } from "react"
 import { api } from "@/utils/api"
 import type { FieldInterface } from '@/utils/interfaces';
-import { useNavigate, useParams, useSearchParams } from 'react-router';
+import {  useSearchParams } from 'react-router';
 import { Loading } from './Loading';
 import { Input } from './Input';
-import { pushParams } from '@/utils/push-params';
 
 
 interface Props {
   fields: FieldInterface
+  uri: string
 }
 interface ItemInterface {
   id: number;
   [key: string]: string | number;
 }
-export function List({ fields }: Readonly<Props>) {
+export function List({ fields, uri }: Readonly<Props>) {
 
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -23,13 +22,11 @@ export function List({ fields }: Readonly<Props>) {
   const id = searchParams.get('id')
 
 
-  const headers = Object.keys(fields)
-  let navigate = useNavigate();
-
+  const headers = Object.keys(fields);
 
   useEffect(() => {
 
-    api.get('/foods').then(response => {
+    api.get(uri).then(response => {
       setList(response.data)
     })
 

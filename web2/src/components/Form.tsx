@@ -1,13 +1,14 @@
 import type { FieldInterface } from '@/utils/interfaces';
 import { Input } from "./Input";
-import { useNavigate, useParams, useSearchParams } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { useEffect } from 'react';
 import { api } from '@/utils/api';
 
 interface Props {
   fields: FieldInterface
+  uri: string
 }
-export function Form({ fields }: Readonly<Props>) {
+export function Form({ fields, uri }: Readonly<Props>) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id')
@@ -21,7 +22,7 @@ export function Form({ fields }: Readonly<Props>) {
       return
     }
 
-    api.get(`/foods/${id}`).then(response => {
+    api.get(`${uri}/${id}`).then(response => {
       const { data } = response
 
       headers.forEach((header) => {
@@ -38,11 +39,8 @@ export function Form({ fields }: Readonly<Props>) {
 
 
 
-    navigate('/foods')
+    navigate(uri)
   }
-
-
-
 
   return (
     <form className="card">

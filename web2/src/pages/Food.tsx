@@ -24,15 +24,18 @@ export function Food() {
     Calorie: {
       type: 'number',
     },
-    
-
   }
+
+  const uri = '/foods'
+
   return (
     <>
       <Form
-        fields={fields} />
+        fields={fields}
+        uri={uri} />
       <List
         fields={fields}
+        uri={uri}
       />
     </>
   )
