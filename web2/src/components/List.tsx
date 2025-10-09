@@ -33,6 +33,10 @@ export function List({ fields }: Readonly<Props>) {
 
   function handleSelect(id: number) {
     navigate(`/foods/${id}`)
+    window.scroll({
+      top: 0,
+      behavior: 'smooth'
+    })
   }
 
   if (!list) {
