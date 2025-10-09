@@ -1,10 +1,35 @@
+import type { FieldInterface } from '@/utils/interfaces';
 import { Input } from "./Input";
-import type { FieldType } from "./List";
+import { useParams } from 'react-router';
+import { useEffect } from 'react';
+import { api } from '@/utils/api';
 
 interface Props {
-  fields: FieldType
+  fields: FieldInterface
 }
 export function Form({ fields }: Readonly<Props>) {
+  const { id } = useParams();
+  const headers = Object.keys(fields).map(field => field.toLowerCase())
+
+
+  useEffect(() => {
+    if (!id) {
+      return
+    }
+
+    api.get(`/foods/${id}`).then(response => {
+      const { data } = response
+      console.log('headers ', headers)
+      console.log('data ', data)
+
+      headers.forEach((header) => {
+        document.getElementById(header)?.setAttribute('value', data[header])
+      })
+    })
+    
+  }, [id])
+
+
   return (
     <form className="card">
 

@@ -7,6 +7,8 @@ export function App() {
       <Routes>
         <Route path="/" element={<Food />} />
         <Route path="/foods" element={<Food />} />
+        <Route path="/foods/:id" element={<Food />} />
+        
       </Routes>
     </BrowserRouter>
   )

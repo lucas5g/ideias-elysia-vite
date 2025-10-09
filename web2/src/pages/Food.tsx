@@ -1,18 +1,21 @@
 import { Form } from '@/components/Form'
-import { List, type FieldType } from '@/components/List'
+import { List } from '@/components/List'
+import type { FieldInterface } from '@/utils/interfaces'
 
 export function Food() {
-  const fields: FieldType = {
+  const fields: FieldInterface = {
     Name: {
 
     },
-    Protein: {
-      type: 'number',
-    },
-    Fat: {
-      type: 'number',
-    },
-    Carb: {
+    // row:{
+    //   Protein: {
+    //     type: 'number',
+    //   },
+    //   Fat: {
+    //     type: 'number',
+    //   }
+    // },    
+    Carbo: {
       type: 'number',
     },
     Fiber: {
@@ -21,7 +24,7 @@ export function Food() {
     Calorie: {
       type: 'number',
     },
-
+    
 
   }
   return (

@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react"
-import type { InputProps } from "./Input"
-import { api } from "@/utils/api"
+import { use, useEffect, useState } from "react"
 
-export type FieldType = Record< string, InputProps>
+import { api } from "@/utils/api"
+import type { FieldInterface } from '@/utils/interfaces';
+import { useNavigate } from 'react-router';
+
+
 interface Props {
-  fields: FieldType
+  fields: FieldInterface
 }
-interface  ItemInterface {
+interface ItemInterface {
   id: number;
   [key: string]: string | number;
 }
@@ -14,6 +16,7 @@ export function List({ fields }: Readonly<Props>) {
 
   const [list, setList] = useState<ItemInterface[]>()
   const headers = Object.keys(fields)
+  let navigate = useNavigate();
 
   useEffect(() => {
     api.get('/foods').then(response => {
@@ -21,6 +24,10 @@ export function List({ fields }: Readonly<Props>) {
     })
 
   }, [])
+
+  function handleSelect(id: number) {
+    navigate(`/foods/${id}`)    
+  }
 
   return (
     <div className="card">
@@ -38,17 +45,21 @@ export function List({ fields }: Readonly<Props>) {
         </thead>
         <tbody>
           {list?.map((row) => (
-            <tr key={row.id}>
-              {headers.map((head) => (
-                <td key={head}>
-                  {row[head.toLowerCase()]}
-                </td>
-              ))}
-            </tr>
+
+              <tr 
+                onClick={() => handleSelect(row.id)}
+                key={row.id}>
+                {headers.map((head) => (
+                  <td key={head}>
+
+                    {row[head.toLowerCase()]}
+                  </td>
+                ))}
+              </tr>
           ))}
 
         </tbody>
       </table>
-    </div>
+    </div >
   )
 }
