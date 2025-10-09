@@ -4,6 +4,7 @@ import { api } from "@/utils/api"
 import type { FieldInterface } from '@/utils/interfaces';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { Loading } from './Loading';
+import { Input } from './Input';
 
 
 interface Props {
@@ -56,10 +57,14 @@ export function List({ fields }: Readonly<Props>) {
       <h1>
         List
       </h1>
-      <input
-        placeholder="Search"
-        className="input"
-        onChange={(e) => setSearchParams({ search: e.target.value })}
+
+      <Input
+        name='Search'
+        value={searchParams.get('search') || ''}
+        onChange={(e) => {
+          setSearchParams({ search: e.target.value })
+        }}
+
       />
       <table>
         <thead>
