@@ -5,6 +5,9 @@ export abstract class FoodService {
   static findAll(where?: FoodModel.findAllQuery) {
     return prisma.food.findMany({
       where,
+      orderBy: {
+        name: 'asc'
+      }
     });
   }
 
