@@ -7,14 +7,12 @@ export function Food() {
     Name: {
 
     },
-    // row:{
-    //   Protein: {
-    //     type: 'number',
-    //   },
-    //   Fat: {
-    //     type: 'number',
-    //   }
-    // },    
+    Protein: {
+      type: 'number',
+    },
+    Fat: {
+      type: 'number',
+    },
     Carbo: {
       type: 'number',
     },

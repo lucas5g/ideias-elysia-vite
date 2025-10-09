@@ -28,12 +28,14 @@ export function Form({ fields, resource }: Readonly<Props>) {
 
       headers.forEach((header) => {
         document.getElementById(header)?.setAttribute('value', data[header])
-      })
+      })    
+
     })
 
   }, [id])
 
   function handleReset() {
+
     headers.forEach((header) => {
       document.getElementById(header)?.setAttribute('value', '')
     })
@@ -65,26 +67,11 @@ export function Form({ fields, resource }: Readonly<Props>) {
           />
         }
       </div>
-      {Object.keys(fields).map((field) => {
+      {headers.map((field) => {
 
-        if(field === 'row') {
-          // console.log(Object.keys(fields[field]))
-          const [a, b] = Object.keys(fields[field])
-          return (
-            <Input key={field} name={field} {...fields[field]} />
-          )
-          // return (
-          //   <div className="row" key={field}>
-          //     {Object.keys(field[field]).map((subfield) => {
-          //       return <Input key={subfield} name={subfield} {...fields[field][subfield]} />
-          //     })}
-          //   </div>
-          // )
-        }
-        
         return <Input key={field} name={field} {...fields[field]} />
       })}
-      
+
 
       <div className="row">
         <button className="button-primary" type="submit">

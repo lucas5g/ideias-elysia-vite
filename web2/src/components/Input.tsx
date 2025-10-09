@@ -10,7 +10,7 @@ export function Input({doesntHaveLabel, ...props}: Readonly<InputProps>) {
 
       {!doesntHaveLabel &&
         <label
-          htmlFor={props.name}
+          htmlFor={props.name?.toLowerCase()}
           className='text-sm'
         >
           {props.name}
