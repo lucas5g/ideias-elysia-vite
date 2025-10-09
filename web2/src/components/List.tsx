@@ -5,6 +5,7 @@ import type { FieldInterface } from '@/utils/interfaces';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { Loading } from './Loading';
 import { Input } from './Input';
+import { pushParams } from '@/utils/push-params';
 
 
 interface Props {
@@ -16,9 +17,11 @@ interface ItemInterface {
 }
 export function List({ fields }: Readonly<Props>) {
 
-  const { id } = useParams();
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [list, setList] = useState<ItemInterface[]>()
+  const id = searchParams.get('id')
+
 
   const headers = Object.keys(fields)
   let navigate = useNavigate();
@@ -32,8 +35,14 @@ export function List({ fields }: Readonly<Props>) {
 
   }, [])
 
+
+
   function handleSelect(id: number) {
-    navigate(`/foods/${id}`)
+
+    // pushParams('id', String(id))
+    setSearchParams({ id: String(id), search: searchParams.get('search') ?? '' });
+
+
     window.scroll({
       top: 0,
       behavior: 'smooth'
@@ -62,7 +71,7 @@ export function List({ fields }: Readonly<Props>) {
         name='Search'
         value={searchParams.get('search') || ''}
         onChange={(e) => {
-          setSearchParams({ search: e.target.value })
+          setSearchParams({ search: e.target.value, id: String(id) });          
         }}
 
       />

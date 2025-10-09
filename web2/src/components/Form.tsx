@@ -1,6 +1,6 @@
 import type { FieldInterface } from '@/utils/interfaces';
 import { Input } from "./Input";
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { useEffect } from 'react';
 import { api } from '@/utils/api';
 
@@ -8,13 +8,15 @@ interface Props {
   fields: FieldInterface
 }
 export function Form({ fields }: Readonly<Props>) {
-  const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get('id')
 
   const headers = Object.keys(fields).map(field => field.toLowerCase())
 
 
   useEffect(() => {
+
     if (!id) {
       return
     }
@@ -34,6 +36,8 @@ export function Form({ fields }: Readonly<Props>) {
       document.getElementById(header)?.setAttribute('value', '')
     })
 
+
+
     navigate('/foods')
   }
 
@@ -46,6 +50,9 @@ export function Form({ fields }: Readonly<Props>) {
       <h1>
         Form
       </h1>
+      <button>
+        delete
+      </button>
       {Object.keys(fields).map((field) => (
         <Input key={field} name={field} {...fields[field]} />
       ))}
