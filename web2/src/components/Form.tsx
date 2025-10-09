@@ -14,7 +14,7 @@ export function Form({ fields, resource }: Readonly<Props>) {
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id')
 
-  const headers = Object.keys(fields).map(field => field.toLowerCase())
+  const headers = Object.keys(fields).map(field => field)
 
 
   useEffect(() => {
@@ -27,8 +27,8 @@ export function Form({ fields, resource }: Readonly<Props>) {
       const { data } = response
 
       headers.forEach((header) => {
-        document.getElementById(header)?.setAttribute('value', data[header])
-      })    
+        document.getElementById(header.toLowerCase())?.setAttribute('value', data[header.toLowerCase()])
+      })
 
     })
 
@@ -37,7 +37,7 @@ export function Form({ fields, resource }: Readonly<Props>) {
   function handleReset() {
 
     headers.forEach((header) => {
-      document.getElementById(header)?.setAttribute('value', '')
+      document.getElementById(header.toLowerCase())?.setAttribute('value', '')
     })
 
     navigate(resource)
@@ -53,8 +53,30 @@ export function Form({ fields, resource }: Readonly<Props>) {
     handleReset()
   }
 
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    const data = Object.keys(fields).reduce((acc: Record<string, any>, field) => {
+      const value = document.getElementById(field.toLowerCase())?.getAttribute('value')
+      const key = field.toLowerCase()
+
+      acc[key] = fields[field].type === 'number'
+        ? Number(value)
+        : value
+      return acc
+    }, {})
+
+console.log(data)
+    if (id) {
+      await api.patch(`${resource}/${id}`, data)
+      return
+    }
+
+    await api.post(`${resource}`, data)
+  }
+
   return (
-    <form className="card">
+    <form className="card" onSubmit={handleSubmit}>
       <div className='row justify-between border-b border-gray-600'>
         <h2>
           Form

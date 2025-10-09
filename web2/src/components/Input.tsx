@@ -19,11 +19,12 @@ export function Input({doesntHaveLabel, ...props}: Readonly<InputProps>) {
 
 
       <input
+        {...props}
         className="input"
         required
         id={props.name?.toLowerCase()}
+        name={props.name?.toLowerCase()}
         placeholder={props.name}
-        {...props}
       />
     </div>
   )
