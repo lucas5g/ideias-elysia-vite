@@ -3,6 +3,7 @@ import { use, useEffect, useState } from "react"
 import { api } from "@/utils/api"
 import type { FieldInterface } from '@/utils/interfaces';
 import { useNavigate } from 'react-router';
+import { Loading } from './Loading';
 
 
 interface Props {
@@ -19,14 +20,20 @@ export function List({ fields }: Readonly<Props>) {
   let navigate = useNavigate();
 
   useEffect(() => {
+
     api.get('/foods').then(response => {
+      // localStorage.setItem('foods', JSON.stringify(response.data))
       setList(response.data)
     })
 
   }, [])
 
   function handleSelect(id: number) {
-    navigate(`/foods/${id}`)    
+    navigate(`/foods/${id}`)
+  }
+
+  if (!list) {
+    return <Loading />
   }
 
   return (
@@ -34,7 +41,19 @@ export function List({ fields }: Readonly<Props>) {
       <h1>
         List
       </h1>
-      <input type="text" placeholder="Search" className="input" id="search-input" />
+      <input
+        placeholder="Search"
+        className="input"
+        onChange={(e) => {
+
+          // const rows = document.querySelectorAll('tbody tr')
+          // rows.forEach(row => {
+          //   const cells = Array.from(row.querySelectorAll('td'))
+          //   const matches = cells.some(cell => cell.textContent.toLowerCase().includes(e.target.value.toLowerCase()))
+
+          //   row.style.display = matches ? '' : 'none' // Mostra ou oculta a linha
+        }}
+      />
       <table>
         <thead>
           <tr>
@@ -46,16 +65,16 @@ export function List({ fields }: Readonly<Props>) {
         <tbody>
           {list?.map((row) => (
 
-              <tr 
-                onClick={() => handleSelect(row.id)}
-                key={row.id}>
-                {headers.map((head) => (
-                  <td key={head}>
+            <tr
+              onClick={() => handleSelect(row.id)}
+              key={row.id}>
+              {headers.map((head) => (
+                <td key={head}>
 
-                    {row[head.toLowerCase()]}
-                  </td>
-                ))}
-              </tr>
+                  {row[head.toLowerCase()]}
+                </td>
+              ))}
+            </tr>
           ))}
 
         </tbody>
