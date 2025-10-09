@@ -28,7 +28,7 @@ export function Form({ fields }: Readonly<Props>) {
   }, [id])
 
 
-  
+
 
 
   return (
@@ -41,12 +41,14 @@ export function Form({ fields }: Readonly<Props>) {
         <Input key={field} name={field} {...fields[field]} />
       ))}
 
-      <button className="button-primary" type="submit">
-        {id ? 'Update' : 'Create'}        
-      </button>
-      <button className="button-secondary" type="reset">
-        Cancel
-      </button>
+      <div className="row">
+        <button className="button-primary" type="submit">
+          {id ? 'Update' : 'Create'}
+        </button>
+        <button className="button-secondary" type="reset">
+          Cancel
+        </button>
+      </div>
       {id &&
         <button type="button" className="button-delete">
           Delete
