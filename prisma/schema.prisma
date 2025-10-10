@@ -55,3 +55,10 @@ model Food {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }
+
+enum Meal {
+  BREAKFAST
+  LUNCH
+  SNACK
+  DINNER
+}

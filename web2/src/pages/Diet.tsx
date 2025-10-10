@@ -1,24 +1,38 @@
 import { Form } from "@/components/Form"
 import { List } from "@/components/List"
+import { api } from "@/utils/api"
 import type { FieldInterface } from "@/utils/interfaces"
+import { useEffect, useState } from "react"
 
 export function Diet() {
-  const fields: FieldInterface = {
-    Name: {
+  const resource = '/diets'
+  const [mealOptions, setMealOptions] = useState()
 
+  useEffect(() => {
+    api.get('/meals').then(res => {
+      // Assuming res.data is an array of meals, map to { value, label }
+      const options = res.data.map((meal: string) => ({
+        value: meal,
+        label: meal
+      }))
+      setMealOptions(options)
+    })
+  }, [])
+
+  const fields: FieldInterface = {
+    Meal: {
+      type: 'select',
+      options: mealOptions
     },
-    Description: {
-      type: 'textarea',
+    Food: {
+      type: 'text',
     },
-    StartDate: {
-      type: 'date',
-    },
-    EndDate: {
-      type: 'date',
-    },
+    Quantity: {
+      type: 'number',
+
+    }
   }
 
-  const resource = '/diets'
 
   return (
     <>

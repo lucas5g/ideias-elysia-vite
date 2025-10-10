@@ -9,6 +9,7 @@ import { prismaException } from './utils/prisma-exception';
 import z from 'zod';
 import { phrase } from '@/phrase/phrase';
 import staticPlugin from '@elysiajs/static';
+import { meal } from '@/meal/meal';
 
 new Elysia()
   .use(prismaException)
@@ -33,6 +34,7 @@ new Elysia()
   .get('/', () => redirect('/openapi'))
   .use(phrase)
   .use(food)
+  .use(meal)
   .listen(3000);
 
 console.debug(

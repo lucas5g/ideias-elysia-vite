@@ -1,9 +1,10 @@
 import type { FieldInterface } from '@/utils/interfaces';
 import { Input } from "./Input";
-import {  useSearchParams } from 'react-router';
+import { useSearchParams } from 'react-router';
 import { useEffect } from 'react';
 import { api } from '@/utils/api';
 import { TrashIcon } from '@phosphor-icons/react'
+import { Select } from '@/components/Select';
 
 interface Props {
   fields: FieldInterface
@@ -100,6 +101,9 @@ export function Form({ fields, resource }: Readonly<Props>) {
         }
       </div>
       {headers.map((field) => {
+        if (fields[field].type === 'select') {
+          return <Select key={field} name={field} {...fields[field]} />
+        }
 
         return <Input key={field} name={field} {...fields[field]} />
       })}

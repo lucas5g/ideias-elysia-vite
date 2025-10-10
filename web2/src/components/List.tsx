@@ -65,13 +65,16 @@ export function List({ fields, resource }: Readonly<Props>) {
         value={searchParams.get('search') || ''}
         doesntHaveLabel
         onChange={(e) => {
-          setSearchParams({ search: e.target.value, id: String(id) });
+          if (id) {
+            return setSearchParams({ id: String(id), search: e.target.value });
+          }
+          setSearchParams({ search: e.target.value });
         }}
       />
-      {!list?.length && 
+      {!list?.length &&
         <Loading />
       }
-      {list?.length  &&
+      {list?.length &&
         <table>
           <thead>
             <tr>
