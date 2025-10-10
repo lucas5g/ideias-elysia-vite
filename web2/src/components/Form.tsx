@@ -1,6 +1,6 @@
 import type { FieldInterface } from '@/utils/interfaces';
 import { Input } from "./Input";
-import { useNavigate, useSearchParams } from 'react-router';
+import {  useSearchParams } from 'react-router';
 import { useEffect } from 'react';
 import { api } from '@/utils/api';
 import { TrashIcon } from '@phosphor-icons/react'
@@ -10,7 +10,6 @@ interface Props {
   resource: string
 }
 export function Form({ fields, resource }: Readonly<Props>) {
-  const navigate = useNavigate();
   const [searchParams, setSeachrchParams] = useSearchParams();
   const id = searchParams.get('id')
 
@@ -43,7 +42,6 @@ export function Form({ fields, resource }: Readonly<Props>) {
     })
 
     setSeachrchParams({ search: searchParams.get('search') ?? '' })
-    // navigate(resource)
   }
 
   async function handleDelete() {
