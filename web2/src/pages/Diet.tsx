@@ -7,6 +7,7 @@ import { useEffect, useState } from "react"
 export function Diet() {
   const resource = '/diets'
   const [mealOptions, setMealOptions] = useState()
+  const [foodsOptions, setFoodsOptions] = useState()
 
   useEffect(() => {
     api.get('/meals').then(res => {
@@ -17,15 +18,24 @@ export function Diet() {
       }))
       setMealOptions(options)
     })
+
+    api.get('/foods').then(res => {
+      const options = res.data.map((food: {id:number, name: string}) => ({
+        value: food.id,
+        label: food.name
+      }))
+      setFoodsOptions(options)
+    })
   }, [])
 
   const fields: FieldInterface = {
     Meal: {
       type: 'select',
-      options: mealOptions
+      options: mealOptions!
     },
     Food: {
-      type: 'text',
+      type: 'select',
+      options: foodsOptions!
     },
     Quantity: {
       type: 'number',

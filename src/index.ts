@@ -1,3 +1,4 @@
+import { diet } from '@/diet/diet';
 import { food } from '@/food/food';
 import { Elysia, redirect } from 'elysia';
 import cors from '@elysiajs/cors';
@@ -35,6 +36,7 @@ new Elysia()
   .use(phrase)
   .use(food)
   .use(meal)
+  .use(diet)
   .listen(3000);
 
 console.debug(

@@ -1,13 +1,26 @@
 import type { InputProps } from '@/components/Input';
+import type { SelectProps } from '@/components/Select';
 
-export interface FieldConfig extends Omit<InputProps, 'type'> {
+// Interface base sem o campo 'type'
+interface BaseFieldConfig {
   type: 'text' | 'number' | 'email' | 'password' | 'select';
   options?: { value: string | number; label: string }[];
 }
 
+// Para campos de input
+interface InputFieldConfig extends BaseFieldConfig, Omit<InputProps, 'type'> {
+  type: 'text' | 'number' | 'email' | 'password';
+}
 
-// export type FieldType = Record<string, InputProps | FieldType>
+// Para campos de select
+interface SelectFieldConfig extends BaseFieldConfig, Omit<SelectProps, 'type'> {
+  type: 'select';
+  options: { value: string | number; label: string }[];
+}
+
+// União das configurações
+export type FieldConfig = InputFieldConfig | SelectFieldConfig;
+
 export interface FieldInterface {
-  // type: 'select' | 'text' | 'number'
-  [key: string]: FieldConfig | FieldInterface
+  [key: string]: FieldConfig | FieldInterface;
 }

@@ -54,6 +54,7 @@ model Food {
   calorie   Float
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+  Diet      Diet[]
 }
 
 enum Meal {
@@ -61,4 +62,20 @@ enum Meal {
   LUNCH
   SNACK
   DINNER
+}
+
+model Diet {
+  id   Int  @id @default(autoincrement())
+  meal Meal
+  foodId    Int
+  quantity Float
+  protein Float
+  fat     Float
+  carbo   Float
+  fiber   Float
+  calorie Float
+
+  food      Food     @relation(fields: [foodId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
