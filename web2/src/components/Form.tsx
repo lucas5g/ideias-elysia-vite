@@ -11,7 +11,7 @@ interface Props {
 }
 export function Form({ fields, resource }: Readonly<Props>) {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSeachrchParams] = useSearchParams();
   const id = searchParams.get('id')
 
   const headers = Object.keys(fields).map(field => field)
@@ -27,7 +27,8 @@ export function Form({ fields, resource }: Readonly<Props>) {
       const { data } = response
 
       headers.forEach((header) => {
-        document.getElementById(header.toLowerCase())?.setAttribute('value', data[header.toLowerCase()])
+        const element = document.getElementById(header.toLowerCase()) as HTMLInputElement
+        element.value = data[header.toLowerCase()]
       })
 
     })
@@ -37,10 +38,12 @@ export function Form({ fields, resource }: Readonly<Props>) {
   function handleReset() {
 
     headers.forEach((header) => {
-      document.getElementById(header.toLowerCase())?.setAttribute('value', '')
+      const element = document.getElementById(header.toLowerCase()) as HTMLInputElement
+      element.value = ''
     })
 
-    navigate(resource)
+    setSeachrchParams({ search: searchParams.get('search') ?? '' })
+    // navigate(resource)
   }
 
   async function handleDelete() {
@@ -50,14 +53,22 @@ export function Form({ fields, resource }: Readonly<Props>) {
       return
     }
     await api.delete(`${resource}/${id}`)
-    handleReset()
+
+    headers.forEach((header) => {
+      const element = document.getElementById(header.toLowerCase()) as HTMLInputElement
+      element.value = ''
+    })
+
+    setSeachrchParams({ search: searchParams.get('search') ?? '' })
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    const data = Object.keys(fields).reduce((acc: Record<string, any>, field) => {
-      const value = document.getElementById(field.toLowerCase())?.getAttribute('value')
+    const payload = Object.keys(fields).reduce((acc: Record<string, any>, field) => {
+      const element = document.getElementById(field.toLowerCase()) as HTMLInputElement
+      const value = element.value
+
       const key = field.toLowerCase()
 
       acc[key] = fields[field].type === 'number'
@@ -66,13 +77,14 @@ export function Form({ fields, resource }: Readonly<Props>) {
       return acc
     }, {})
 
-console.log(data)
+
     if (id) {
-      await api.patch(`${resource}/${id}`, data)
+      await api.patch(`${resource}/${id}`, payload)
       return
     }
 
-    await api.post(`${resource}`, data)
+    const { data } = await api.post(`${resource}`, payload)
+    setSeachrchParams({ id: String(data.id), search: searchParams.get('search') ?? data['name'] })
   }
 
   return (

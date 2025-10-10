@@ -30,7 +30,7 @@ export function List({ fields, resource }: Readonly<Props>) {
       setList(response.data)
     })
 
-  }, [])
+  }, [id])
 
 
 
