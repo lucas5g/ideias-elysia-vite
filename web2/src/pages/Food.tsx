@@ -22,6 +22,7 @@ export function Food() {
     Calorie: {
       type: 'number',
     },
+    
   }
 
   const resource = '/foods'

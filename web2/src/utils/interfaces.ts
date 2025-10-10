@@ -3,13 +3,13 @@ import type { SelectProps } from '@/components/Select';
 
 // Interface base sem o campo 'type'
 interface BaseFieldConfig {
-  type: 'text' | 'number' | 'email' | 'password' | 'select';
+  type: 'text' | 'number' | 'email' | 'password' | 'select' | 'hidden';
   options?: { value: string | number; label: string }[];
 }
 
 // Para campos de input
 interface InputFieldConfig extends BaseFieldConfig, Omit<InputProps, 'type'> {
-  type: 'text' | 'number' | 'email' | 'password';
+  type: 'text' | 'number' | 'email' | 'password' | 'hidden';
 }
 
 // Para campos de select

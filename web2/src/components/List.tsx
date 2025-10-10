@@ -4,6 +4,7 @@ import type { FieldInterface } from '@/utils/interfaces';
 import { useSearchParams } from 'react-router';
 import { Loading } from './Loading';
 import { Input } from './Input';
+import { fetcher } from "@/utils/fetcher";
 
 
 interface Props {
@@ -18,27 +19,15 @@ export function List({ fields, resource }: Readonly<Props>) {
 
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const [list, setList] = useState<ItemInterface[]>()
+  // const [list, setList] = useState<ItemInterface[]>()
+  const { data: list, isLoading } = fetcher<ItemInterface[]>(resource);
+
   const id = searchParams.get('id')
-
-
   const headers = Object.keys(fields);
-
-  useEffect(() => {
-
-    api.get(resource).then(response => {
-      setList(response.data)
-    })
-
-  }, [id])
-
-
 
   function handleSelect(id: number) {
 
-    // pushParams('id', String(id))
     setSearchParams({ id: String(id), search: searchParams.get('search') ?? '' });
-
 
     window.scroll({
       top: 0,
@@ -47,7 +36,6 @@ export function List({ fields, resource }: Readonly<Props>) {
   }
 
   const search = searchParams.get('search') || ''
-
   const filteredList = list?.filter(item =>
     Object.values(item).some(value =>
       String(value).toLowerCase().includes(search)
@@ -71,7 +59,7 @@ export function List({ fields, resource }: Readonly<Props>) {
           setSearchParams({ search: e.target.value });
         }}
       />
-      {!list?.length &&
+      {isLoading &&
         <Loading />
       }
       {list?.length &&

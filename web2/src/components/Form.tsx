@@ -1,7 +1,7 @@
 import type { FieldInterface } from '@/utils/interfaces';
 import { Input } from "./Input";
 import { useSearchParams } from 'react-router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { api } from '@/utils/api';
 import { TrashIcon } from '@phosphor-icons/react'
 import { Select } from '@/components/Select';
@@ -12,6 +12,8 @@ interface Props {
 }
 export function Form({ fields, resource }: Readonly<Props>) {
   const [searchParams, setSeachrchParams] = useSearchParams();
+  const [isLoading, setIsLoading] = useState(false)
+
   const id = searchParams.get('id')
 
   const headers = Object.keys(fields).map(field => field)
@@ -76,13 +78,15 @@ export function Form({ fields, resource }: Readonly<Props>) {
       return acc
     }, {})
 
+    const request = id
+      ? api.patch(`${resource}/${id}`, payload)
+      : api.post(`${resource}`, payload)
 
-    if (id) {
-      await api.patch(`${resource}/${id}`, payload)
-      return
-    }
+    setIsLoading(true)
+    const { data } =  await request
+    setIsLoading(false)
 
-    const { data } = await api.post(`${resource}`, payload)
+    
     setSeachrchParams({ id: String(data.id), search: searchParams.get('search') ?? data['name'] })
   }
 
@@ -110,7 +114,12 @@ export function Form({ fields, resource }: Readonly<Props>) {
 
 
       <div className="row">
-        <button className="button-primary" type="submit">
+        <button 
+          className="button-primary" 
+          type="submit"
+          disabled={isLoading}
+        >
+          {/* {isLoading && 'Loading...'} */}
           {id ? 'Update' : 'Create'}
         </button>
         <button
