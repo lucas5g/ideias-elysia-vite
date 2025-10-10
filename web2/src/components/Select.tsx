@@ -4,7 +4,6 @@ export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElemen
 }
 
 export function Select({ doesntHaveLabel, options = [], ...props }: Readonly<SelectProps>) {
-  console.log({ options})
   return (
     <div className="relative">
       {!doesntHaveLabel && (

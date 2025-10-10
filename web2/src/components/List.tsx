@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { api } from "@/utils/api"
-import type { FieldInterface } from '@/utils/interfaces';
+import type { FieldInterface, ItemInterface } from '@/utils/interfaces';
 import { useSearchParams } from 'react-router';
 import { Loading } from './Loading';
 import { Input } from './Input';
@@ -11,19 +11,22 @@ interface Props {
   fields: FieldInterface
   resource: string
 }
-interface ItemInterface {
-  id: number;
-  [key: string]: string | number;
-}
+
 export function List({ fields, resource }: Readonly<Props>) {
 
 
-  const [searchParams, setSearchParams] = useSearchParams();
-  // const [list, setList] = useState<ItemInterface[]>()
-  const { data: list, isLoading } = fetcher<ItemInterface[]>(resource);
-
+  const [searchParams, setSearchParams] = useSearchParams();  
   const id = searchParams.get('id')
   const headers = Object.keys(fields);
+  const { data: list, isLoading } = fetcher<ItemInterface[]>(resource);
+
+  const search = searchParams.get('search') || ''
+  const filteredList = list?.filter(item =>
+    Object.values(item).some(value =>
+      String(value).toLowerCase().includes(search)
+    )
+  );
+
 
   function handleSelect(id: number) {
 
@@ -34,14 +37,7 @@ export function List({ fields, resource }: Readonly<Props>) {
       behavior: 'smooth'
     })
   }
-
-  const search = searchParams.get('search') || ''
-  const filteredList = list?.filter(item =>
-    Object.values(item).some(value =>
-      String(value).toLowerCase().includes(search)
-    )
-  );
-
+  
   return (
     <div className="card">
       <h1>

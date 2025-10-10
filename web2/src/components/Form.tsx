@@ -5,17 +5,18 @@ import { useEffect, useState } from 'react';
 import { api } from '@/utils/api';
 import { TrashIcon } from '@phosphor-icons/react'
 import { Select } from '@/components/Select';
+import { mutate } from 'swr';
 
 interface Props {
   fields: FieldInterface
   resource: string
 }
 export function Form({ fields, resource }: Readonly<Props>) {
+
   const [searchParams, setSeachrchParams] = useSearchParams();
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingButton, setIsLoadingButton] = useState(false)
 
   const id = searchParams.get('id')
-
   const headers = Object.keys(fields).map(field => field)
 
 
@@ -25,24 +26,24 @@ export function Form({ fields, resource }: Readonly<Props>) {
       return
     }
 
-    api.get(`${resource}/${id}`).then(response => {
-      const { data } = response
-
+    api.get(`${resource}/${id}`).then(({ data }) => {
       headers.forEach((header) => {
         const element = document.getElementById(header.toLowerCase()) as HTMLInputElement
-        element.value = data[header.toLowerCase()]
+        element.value = data?.[header.toLowerCase() as keyof typeof data] || ''
       })
-
     })
 
   }, [id])
 
-  function handleReset() {
-
-    headers.forEach((header) => {
+  function cleanFields() {
+    headers.forEach((header) => {   
       const element = document.getElementById(header.toLowerCase()) as HTMLInputElement
       element.value = ''
     })
+  }
+
+  function handleReset() {
+    cleanFields()
 
     setSeachrchParams({ search: searchParams.get('search') ?? '' })
   }
@@ -55,12 +56,10 @@ export function Form({ fields, resource }: Readonly<Props>) {
     }
     await api.delete(`${resource}/${id}`)
 
-    headers.forEach((header) => {
-      const element = document.getElementById(header.toLowerCase()) as HTMLInputElement
-      element.value = ''
-    })
+    cleanFields()
 
     setSeachrchParams({ search: searchParams.get('search') ?? '' })
+    mutate(resource)
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -82,11 +81,11 @@ export function Form({ fields, resource }: Readonly<Props>) {
       ? api.patch(`${resource}/${id}`, payload)
       : api.post(`${resource}`, payload)
 
-    setIsLoading(true)
-    const { data } =  await request
-    setIsLoading(false)
+    setIsLoadingButton(true)
+    const { data } = await request
+    setIsLoadingButton(false)
 
-    
+    mutate(resource)
     setSeachrchParams({ id: String(data.id), search: searchParams.get('search') ?? data['name'] })
   }
 
@@ -105,6 +104,11 @@ export function Form({ fields, resource }: Readonly<Props>) {
         }
       </div>
       {headers.map((field) => {
+
+        if (fields[field].type === 'hidden') {
+          return
+        }
+
         if (fields[field].type === 'select') {
           return <Select key={field} name={field} {...fields[field]} />
         }
@@ -114,12 +118,11 @@ export function Form({ fields, resource }: Readonly<Props>) {
 
 
       <div className="row">
-        <button 
-          className="button-primary" 
+        <button
+          className="button-primary"
           type="submit"
-          disabled={isLoading}
+          disabled={isLoadingButton}
         >
-          {/* {isLoading && 'Loading...'} */}
           {id ? 'Update' : 'Create'}
         </button>
         <button

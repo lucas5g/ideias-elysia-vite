@@ -12,8 +12,23 @@ export abstract class DietService {
     return prisma.diet.findUniqueOrThrow({ where: { id } });
   }
 
-  static create(data: DietModel.createBody) {
-    return prisma.diet.create({ data });
+  static async create(data: DietModel.createBody) {
+    const food = await prisma.food.findUniqueOrThrow({
+      where: { id: data.foodId }
+    });
+
+    const quantity = (macro: number) => Number((macro * data.quantity / 100).toFixed(2));
+
+    return prisma.diet.create({
+      data: {
+        ...data,
+        protein: quantity(food.protein),
+        fat: quantity(food.fat),
+        carbo: quantity(food.carbo),
+        fiber: quantity(food.fiber),
+        calorie: quantity(food.calorie),
+      }
+    });
   }
 
   static update(id: number, data: DietModel.updateBody) {

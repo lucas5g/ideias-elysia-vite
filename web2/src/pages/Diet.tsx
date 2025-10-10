@@ -40,21 +40,6 @@ export function Diet() {
     Quantity: {
       type: 'number',
     },
-    Protein:{
-      type: 'hidden'
-    },
-    Fat:{
-      type: 'hidden'
-    },
-    Carbo:{
-      type: 'hidden'
-    },
-    Fiber:{
-      type: 'hidden'
-    },
-    Calorie:{
-      type: 'hidden'
-    },
 
   }
 

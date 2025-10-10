@@ -24,3 +24,8 @@ export type FieldConfig = InputFieldConfig | SelectFieldConfig;
 export interface FieldInterface {
   [key: string]: FieldConfig | FieldInterface;
 }
+
+export interface ItemInterface {
+  id: number;
+  [key: string]: string | number;
+}

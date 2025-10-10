@@ -1,15 +1,16 @@
+import { Meal } from '@prisma/client';
 import { z } from 'zod';
 
 export namespace DietModel {
   export const createBody = z.object({
-    meal: z.any(),
+    meal: z.enum(Meal),
     foodId: z.number(),
     quantity: z.number(),
-    protein: z.number(),
-    fat: z.number(),
-    carbo: z.number(),
-    fiber: z.number(),
-    calorie: z.number(),
+    // protein: z.number(),
+    // fat: z.number(),
+    // carbo: z.number(),
+    // fiber: z.number(),
+    // calorie: z.number(),
   });
 
   export const updateBody = createBody.partial();
