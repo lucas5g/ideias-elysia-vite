@@ -23,7 +23,8 @@ export abstract class DietService {
             calorie: true,
           }
         },      
-      }
+      },
+      orderBy: { meal: 'asc' },
     });
 
     return res.map(diet => ({

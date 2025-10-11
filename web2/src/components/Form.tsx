@@ -25,15 +25,13 @@ export function Form({ fields, resource }: Readonly<Props>) {
     if (!id) {
       return
     }
-    console.log('id changed => ', id)
+
     api.get(`${resource}/${id}`).then(({ data }) => {
       headers.forEach((header) => {
         const id = fields[header].id ?? header.toLowerCase()
 
         const element = document.getElementById(id) as HTMLInputElement
-        // console.log('id => ', id)   
-        // console.log('data => ', data[id])     
-        // debugger
+
         element.value = data?.[id] || ''
       })
     })
