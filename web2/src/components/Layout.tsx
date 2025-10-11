@@ -1,16 +1,33 @@
-import { Link, Outlet } from "react-router";
+import { useEffect } from "react";
+import { NavLink, Outlet } from "react-router";
 
 export function Layout() {
+
+  const links = [
+    'Diets',
+    'Foods'
+  ]
+
+  useEffect(() => {
+    const currentPath = window.location.pathname
+    const currentLink = links.find(link => `/${link.toLowerCase()}` === currentPath) 
+    document.title = `Ideias - ${currentLink}`
+  }, [])
+
   return (
     <>
       <nav>
         <ul>
-          <li>
-            <Link to="/foods">Foods</Link>
-          </li>
-          <li>
-            <Link to="/diets">Diets</Link>
-          </li>
+          {links.map(link => (
+            <li key={link}>
+              <NavLink
+                to={`/${link.toLowerCase()}`}
+                onClick={() => document.title = `Ideias - ${link}`}
+                >
+                {link}
+              </NavLink>
+            </li>
+          ))}
         </ul>
       </nav>
       <Outlet />
