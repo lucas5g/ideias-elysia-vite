@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react"
-import { api } from "@/utils/api"
-import type { FieldInterface, ItemInterface } from '@/utils/interfaces';
+
+import type {  ItemInterface } from '@/utils/interfaces';
 import { useSearchParams } from 'react-router';
 import { Loading } from './Loading';
 import { Input } from './Input';
