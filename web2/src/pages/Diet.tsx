@@ -1,15 +1,13 @@
 import { Form } from "@/components/Form"
 import { List } from "@/components/List"
 import { Loading } from "@/components/Loading"
-import { api } from "@/utils/api"
 import { fetcher } from "@/utils/fetcher"
 import type { FieldInterface } from "@/utils/interfaces"
-import { useEffect, useState } from "react"
+
 
 export function Diet() {
   const resource = '/diets'
-  const [mealOptions, setMealOptions] = useState()
-  const [foodsOptions, setFoodsOptions] = useState()
+
 
   const { data: meals } = fetcher<string[]>('/meals')
   const { data: foods } = fetcher<{ id: number, name: string }[]>('/foods')
