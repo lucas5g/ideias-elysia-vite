@@ -91,9 +91,9 @@ export function Form({ fields, resource }: Readonly<Props>) {
     setIsLoadingButton(true)
     const { data } = await request
     setIsLoadingButton(false)
-
-    mutate(resource)
+    
     setSeachrchParams({ id: String(data.id), search: searchParams.get('search') ?? data['name'] })
+    mutate(resource)
   }
 
   return (
