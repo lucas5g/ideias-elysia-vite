@@ -59,5 +59,7 @@ COPY --from=build /app/public ./public
 ENV NODE_ENV=production
 EXPOSE 3000
 
+
+
 # Rodar prisma db push antes do servidor iniciar
-CMD ["sh", "-c", "bunx prisma db push && ./server"]
+CMD ["sh", "-c", "bunx prisma db push --accept-data-loss && ./server"]
