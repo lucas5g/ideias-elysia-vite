@@ -120,7 +120,9 @@ export function Form({ fields, resource }: Readonly<Props>) {
             {...fields[field]} />
         }
 
-        return <Input key={field} name={field} {...fields[field]} />
+        return <Input 
+          key={field} 
+          name={field} {...fields[field]} />
       })}
 
 
