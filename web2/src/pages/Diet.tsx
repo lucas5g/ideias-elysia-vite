@@ -1,6 +1,8 @@
 import { Form } from "@/components/Form"
 import { List } from "@/components/List"
+import { Loading } from "@/components/Loading"
 import { api } from "@/utils/api"
+import { fetcher } from "@/utils/fetcher"
 import type { FieldInterface } from "@/utils/interfaces"
 import { useEffect, useState } from "react"
 
@@ -9,43 +11,31 @@ export function Diet() {
   const [mealOptions, setMealOptions] = useState()
   const [foodsOptions, setFoodsOptions] = useState()
 
-  useEffect(() => {
-    api.get('/meals').then(res => {
-      // Assuming res.data is an array of meals, map to { value, label }
-      const options = res.data.map((meal: string) => ({
-        value: meal,
-        label: meal
-      }))
-      setMealOptions(options)
-    })
+  const { data: meals } = fetcher<string[]>('/meals')
+  const { data: foods } = fetcher<{ id: number, name: string }[]>('/foods')
 
-    api.get('/foods').then(res => {
-      const options = res.data.map((food: {id:number, name: string}) => ({
-        value: food.id,
-        label: food.name
-      }))
-      setFoodsOptions(options)
-    })
-  }, [])
 
   const fields: FieldInterface = {
     Meal: {
       type: 'select',
-      options: mealOptions!,
-      // id: 'mealId',
+      options: meals?.map((meal) => ({ value: meal, label: meal })) || [],
 
     },
     Food: {
       type: 'select',
-      options: foodsOptions!,
+      options: foods?.map((food) => ({ value: food.id, label: food.name })) || [],
       id: 'foodId',
     },
     Quantity: {
       type: 'number',
-    },    
+    },
   }
 
   const headers = [...Object.keys(fields), 'Protein', 'Fat', 'Calorie']
+
+  if (!meals || !foods) {
+    return <Loading />
+  }
 
   return (
     <>
