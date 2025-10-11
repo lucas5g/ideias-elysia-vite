@@ -29,7 +29,7 @@ export function Form({ fields, resource }: Readonly<Props>) {
     api.get(`${resource}/${id}`).then(({ data }) => {
       headers.forEach((header) => {
         const id = fields[header].id ?? header.toLowerCase()
-   
+
         const element = document.getElementById(id) as HTMLInputElement
         // console.log('id => ', id)   
         // console.log('data => ', data[id])     
@@ -72,7 +72,7 @@ export function Form({ fields, resource }: Readonly<Props>) {
     event.preventDefault()
 
     const payload = Object.keys(fields).reduce((acc: Record<string, any>, field) => {
-      const key = fields[field].id ?? field.toLowerCase() 
+      const key = fields[field].id ?? field.toLowerCase()
 
       const element = document.getElementById(key) as HTMLInputElement
       const value = element?.value
@@ -83,17 +83,16 @@ export function Form({ fields, resource }: Readonly<Props>) {
       return acc
     }, {})
 
-
-    const request = id
-      ? api.patch(`${resource}/${id}`, payload)
-      : api.post(`${resource}`, payload)
-
     setIsLoadingButton(true)
-    const { data } = await request
-    setIsLoadingButton(false)
-    
-    setSeachrchParams({ id: String(data.id), search: searchParams.get('search') ?? data['name'] })
+    if(id){
+      await api.patch(`${resource}/${id}`, payload)
+      
+    }else{
+      await api.post(`${resource}`, payload)
+      cleanFields()
+    }
     mutate(resource)
+    setIsLoadingButton(false)
   }
 
   return (
