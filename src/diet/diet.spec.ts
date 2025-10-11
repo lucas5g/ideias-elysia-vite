@@ -7,11 +7,11 @@ describe('DietService', () => {
   let id: number;
 
   beforeAll(async () => {
-    const payload: DietModel.createBody  = {
+    const payload: DietModel.createBody = {
       meal: Meal.BREAKFAST,
       foodId: 19,
       quantity: 1,
-     
+
     };
     const created = await DietService.create(payload);
     id = created.id;
@@ -37,5 +37,10 @@ describe('DietService', () => {
     };
     const res = await DietService.update(id, payload);
     expect(res).toMatchObject(payload);
+  });
+
+  it('report', async () => {
+    const res = await DietService.report();
+    expect(res).toBeObject();
   });
 });

@@ -22,9 +22,9 @@
     @apply bg-gray-800 text-white h-full
   }
 
-  #root {
-    @apply flex flex-col lg:flex-row gap-1 p-1
-  }
+  /* #root {
+    @apply flex flex-col lg:flex-row gap-1
+  } */
 
   .card {
     @apply bg-gray-950 p-5 text-white border border-gray-700 rounded w-full h-fit flex flex-col gap-3
@@ -43,7 +43,7 @@
   }
 
   h2 {
-    @apply text-3xl  pb-2
+    @apply text-3xl pb-2
   }
 
   table>thead>tr {
@@ -60,7 +60,7 @@
 
   tbody>tr>td:last-child {
     @apply text-right
-  } 
+  }
 
   button {
     @apply cursor-pointer w-full
@@ -80,4 +80,11 @@
     @apply bg-red-500 hover:bg-red-600 font-bold py-3 rounded cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
   }
 
+  nav ul {
+    @apply flex gap-3 bg-gray-950 p-5 text-gray-500  font-bold text-2xl border-b border-black
+  }
+
+  a.active{
+    @apply text-white
+  }
 }

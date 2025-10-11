@@ -22,7 +22,7 @@ export abstract class DietService {
             fiber: true,
             calorie: true,
           }
-        },      
+        },
       },
       orderBy: { meal: 'asc' },
     });
@@ -30,7 +30,7 @@ export abstract class DietService {
     return res.map(diet => ({
       id: diet.id,
       meal: diet.meal,
-      food:diet.food.name,
+      food: diet.food.name,
       quantity: diet.quantity,
       protein: quantity(diet.food.protein, diet.quantity),
       fat: quantity(diet.food.fat, diet.quantity),
@@ -56,5 +56,21 @@ export abstract class DietService {
 
   static delete(id: number) {
     return prisma.diet.delete({ where: { id } });
+  }
+
+  static async report() {
+    const res = await this.findAll();
+
+    //fazer reduce com os macros
+
+    return res.reduce((acc, curr) => {
+      acc.protein += curr.protein;
+      acc.fat += curr.fat;
+      acc.carbo += curr.carbo;
+      acc.fiber += curr.fiber;
+      acc.calorie += curr.calorie;
+      return acc;
+    }, { protein: 0, fat: 0, carbo: 0, fiber: 0, calorie: 0 });
+
   }
 }

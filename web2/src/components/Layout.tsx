@@ -15,7 +15,7 @@ export function Layout() {
   }, [])
 
   return (
-    <>
+    <div className="flex flex-col gap-1">
       <nav>
         <ul>
           {links.map(link => (
@@ -30,7 +30,9 @@ export function Layout() {
           ))}
         </ul>
       </nav>
+      <main className="p-1 flex flex-col gap-1 lg:flex-row">
       <Outlet />
-    </>
+      </main>
+    </div>
   )
 }
