@@ -28,16 +28,22 @@ export function Form({ fields, resource }: Readonly<Props>) {
 
     api.get(`${resource}/${id}`).then(({ data }) => {
       headers.forEach((header) => {
-        const element = document.getElementById(header.toLowerCase()) as HTMLInputElement
-        element.value = data?.[header.toLowerCase() as keyof typeof data] || ''
+        const id = fields[header].id ?? header.toLowerCase()
+   
+        const element = document.getElementById(id) as HTMLInputElement
+        console.log('id => ', id)   
+        console.log('data => ', data[id])     
+        // debugger
+        element.value = data?.[id] || ''
       })
     })
 
   }, [id])
 
   function cleanFields() {
-    headers.forEach((header) => {   
-      const element = document.getElementById(header.toLowerCase()) as HTMLInputElement
+    headers.forEach((header) => {
+      const id = fields[header].id ?? header.toLowerCase()
+      const element = document.getElementById(id) as HTMLInputElement
       element.value = ''
     })
   }
@@ -66,16 +72,20 @@ export function Form({ fields, resource }: Readonly<Props>) {
     event.preventDefault()
 
     const payload = Object.keys(fields).reduce((acc: Record<string, any>, field) => {
-      const element = document.getElementById(field.toLowerCase()) as HTMLInputElement
-      const value = element.value
+      const key = fields[field].id ?? field.toLowerCase() 
 
-      const key = field.toLowerCase()
+      const element = document.getElementById(key) as HTMLInputElement
+      const value = element?.value
 
-      acc[key] = fields[field].type === 'number'
+      acc[key] = fields[field].type === 'number' || key.includes('Id')
         ? Number(value)
         : value
       return acc
     }, {})
+
+    // console.log('fiellds =>', fields)
+    // console.log('payload =>', payload)
+    // return
 
     const request = id
       ? api.patch(`${resource}/${id}`, payload)
@@ -110,7 +120,10 @@ export function Form({ fields, resource }: Readonly<Props>) {
         }
 
         if (fields[field].type === 'select') {
-          return <Select key={field} name={field} {...fields[field]} />
+          return <Select
+            key={field}
+            name={field}
+            {...fields[field]} />
         }
 
         return <Input key={field} name={field} {...fields[field]} />

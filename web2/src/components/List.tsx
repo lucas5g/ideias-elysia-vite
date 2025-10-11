@@ -8,16 +8,15 @@ import { fetcher } from "@/utils/fetcher";
 
 
 interface Props {
-  fields: FieldInterface
+  headers: string[]
   resource: string
 }
 
-export function List({ fields, resource }: Readonly<Props>) {
+export function List({ headers, resource }: Readonly<Props>) {
 
 
   const [searchParams, setSearchParams] = useSearchParams();  
   const id = searchParams.get('id')
-  const headers = Object.keys(fields);
   const { data: list, isLoading } = fetcher<ItemInterface[]>(resource);
 
   const search = searchParams.get('search') || ''
@@ -58,7 +57,7 @@ export function List({ fields, resource }: Readonly<Props>) {
       {isLoading &&
         <Loading />
       }
-      {list?.length &&
+      {list &&
         <table>
           <thead>
             <tr>

@@ -65,15 +65,10 @@ enum Meal {
 }
 
 model Diet {
-  id   Int  @id @default(autoincrement())
-  meal Meal
-  foodId    Int
+  id       Int   @id @default(autoincrement())
+  meal     Meal
+  foodId   Int
   quantity Float
-  protein Float
-  fat     Float
-  carbo   Float
-  fiber   Float
-  calorie Float
 
   food      Food     @relation(fields: [foodId], references: [id])
   createdAt DateTime @default(now())

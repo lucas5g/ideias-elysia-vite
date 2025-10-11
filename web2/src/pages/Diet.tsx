@@ -31,18 +31,21 @@ export function Diet() {
   const fields: FieldInterface = {
     Meal: {
       type: 'select',
-      options: mealOptions!
+      options: mealOptions!,
+      // id: 'mealId',
+
     },
     Food: {
       type: 'select',
-      options: foodsOptions!
+      options: foodsOptions!,
+      id: 'foodId',
     },
     Quantity: {
       type: 'number',
-    },
-
+    },    
   }
 
+  const headers = [...Object.keys(fields), 'Protein', 'Fat', 'Calorie']
 
   return (
     <>
@@ -50,7 +53,7 @@ export function Diet() {
         fields={fields}
         resource={resource} />
       <List
-        fields={fields}
+        headers={headers}
         resource={resource}
       />
     </>

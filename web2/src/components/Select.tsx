@@ -17,14 +17,17 @@ export function Select({ doesntHaveLabel, options = [], ...props }: Readonly<Sel
 
       <select
         {...props}
-        className="input"
+        className="input cursor-pointer"
         required
-        id={props.name?.toLowerCase()}
+        id={props.id ?? props.name?.toLowerCase()}
         name={props.name?.toLowerCase()}
       >
         <option value="">Selecione {props.name}</option>
         {options.map((option) => (
-          <option key={option.value} value={option.value}>
+          <option
+            key={option.value}
+            value={option.value}
+          >
             {option.label}
           </option>
         ))}

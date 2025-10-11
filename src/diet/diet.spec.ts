@@ -1,20 +1,17 @@
 import { describe, it, beforeAll, afterAll, expect } from 'bun:test';
 import { DietService } from '@/diet/diet.service';
 import { Meal } from '@prisma/client';
+import { DietModel } from '@/diet/diet.model';
 
 describe('DietService', () => {
   let id: number;
 
   beforeAll(async () => {
-    const payload = {
+    const payload: DietModel.createBody  = {
       meal: Meal.BREAKFAST,
       foodId: 19,
-      quantity: 123,
-      protein: 123,
-      fat: 123,
-      carbo: 123,
-      fiber: 123,
-      calorie: 123,
+      quantity: 1,
+     
     };
     const created = await DietService.create(payload);
     id = created.id;

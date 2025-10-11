@@ -5,7 +5,7 @@ import type { FieldInterface } from '@/utils/interfaces'
 export function Food() {
   const fields: FieldInterface = {
     Name: {
-
+      type: 'text',
     },
     Protein: {
       type: 'number',
@@ -22,7 +22,7 @@ export function Food() {
     Calorie: {
       type: 'number',
     },
-    
+
   }
 
   const resource = '/foods'
@@ -33,7 +33,7 @@ export function Food() {
         fields={fields}
         resource={resource} />
       <List
-        fields={fields}
+        headers={Object.keys(fields)}
         resource={resource}
       />
     </>
