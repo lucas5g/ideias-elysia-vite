@@ -1,9 +1,9 @@
 import type { FieldInterface } from '@/utils/interfaces';
 import { Input } from "./Input";
-import { useSearchParams } from 'react-router';
+import { useSearchParams, useNavigate } from 'react-router';
 import { useEffect, useState } from 'react';
 import { api } from '@/utils/api';
-import { TrashIcon } from '@phosphor-icons/react'
+import { PlusIcon, TrashIcon } from '@phosphor-icons/react'
 import { Select } from '@/components/Select';
 import { mutate } from 'swr';
 
@@ -13,10 +13,12 @@ interface Props {
 }
 export function Form({ fields, resource }: Readonly<Props>) {
 
-  const [searchParams, setSeachrchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isLoadingButton, setIsLoadingButton] = useState(false)
+  const navigate = useNavigate()
 
   const id = searchParams.get('id')
+  const action = searchParams.get('action')
   const headers = Object.keys(fields).map(field => field)
 
 
@@ -49,7 +51,7 @@ export function Form({ fields, resource }: Readonly<Props>) {
   function handleReset() {
     cleanFields()
 
-    setSeachrchParams({ search: searchParams.get('search') ?? '' })
+    setSearchParams({ search: searchParams.get('search') ?? '' })
   }
 
   async function handleDelete() {
@@ -62,7 +64,7 @@ export function Form({ fields, resource }: Readonly<Props>) {
 
     cleanFields()
 
-    setSeachrchParams({ search: searchParams.get('search') ?? '' })
+    setSearchParams({ search: searchParams.get('search') ?? '' })
     mutate(resource)
   }
 
@@ -82,15 +84,26 @@ export function Form({ fields, resource }: Readonly<Props>) {
     }, {})
 
     setIsLoadingButton(true)
-    if(id){
+    if (id) {
       await api.patch(`${resource}/${id}`, payload)
-      
-    }else{
+
+    } else {
       await api.post(`${resource}`, payload)
       cleanFields()
     }
     mutate(resource)
     setIsLoadingButton(false)
+  }
+
+  console.log({ id, action })
+  if (!id && !action) {
+    return (
+      <button
+        onClick={() => setSearchParams({ action: 'create' })}
+        className='fixed bottom-5 w-10 h-10 right-3  bg-blue-500 rounded-full flex items-center justify-center hover:bg-blue-600 border border-gray-200'>
+        <PlusIcon size={20} />
+      </button>
+    )
   }
 
   return (
@@ -120,8 +133,8 @@ export function Form({ fields, resource }: Readonly<Props>) {
             {...fields[field]} />
         }
 
-        return <Input 
-          key={field} 
+        return <Input
+          key={field}
           name={field} {...fields[field]} />
       })}
 
