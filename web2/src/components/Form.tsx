@@ -1,12 +1,11 @@
 import type { FieldInterface } from '@/utils/interfaces';
 import { Input } from "./Input";
-import { useSearchParams, useNavigate } from 'react-router';
+import { useSearchParams } from 'react-router';
 import { useEffect, useState } from 'react';
 import { api } from '@/utils/api';
 import { PlusIcon, TrashIcon } from '@phosphor-icons/react'
 import { Select } from '@/components/Select';
 import { mutate } from 'swr';
-import { m } from 'node_modules/react-router/dist/development/index-react-server-client-BIz4AUNd.d.mts';
 
 interface Props {
   fields: FieldInterface
