@@ -24,7 +24,7 @@ export function Input({doesntHaveLabel, ...props}: Readonly<InputProps>) {
         required
         id={props.name?.toLowerCase()}
         name={props.name?.toLowerCase()}
-        placeholder={props.name}
+        placeholder={props.placeholder ?? props.name}
         step={props.type === 'number' ? '0.01' : undefined}
       />
     </div>

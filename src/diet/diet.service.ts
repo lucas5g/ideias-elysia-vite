@@ -59,27 +59,45 @@ export abstract class DietService {
   }
 
   static async report() {
-    const res = await this.findAll();
+    const [user, diets] = await Promise.all([
+      prisma.user.findFirstOrThrow(),
+      this.findAll(),
+
+    ]);
+
+
 
     const toFixed = (num: number) => Number(num.toFixed(2));
     //fazer reduce com os macros
 
-    const macros = res.reduce((acc, curr) => {
+    const macros = diets.reduce((acc, curr) => {
+
       acc.protein += curr.protein;
       acc.fat += curr.fat;
       acc.carbo += curr.carbo;
       acc.fiber += curr.fiber;
       acc.calorie += curr.calorie;
       return acc;
+      // }, []);
     }, { protein: 0, fat: 0, carbo: 0, fiber: 0, calorie: 0 });
 
-    return {
-      protein: toFixed(macros.protein),
-      fat: toFixed(macros.fat),
-      carbo: toFixed(macros.carbo),
-      fiber: toFixed(macros.fiber),
-      calorie: toFixed(macros.calorie),
+
+
+    // Definir metas padrão baseadas no peso (você pode ajustar essas fórmulas)
+    const goals = {
+      protein: user.weight * 1.6, // 1.6g por kg
+      fat: user.weight * 1.0,     // 1g por kg
+      carbo: user.weight * 4.0,   // 4g por kg
+      fiber: 25,                  // 25g fixo
+      calorie: user.weight * 30   // 30 kcal por kg
     };
+
+    return Object.entries(macros).map(([name, total]) => ({
+      name,
+      total: toFixed(total),
+      goal: toFixed(goals[name as keyof typeof goals]),
+      diff: toFixed(goals[name as keyof typeof goals] - total)
+    }));
   }
 
 }

@@ -74,3 +74,11 @@ model Diet {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }
+
+model User {
+  id        Int      @id @default(autoincrement())
+  weight    Float
+  calorie   Float?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}

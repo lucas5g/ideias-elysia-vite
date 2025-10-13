@@ -22,7 +22,8 @@ interface SelectFieldConfig extends BaseFieldConfig, Omit<SelectProps, 'type'> {
 export type FieldConfig = InputFieldConfig | SelectFieldConfig;
 
 export interface FieldInterface {
-  [key: string]: FieldConfig ;
+  // [key: string]: InputFieldConfig ;
+  [key: string]: FieldConfig;
 }
 
 export interface ItemInterface {

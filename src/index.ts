@@ -1,3 +1,4 @@
+import { user } from '@/user/user';
 import { diet } from '@/diet/diet';
 import { food } from '@/food/food';
 import { Elysia, redirect } from 'elysia';
@@ -37,6 +38,7 @@ new Elysia()
   .use(food)
   .use(meal)
   .use(diet)
+  .use(user)
   .listen(3000);
 
 console.debug(
