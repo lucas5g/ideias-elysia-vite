@@ -11,7 +11,7 @@ export function Diet() {
 
   const { data: meals } = fetcher<string[]>('/meals')
   const { data: foods } = fetcher<{ id: number, name: string }[]>('/foods')
-  const { data: report } = fetcher<{ totalProtein: number, totalFat: number, totalCalorie: number }>('/diets/report')
+  const { data: report } = fetcher<Record<string, number>>('/diets/report')
 
   const fields: FieldInterface = {
     Meal: {
@@ -29,7 +29,7 @@ export function Diet() {
     },
   }
 
-  const headers = [...Object.keys(fields), 'Protein', 'Fat', 'Calorie']
+  const headers = [...Object.keys(fields), 'Protein', 'Fat', 'Carbo', 'Fiber', 'Calorie']
 
   if (!meals || !foods || !report) {
     return <Loading />
@@ -37,16 +37,18 @@ export function Diet() {
 
   return (
     <>
+      <Form
+        fields={fields}
+        resource={resource}
+      />
+
+
       <List
         headers={headers}
         resource={resource}
       />
-      <Form
-        fields={fields}
-        resource={resource} />
 
-
-      <div className="card">
+      <div className="card lg:w-1/3">
         <h1>Report</h1>
         <table>
           <thead>
@@ -56,19 +58,15 @@ export function Diet() {
             </tr>
           </thead>
           <tbody>
-            {Object.keys(report).map((key) => (
+            {Object.entries(report).map(([key, value]) => (
               <tr key={key}>
-                <td className="font-bold">{key.replace('total', '')}</td>
-                <td>{report[key as keyof typeof report].toFixed(2)}</td>
+                <td className="font-bold">{key}</td>
+                <td>{value}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      {/* <List
-        headers={Object.keys(report)}
-        resource="diets/report"
-      /> */}
     </>
   )
 }

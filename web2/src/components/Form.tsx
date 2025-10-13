@@ -6,16 +6,17 @@ import { api } from '@/utils/api';
 import { PlusIcon, TrashIcon } from '@phosphor-icons/react'
 import { Select } from '@/components/Select';
 import { mutate } from 'swr';
+import { m } from 'node_modules/react-router/dist/development/index-react-server-client-BIz4AUNd.d.mts';
 
 interface Props {
   fields: FieldInterface
   resource: string
+
 }
 export function Form({ fields, resource }: Readonly<Props>) {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [isLoadingButton, setIsLoadingButton] = useState(false)
-  const navigate = useNavigate()
 
   const id = searchParams.get('id')
   const action = searchParams.get('action')
@@ -66,6 +67,7 @@ export function Form({ fields, resource }: Readonly<Props>) {
 
     setSearchParams({ search: searchParams.get('search') ?? '' })
     mutate(resource)
+    mutate('/diets/report')
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -92,6 +94,7 @@ export function Form({ fields, resource }: Readonly<Props>) {
       cleanFields()
     }
     mutate(resource)
+    mutate('/diets/report')
     setIsLoadingButton(false)
   }
 
