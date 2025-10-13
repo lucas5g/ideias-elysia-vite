@@ -11,7 +11,7 @@ export function Diet() {
 
   const { data: meals } = fetcher<string[]>('/meals')
   const { data: foods } = fetcher<{ id: number, name: string }[]>('/foods')
-
+  const { data: report } = fetcher<{ totalProtein: number, totalFat: number, totalCalorie: number }>('/diets/report')
 
   const fields: FieldInterface = {
     Meal: {
@@ -31,19 +31,44 @@ export function Diet() {
 
   const headers = [...Object.keys(fields), 'Protein', 'Fat', 'Calorie']
 
-  if (!meals || !foods) {
+  if (!meals || !foods || !report) {
     return <Loading />
   }
 
   return (
     <>
-      <Form
-        fields={fields}
-        resource={resource} />
       <List
         headers={headers}
         resource={resource}
       />
+      <Form
+        fields={fields}
+        resource={resource} />
+
+
+      <div className="card">
+        <h1>Report</h1>
+        <table>
+          <thead>
+            <tr>
+              <th>Macro</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.keys(report).map((key) => (
+              <tr key={key}>
+                <td className="font-bold">{key.replace('total', '')}</td>
+                <td>{report[key as keyof typeof report].toFixed(2)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {/* <List
+        headers={Object.keys(report)}
+        resource="diets/report"
+      /> */}
     </>
   )
 }

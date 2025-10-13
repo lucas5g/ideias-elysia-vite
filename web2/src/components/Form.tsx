@@ -95,12 +95,11 @@ export function Form({ fields, resource }: Readonly<Props>) {
     setIsLoadingButton(false)
   }
 
-  console.log({ id, action })
   if (!id && !action) {
     return (
       <button
         onClick={() => setSearchParams({ action: 'create' })}
-        className='fixed bottom-5 w-10 h-10 right-3  bg-blue-500 rounded-full flex items-center justify-center hover:bg-blue-600 border border-gray-200'>
+        className='fixed bottom-5 w-10 h-10 right-3  bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-900 border border-gray-200'>
         <PlusIcon size={20} />
       </button>
     )
