@@ -64,15 +64,22 @@ export abstract class DietService {
     const toFixed = (num: number) => Number(num.toFixed(2));
     //fazer reduce com os macros
 
-    return res.reduce((acc, curr) => {
-      acc.protein += toFixed(curr.protein);
-      acc.fat += toFixed(curr.fat);
-      acc.carbo += toFixed(curr.carbo);
-      acc.fiber += toFixed(curr.fiber);
-      acc.calorie += toFixed(curr.calorie);
+    const macros = res.reduce((acc, curr) => {
+      acc.protein += curr.protein;
+      acc.fat += curr.fat;
+      acc.carbo += curr.carbo;
+      acc.fiber += curr.fiber;
+      acc.calorie += curr.calorie;
       return acc;
     }, { protein: 0, fat: 0, carbo: 0, fiber: 0, calorie: 0 });
 
+    return {
+      protein: toFixed(macros.protein),
+      fat: toFixed(macros.fat),
+      carbo: toFixed(macros.carbo),
+      fiber: toFixed(macros.fiber),
+      calorie: toFixed(macros.calorie),
+    };
   }
 
 }
