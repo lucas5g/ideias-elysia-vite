@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await getFoods()
   await getListAndFilter()
   await getReport()
-  
+
 })
 
 document.addEventListener('submit', async (e) => {
@@ -34,7 +34,7 @@ document.addEventListener('submit', async (e) => {
   await getListAndFilter()
   hideLoadingButton()
 
-  if(!id){
+  if (!id) {
     document.querySelector('form').reset()
   }
 })
@@ -52,6 +52,9 @@ document.addEventListener('reset', () => {
   window.history.pushState(null, null, url)
 
   buttonDelete.classList.add('hidden')
+
+  const rows = document.querySelectorAll('tbody tr')
+  rows.forEach((row) => row.classList.remove('bg-gray-800'));
 
 })
 

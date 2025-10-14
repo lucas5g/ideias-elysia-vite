@@ -81,7 +81,8 @@ async function getList() {
 
   document.querySelector('#items-table tbody').innerHTML = ''
   for (const row of data) {
-    const css = row.meal === 'LUNCH' || row.meal === 'DINNER' ? 'bg-gray-800' : ''
+    const css = row.meal === 'LUNCH' || row.meal === 'DINNER' ? 'bg-gray-900' : ''
+    // <tr data-id="${row.id}" onclick="getItemById('${row.id}')">
     const html = `
       <tr data-id="${row.id}" onclick="getItemById('${row.id}')" class="${css} hover:cursor-pointer hover:bg-gray-700 transition-all border-b border-gray-700 h-12">
         <td>${row.meal}</td>

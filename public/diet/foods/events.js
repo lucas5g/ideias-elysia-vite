@@ -1,4 +1,4 @@
-import { getListAndFilter, baseUrl, filterList, showLoadingButton, hideLoadingButton, buttonDelete } from '../utils.js'
+import { getListAndFilter, baseUrl, filterList, showLoadingButton, hideLoadingButton, buttonDelete } from './utils.js'
 
 document.addEventListener('DOMContentLoaded', async () => {
   await getListAndFilter()
@@ -54,6 +54,7 @@ document.addEventListener('reset', () => {
   window.history.pushState(null, null, url)
 
   buttonDelete.classList.add('hidden')
+
 
 })
 
