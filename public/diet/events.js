@@ -1,4 +1,4 @@
-import { getListAndFilter, baseUrl, filterList, showLoadingButton, hideLoadingButton, getFoodById, buttonDelete } from './utils.js'
+import { getListAndFilter, baseUrl, filterList, showLoadingButton, hideLoadingButton, buttonDelete } from './utils.js'
 
 document.addEventListener('DOMContentLoaded', async () => {
   await getListAndFilter()
@@ -47,17 +47,30 @@ document.addEventListener('reset', () => {
   url.searchParams.delete('id')
   window.history.pushState(null, null, url)
 
-  document.querySelector('.button-delete').classList.add('hidden')
+  buttonDelete.classList.add('hidden')
+
 })
 
 
-document.querySelector('.ph-trash').addEventListener('click', async () => {
+
+buttonDelete.addEventListener('click', async () => {
+
+  const confirm = window.confirm('Are you sure you want to delete this item?')
+  if (!confirm) return
+
   const id = document.querySelector('#id').value
-  document.querySelector('.button-delete').classList.add('hidden')
+
   await fetch(`${baseUrl}/foods/${id}`, {
     method: 'DELETE'
   })
-  // const url = new URL(window.location)
-  // url.searchParams.delete('id')
-  // window.history.pushState(null, null, url)
+
+  buttonDelete.classList.add('hidden')
+
+  const url = new URL(window.location)
+  url.searchParams.delete('id')
+  window.history.pushState(null, null, url)
+
+  await getListAndFilter()
+
+  document.querySelector('form').reset()
 })
