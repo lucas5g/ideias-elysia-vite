@@ -21,10 +21,13 @@ export abstract class DietService {
             carbo: true,
             fiber: true,
             calorie: true,
-          }
+          },
         },
       },
-      orderBy: { meal: 'asc' },
+      orderBy: [
+        { meal: 'asc' },
+        { food: { name: 'asc' } }
+      ]
     });
 
     return res.map(diet => ({

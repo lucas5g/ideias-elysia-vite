@@ -1,21 +1,12 @@
-import { getListAndFilter, baseUrl, filterList, showLoadingButton, hideLoadingButton, buttonDelete, getReport } from './utils.js'
+import { getListAndFilter, baseUrl, filterList, showLoadingButton, hideLoadingButton, buttonDelete, getReport, getFoods } from './utils.js'
 
 document.addEventListener('DOMContentLoaded', async () => {
-  await getListAndFilter()
 
-  fetch(`${baseUrl}/foods`)
-    .then(response => response.json())
-    .then(data => {
-      const foodIdSelect = document.querySelector('#foodId')
-      foodIdSelect.innerHTML = '<option value="" disabled selected>Select Food</option>'
-      data.forEach(food => {
-        foodIdSelect.innerHTML += `<option value="${food.id}">${food.name}</option>`
-      })
-    })
-    .catch(error => console.error('Error fetching foods:', error))
-
-
-  await getReport()
+  await Promise.all([
+    getFoods(),
+    getListAndFilter(),
+    getReport()
+  ])
 })
 
 document.addEventListener('submit', async (e) => {
@@ -73,7 +64,6 @@ buttonDelete.addEventListener('click', async () => {
 
   const id = document.querySelector('#id').value
 
-  console.log('Deleting item with id:', id)
 
   await fetch(`${baseUrl}/diets/${id}`, {
     method: 'DELETE'

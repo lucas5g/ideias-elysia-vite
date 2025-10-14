@@ -1,4 +1,6 @@
-export const baseUrl = 'https://api.dizelequefez.com.br'
+// export const baseUrl = 'https://api.dizelequefez.com.br'
+export const baseUrl = 'http://localhost:3000'
+
 export const buttonDelete = document.querySelector('.ph-trash')
 
 function showLoading() {
@@ -37,7 +39,6 @@ export async function getListAndFilter() {
 
 export async function getItemById(id) {
 
-  console.log('getItemById', id)
 
   buttonDelete.classList.remove('hidden')
 
@@ -56,11 +57,13 @@ export async function getItemById(id) {
     quantity: itemElement.querySelector('td:nth-child(3)').textContent,
   }
 
+  const optionsFood = Array.from(document.querySelector('#foodId').options)
+
   document.querySelector('#id').value = id
   document.querySelector('#meal').value = item.meal
-  document.querySelector('#foodId').value = document.querySelector('#foodId').value =  Array.from(document.querySelector('#foodId').options)
+  document.querySelector('#foodId').value = document.querySelector('#foodId').value = Array.from(document.querySelector('#foodId').options)
     .find(option => option.text === item.food)?.value || ''
-    
+
   document.querySelector('#quantity').value = item.quantity
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -119,8 +122,8 @@ export function pushState(name, value) {
 }
 
 
-export async  function getReport(){
-    
+export async function getReport() {
+
   const res = await fetch(`${baseUrl}/diets/report`)
   const data = await res.json()
   document.querySelector('#report-table tbody').innerHTML = ''
@@ -137,6 +140,17 @@ export async  function getReport(){
   }
 }
 
+export async function getFoods() {
+  const res = await fetch(`${baseUrl}/foods`)
+  const data = await res.json()
+
+  const foodIdSelect = document.querySelector('#foodId')
+  foodIdSelect.innerHTML = '<option value="" disabled selected>Select Food</option>'
+  data.forEach(food => {
+    foodIdSelect.innerHTML += `<option value="${food.id}">${food.name}</option>`
+  })
+
+}
 
 window.getItemById = getItemById
 // window.getFoodById = getFoodById
