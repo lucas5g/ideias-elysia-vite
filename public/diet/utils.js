@@ -36,7 +36,6 @@ export async function getListAndFilter() {
 }
 
 export async function getFoodById(id) {
-  console.log({ id })
 
   document.querySelector('.ph-trash').classList.remove('hidden')
 
@@ -66,7 +65,8 @@ export async function getFoodById(id) {
   document.querySelector('#fiber').value = food.fiber
   document.querySelector('#calorie').value = food.calorie
 
-  document.querySelector('.layout').scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // document.body.scrollTo({ top: 0, behavior: 'smooth' });
 
   const url = new URL(window.location)
   url.searchParams.set('id', id)

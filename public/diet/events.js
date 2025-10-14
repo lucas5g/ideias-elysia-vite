@@ -3,6 +3,12 @@ import { getListAndFilter, baseUrl, filterList, showLoadingButton, hideLoadingBu
 document.addEventListener('DOMContentLoaded', async () => {
   await getListAndFilter()
 
+  // fetch('navbar.html')
+  //   .then(response => response.text())
+  //   .then(data => {
+  //     document.querySelector('body').insertAdjacentHTML('afterbegin', data)
+  //   })
+
 })
 
 document.addEventListener('submit', async (e) => {
