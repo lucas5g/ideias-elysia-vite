@@ -65,8 +65,6 @@ export abstract class DietService {
 
     ]);
 
-
-
     const toFixed = (num: number) => Number(num.toFixed(2));
     //fazer reduce com os macros
 
@@ -82,21 +80,20 @@ export abstract class DietService {
     }, { protein: 0, fat: 0, carbo: 0, fiber: 0, calorie: 0 });
 
 
-
     // Definir metas padrão baseadas no peso (você pode ajustar essas fórmulas)
     const goals = {
       protein: user.weight * 1.6, // 1.6g por kg
       fat: user.weight * 1.0,     // 1g por kg
       carbo: user.weight * 4.0,   // 4g por kg
-      fiber: 25,                  // 25g fixo
-      calorie: user.weight * 30   // 30 kcal por kg
+      fiber: user.weight * 1,                  // 25g fixo
+      calorie: user.calorie  // 30 kcal por kg
     };
 
     return Object.entries(macros).map(([name, total]) => ({
       name,
       total: toFixed(total),
-      goal: toFixed(goals[name as keyof typeof goals]),
-      diff: toFixed(goals[name as keyof typeof goals] - total)
+      goal: goals[name as keyof typeof goals],
+      diff: toFixed((goals[name as keyof typeof goals] ?? 0) - total)
     }));
   }
 

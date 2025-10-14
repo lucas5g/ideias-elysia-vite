@@ -9,7 +9,7 @@ describe('DietService', () => {
   beforeAll(async () => {
     const payload: DietModel.createBody = {
       meal: Meal.BREAKFAST,
-      foodId: 19,
+      foodId: 3,
       quantity: 1,
 
     };
@@ -41,6 +41,7 @@ describe('DietService', () => {
 
   it('report', async () => {
     const res = await DietService.report();
+
     expect(res).toBeObject();
   });
 });
