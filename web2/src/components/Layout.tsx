@@ -10,12 +10,12 @@ export function Layout() {
 
   useEffect(() => {
     const currentPath = window.location.pathname
-    const currentLink = links.find(link => `/${link.toLowerCase()}` === currentPath) 
+    const currentLink = links.find(link => `/${link.toLowerCase()}` === currentPath)
     document.title = `Ideias - ${currentLink}`
   }, [])
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="">
       <nav>
         <ul>
           {links.map(link => (
@@ -23,15 +23,15 @@ export function Layout() {
               <NavLink
                 to={`/${link.toLowerCase()}`}
                 onClick={() => document.title = `Ideias - ${link}`}
-                >
+              >
                 {link}
               </NavLink>
             </li>
           ))}
         </ul>
       </nav>
-      <main className="p-1 flex flex-col gap-1 lg:flex-row">
-      <Outlet />
+      <main>
+        <Outlet />
       </main>
     </div>
   )

@@ -78,10 +78,13 @@
 <body class="layout">
 
   <form class="card">
+    <div class="flex justify-between items-center border-b border-gray-600 pb-2">
+      <h2 class="text-3xl">
+        Form1
+      </h2>
+      <i class="ph ph-trash hover:cursor-pointer hidden"></i>
+    </div>
 
-    <h1>
-      Form
-    </h1>
     <input type="hidden" id="id" />
     <input type="text" placeholder="Name" id="name" class="input" required />
     <div class="row">
@@ -99,9 +102,7 @@
     <button class="button-secondary" type="reset">
       Cancel
     </button>
-    <button type="button" class="button-delete hidden">
-      Delete
-    </button>
+
   </form>
 
   <div class="card" id="card-loading">

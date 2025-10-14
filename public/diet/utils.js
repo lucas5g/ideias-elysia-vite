@@ -1,4 +1,6 @@
 export const baseUrl = 'https://api.dizelequefez.com.br'
+export const buttonDelete = document.querySelector('.ph-trash')
+
 function showLoading() {
   document.querySelector('#card-loading').classList.remove('hidden')
   document.querySelector('#card-list').classList.add('hidden')
@@ -36,7 +38,7 @@ export async function getListAndFilter() {
 export async function getFoodById(id) {
   console.log({ id })
 
-  document.querySelector('.button-delete').classList.remove('hidden')
+  document.querySelector('.ph-trash').classList.remove('hidden')
 
   const rows = document.querySelectorAll('tbody tr')
   rows.forEach((row) => row.classList.remove('bg-gray-800'));

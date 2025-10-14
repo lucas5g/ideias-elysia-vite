@@ -1,7 +1,13 @@
 import { Input } from "@/components/Input";
 import { api } from "@/utils/api";
+import { AxiosError } from 'axios';
+import { useState } from 'react';
+import { useNavigate } from 'react-router';
 
 export function Login() {
+
+  const [isLoadingButton, setIsLoadingButton] = useState(false);
+  const navigate = useNavigate();
 
   const environments = [
     { label: 'DEV', value: 'https://dev.gerais.mg.def.br' },
@@ -16,15 +22,31 @@ export function Login() {
 
 
     const environment = (document.getElementById('environment') as HTMLSelectElement)?.value;
-    const cpf = (document.getElementById('CPF') as HTMLInputElement)?.value;
-    const senha = (document.getElementById('Senha') as HTMLInputElement)?.value;
+    const cpf = (document.getElementById('cpf') as HTMLInputElement)?.value;
+    const senha = (document.getElementById('senha') as HTMLInputElement)?.value;
 
-    const { data } = await api.post(environment + '/sc/service/login', {
-      cpf,
-      senha
-    });
+    console.log({ environment, cpf, senha });
 
-    console.log(data);
+    try{
+
+      setIsLoadingButton(true);
+      const { data } = await api.post(environment + '/scsdp/service/login/interno', {
+        cpf,
+        senha
+      });
+      
+      localStorage.setItem('token', `Bearer ${data}`);
+      
+      navigate('/modelos');
+      
+    }catch(e){
+      if(e instanceof AxiosError){
+        alert(e.response?.data);
+      }
+    }finally{
+      setIsLoadingButton(false);      
+    }
+
   }
 
   return (
@@ -42,8 +64,13 @@ export function Login() {
         </div>
 
         <Input name="CPF" />
-        <Input name="Senha" />
-        <button className="button-primary" type="submit">Login</button>
+        <Input name="Senha" type='password' />
+        <button
+          disabled={isLoadingButton}
+          className="button-primary"
+          type="submit">
+          Login
+        </button>
       </form>
       <form />
     </div>

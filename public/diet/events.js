@@ -1,4 +1,4 @@
-import { getListAndFilter, baseUrl, filterList, showLoadingButton, hideLoadingButton, getFoodById } from './utils.js'
+import { getListAndFilter, baseUrl, filterList, showLoadingButton, hideLoadingButton, getFoodById, buttonDelete } from './utils.js'
 
 document.addEventListener('DOMContentLoaded', async () => {
   await getListAndFilter()
@@ -51,7 +51,7 @@ document.addEventListener('reset', () => {
 })
 
 
-document.querySelector('.button-delete').addEventListener('click', async () => {
+document.querySelector('.ph-trash').addEventListener('click', async () => {
   const id = document.querySelector('#id').value
   document.querySelector('.button-delete').classList.add('hidden')
   await fetch(`${baseUrl}/foods/${id}`, {

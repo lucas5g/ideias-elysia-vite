@@ -34,7 +34,7 @@ export function Form({ fields, resource }: Readonly<Props>) {
 
         const element = document.getElementById(id) as HTMLInputElement
 
-        element.value = data?.[id] || ''
+        element.value = data.dados?.[id] || data?.[id] 
       })
     })
 

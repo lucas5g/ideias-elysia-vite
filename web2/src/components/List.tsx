@@ -9,14 +9,15 @@ import { fetcher } from "@/utils/fetcher";
 interface Props {
   headers: string[]
   resource: string
+  list?: ItemInterface[]
+  isLoading?: boolean
 }
 
-export function List({ headers, resource }: Readonly<Props>) {
+export function List({ headers, resource, list, isLoading }: Readonly<Props>) {
 
 
   const [searchParams, setSearchParams] = useSearchParams();  
   const id = searchParams.get('id')
-  const { data: list, isLoading } = fetcher<ItemInterface[]>(resource);
 
   const search = searchParams.get('search') || ''
   const filteredList = list?.filter(item =>
