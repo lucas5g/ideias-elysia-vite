@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style type="text/tailwindcss">
+
+    /* @layer base{
+      html,
+      body {
+        @apply h-full m-0 p-0 overflow-hidden;
+      }
+
+      body {
+        height: calc(var(--vh, 1vh) * 100);
+      }
+
+      .layout {
+        @apply h-full overflow-y-auto;
+        -webkit-overflow-scrolling: touch;
+      }
+    } */
+
+    @layer components {
+      body {
+        @apply bg-gray-800 text-white h-full
+        /* @apply bg-gray-800 text-white flex flex-col lg:flex-row gap-1 p-1 */
+      }
+      main{
+        @apply flex flex-col gap-1 p-1
+      }
+
+      nav {
+        @apply bg-gray-950 text-white border-b border-gray-700 
+      }
+
+      nav ul {
+        @apply flex gap-3 p-5 text-3xl font-bold
+      }
+
+      .card {
+        @apply bg-gray-950 p-5 text-white border border-gray-700 rounded w-full h-fit flex flex-col gap-3
+      }
+       .input {
+        @apply w-full bg-gray-700 rounded p-3
+      }
+
+      .row{
+        @apply flex gap-1
+      }
+
+     h1 {
+        @apply text-3xl border-b border-gray-600 pb-2
+      }
+
+      table > thead > tr {
+        @apply border-b border-gray-600 text-left h-10
+      }
+
+      table> thead > tr > th:last-child {
+        @apply text-end
+      }
+
+      table > tbody > tr {
+        @apply border-b border-gray-700 h-12 hover:bg-gray-700 hover:cursor-pointer hover:transition-all
+      }
+
+      table > tbody > tr > td:last-child {
+        @apply text-end
+      }
+
+      .button-primary {
+        @apply bg-blue-500 hover:bg-blue-700 font-bold py-3  rounded cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
+
+      }
+
+     .button-secondary {
+        @apply bg-gray-500 hover:bg-gray-700 font-bold py-3  rounded cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
+
+      }
+      .button-delete{
+        @apply bg-red-500 hover:bg-red-600 font-bold py-3  rounded cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
+      }
+
+    }   
+  </style>
+
+  <title>Document</title>
+</head>
+
+<body>
+
+  <nav>
+    <ul>
+      <li><a href="../diet/index.html">Diet</a></li>
+      <li><a href="../diet/foods.html">Foods</a></li>
+    </ul>
+  </nav>
+  <main>
+    <div class="row">
+      <form class="card">
+        <div class="flex justify-between items-center border-b border-gray-600 pb-2">
+          <h2 class="text-3xl">
+            Form
+          </h2>
+          <i class="ph ph-trash hover:cursor-pointer hidden hover:bg-red-500 rounded"></i>
+        </div>
+
+        <input type="hidden" id="id" />
+        <select name="meal" id="meal" class="input" required>
+          <option value="" disabled selected>Select Meal</option>
+          <option value="BREAKFAST">BREAKFAST</option>
+          <option value="LUNCH">LUNCH</option>
+          <option value="SNACK">SNACK</option>
+          <option value="DINNER">DINNER</option>
+        </select>
+        <select name="foodId" id="foodId" class="input" required>
+          <option value="" disabled selected>Select Food</option>
+        </select>
+
+        <input type="number" placeholder="Quantity" id="quantity" class="input" step="0.01" required />
+
+        <button class="button-primary" type="submit">
+          Save
+        </button>
+        <button class="button-secondary" type="reset">
+          Cancel
+        </button>
+      </form>
+      <div class="card">
+        <h1>Report</h1>
+        <table id="report-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Total</th>
+              <th>Goal</th>
+              <th>Diff</th>
+            </tr>
+          </thead>
+          <tbody >
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" id="card-loading">
+      Loading...
+    </div>
+
+    <div class="hidden card" id="card-list">
+      <h1>
+        List
+      </h1>
+      <input type="text" placeholder="Search" class="input" id="search-input" />
+      <table id="items-table">
+        <thead>
+          <tr>
+            <th>Meal</th>
+            <th>Food</th>
+            <th>Quantity</th>
+            <th>Protein</th>
+            <th>Fat</th>
+            <th>Carbo</th>
+            <th>Fiber</th>
+            <th>Calorie</th>
+          </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+</body>
+<script type="module" src="./events.js"></script>
+
+</html>
