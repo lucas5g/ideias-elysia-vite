@@ -85,7 +85,7 @@ export async function getModules() {
       `
       document.querySelector('tbody').innerHTML += html
     }
-  }catch{
+  } catch {
     showLogin()
   }
 }
@@ -101,7 +101,7 @@ export function environments(env) {
     'tst': 'https://tst.gerais.mg.def.br',
     'hml': 'https://hml.gerais.mg.def.br',
     'pre-prod': 'https://pre-prod.gerais.mg.def.br',
-    'prod': 'https://gerais.defensoria.mg.def.br/'
+    'prod': 'https://gerais.defensoria.mg.def.br'
   }
 
   return envs[env]
