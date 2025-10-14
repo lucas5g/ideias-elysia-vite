@@ -57,7 +57,6 @@ export async function getItemById(id) {
     quantity: itemElement.querySelector('td:nth-child(3)').textContent,
   }
 
-  const optionsFood = Array.from(document.querySelector('#foodId').options)
 
   document.querySelector('#id').value = id
   document.querySelector('#meal').value = item.meal
@@ -83,7 +82,7 @@ async function getList() {
   document.querySelector('#items-table tbody').innerHTML = ''
   for (const row of data) {
     const html = `
-      <tr data-id="${row.id}" onclick="getItemById('${row.id}')">
+      <tr data-id="${row.id}" onclick="getItemById('${row.id}')" >
         <td>${row.meal}</td>
         <td>${row.food}</td>
         <td>${row.quantity}</td>
@@ -104,7 +103,7 @@ export function filterList(search) {
 
   pushState('search', search)
 
-  const rows = document.querySelectorAll('tbody tr')
+  const rows = document.querySelectorAll('#items-table>tbody>tr')
 
   rows.forEach(row => {
     const cells = Array.from(row.querySelectorAll('td'))
@@ -114,7 +113,6 @@ export function filterList(search) {
 }
 
 export function pushState(name, value) {
-  if (!value) return
 
   const url = new URL(window.location)
   url.searchParams.set(name, value)
@@ -126,7 +124,7 @@ export async function getReport() {
 
   const res = await fetch(`${baseUrl}/diets/report`)
   const data = await res.json()
-  document.querySelector('#report-table tbody').innerHTML = ''
+  document.querySelector('#report-table>tbody').innerHTML = ''
   for (const row of data) {
     const html = `
       <tr>
@@ -136,7 +134,7 @@ export async function getReport() {
         <td>${row.diff}</td>
       </tr>
     `
-    document.querySelector('#report-table tbody').innerHTML += html
+    document.querySelector('#report-table>tbody').innerHTML += html
   }
 }
 

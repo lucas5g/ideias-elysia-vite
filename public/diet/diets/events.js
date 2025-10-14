@@ -2,11 +2,10 @@ import { getListAndFilter, baseUrl, filterList, showLoadingButton, hideLoadingBu
 
 document.addEventListener('DOMContentLoaded', async () => {
 
-  await Promise.all([
-    getFoods(),
-    getListAndFilter(),
-    getReport()
-  ])
+  await getFoods()
+  await getListAndFilter()
+  await getReport()
+  
 })
 
 document.addEventListener('submit', async (e) => {
@@ -31,12 +30,13 @@ document.addEventListener('submit', async (e) => {
     },
     body: payload
   })
-  await Promise.all([
-    getReport(),
-    getListAndFilter()
-  ])
+  await getReport()
+  await getListAndFilter()
   hideLoadingButton()
-  document.querySelector('form').reset()
+
+  if(!id){
+    document.querySelector('form').reset()
+  }
 })
 
 document.querySelector('#search-input').addEventListener('input', () => {

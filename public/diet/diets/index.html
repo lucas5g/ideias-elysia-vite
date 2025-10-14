@@ -8,6 +8,11 @@
     href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <style type="text/tailwindcss">
+    #items-table tbody tr:has(td:first-child:contains("LUNCH")),
+      #items-table tbody tr:has(td:first-child:contains("DINNER")) {
+        background-color: rgb(17, 24, 39); 
+        
+      }
 
     /* @layer base{
       html,
@@ -66,12 +71,18 @@
       }
 
       table > tbody > tr {
-        @apply border-b border-gray-700 h-12 hover:bg-gray-700 hover:cursor-pointer hover:transition-all
+        @apply border-b border-gray-700 h-12 
+      }
+
+      table > tbody > tr:hover{
+        @apply bg-gray-700 cursor-pointer transition-all
       }
 
       table > tbody > tr > td:last-child {
         @apply text-end
       }
+
+ 
 
       .button-primary {
         @apply bg-blue-500 hover:bg-blue-700 font-bold py-3  rounded cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
@@ -142,7 +153,7 @@
               <th>Diff</th>
             </tr>
           </thead>
-          <tbody >
+          <tbody>
 
           </tbody>
         </table>
