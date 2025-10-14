@@ -30,13 +30,6 @@ export abstract class DietService {
       ]
     });
 
-    enum MealPosition {
-      BREAKFAST = 1,
-      LUNCH = 2,
-      SNACK = 3,
-      DINNER = 4,     
-    }
-
     return res.map(diet => ({
       id: diet.id,
       meal: diet.meal,
@@ -47,8 +40,8 @@ export abstract class DietService {
       carbo: quantity(diet.food.carbo, diet.quantity),
       fiber: quantity(diet.food.fiber, diet.quantity),
       calorie: quantity(diet.food.calorie, diet.quantity),
-      positionMeal: MealPosition[diet.meal]
-    })).sort((a, b) => a.positionMeal > b.positionMeal ? 1 : -1);
+    }));
+    // .sort((a, b) => a.positionMeal > b.positionMeal ? true : false);
   }
 
   static findOne(id: number) {
