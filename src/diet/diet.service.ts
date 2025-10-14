@@ -48,7 +48,7 @@ export abstract class DietService {
       fiber: quantity(diet.food.fiber, diet.quantity),
       calorie: quantity(diet.food.calorie, diet.quantity),
       positionMeal: MealPosition[diet.meal]
-    })).sort((a, b) => a.positionMeal - b.positionMeal);
+    })).sort((a, b) => a.positionMeal > b.positionMeal ? 1 : -1);
   }
 
   static findOne(id: number) {
