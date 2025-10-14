@@ -86,7 +86,7 @@ export abstract class DietService {
 
     // Definir metas padrão baseadas no peso (você pode ajustar essas fórmulas)
     const goals = {
-      protein: user.weight * 1.6, // 1.6g por kg
+      protein: user.weight * 2, // 2g por kg
       fat: user.weight * 1.0,     // 1g por kg
       carbo: user.weight * 4.0,   // 4g por kg
       fiber: user.weight * 1,                  // 25g fixo
