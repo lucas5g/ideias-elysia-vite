@@ -5,7 +5,8 @@ export function Layout() {
 
   const links = [
     'Diets',
-    'Foods'
+    'Foods',
+    'Users'
   ]
 
   useEffect(() => {

@@ -4,6 +4,7 @@ import { Diet } from '@/pages/Diet'
 import { Layout } from '@/components/Layout'
 import { Modelo } from '@/pages/modelo/Modelo'
 import { Login } from '@/pages/modelo/Login'
+import { User } from './pages/Users'
 export function App() {
 
   return (
@@ -13,6 +14,7 @@ export function App() {
           <Route path="/" element={<Food />} />
           <Route path="/foods" element={<Food />} />
           <Route path="/diets" element={<Diet />} />
+          <Route path='/users' element={<User />} />
         </Route>
         <Route path="/modelos" element={<Modelo />} />
         <Route path="/modelos/login" element={<Login />} />

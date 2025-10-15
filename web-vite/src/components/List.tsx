@@ -1,5 +1,5 @@
 
-import type {  ItemInterface } from '@/utils/interfaces';
+import type { ItemInterface } from '@/utils/interfaces';
 import { useSearchParams } from 'react-router';
 import { Loading } from './Loading';
 import { Input } from './Input';
@@ -10,14 +10,14 @@ interface Props {
   headers: string[]
   resource: string
   list?: ItemInterface[]
-  isLoading?: boolean
 }
 
-export function List({ headers, resource, list, isLoading }: Readonly<Props>) {
+export function List({ headers, resource }: Readonly<Props>) {
 
 
-  const [searchParams, setSearchParams] = useSearchParams();  
+  const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get('id')
+  const { data: list, isLoading } = fetcher<ItemInterface[]>(resource)
 
   const search = searchParams.get('search') || ''
   const filteredList = list?.filter(item =>
@@ -36,7 +36,7 @@ export function List({ headers, resource, list, isLoading }: Readonly<Props>) {
       behavior: 'smooth'
     })
   }
-  
+
   return (
     <div className="card">
       <h1>

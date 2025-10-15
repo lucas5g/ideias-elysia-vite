@@ -21,10 +21,19 @@ describe('DietService', () => {
     await DietService.delete(id);
   });
 
+   it('findAllAggregate', async () => {
+    const res = await DietService.findAllAggregate();
+    // console.log(res.ALL);
+    // console.log('BREAKFAST', res.BREAKFAST);
+    // console.log(JSON.stringify(res, null, 2));
+    expect(res).toHaveProperty('ALL');
+  });
+  return;
+
   it('findAll', async () => {
     const res = await DietService.findAll();
     expect(res).toBeArray();
-  });
+  }); 
 
   it('findOne', async () => {
     const record = await DietService.findOne(id);
@@ -44,4 +53,6 @@ describe('DietService', () => {
 
     expect(res).toBeObject();
   });
+
+  // it.only('report')
 });

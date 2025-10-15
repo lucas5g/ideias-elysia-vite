@@ -29,23 +29,23 @@ export function Form({ fields, resource }: Readonly<Props>) {
     }
 
     api.get(`${resource}/${id}`).then(({ data }) => {
-      headers.forEach((header) => {
-        const id = fields[header].id ?? header.toLowerCase()
+      for (const header of headers) {
+        const id = fields[header].id ?? header.toLowerCase();
 
-        const element = document.getElementById(id) as HTMLInputElement
+        const element = document.getElementById(id) as HTMLInputElement;
 
-        element.value = data.dados?.[id] || data?.[id] 
-      })
+        element.value = data.dados?.[id] || data?.[id];
+      }
     })
 
   }, [id])
 
   function cleanFields() {
-    headers.forEach((header) => {
-      const id = fields[header].id ?? header.toLowerCase()
-      const element = document.getElementById(id) as HTMLInputElement
-      element.value = ''
-    })
+    for (const header of headers) {
+      const id = fields[header].id ?? header.toLowerCase();
+      const element = document.getElementById(id) as HTMLInputElement;
+      element.value = '';
+    }
   }
 
   function handleReset() {
@@ -55,7 +55,7 @@ export function Form({ fields, resource }: Readonly<Props>) {
   }
 
   async function handleDelete() {
-    const confirm = window.confirm('Are you sure?')
+    const confirm = globalThis.confirm('Are you sure?')
 
     if (!confirm) {
       return
@@ -66,7 +66,7 @@ export function Form({ fields, resource }: Readonly<Props>) {
 
     setSearchParams({ search: searchParams.get('search') ?? '' })
     mutate(resource)
-    mutate('/diets/report')
+    // mutate('/diets/report')
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -93,7 +93,6 @@ export function Form({ fields, resource }: Readonly<Props>) {
       cleanFields()
     }
     mutate(resource)
-    mutate('/diets/report')
     setIsLoadingButton(false)
   }
 
