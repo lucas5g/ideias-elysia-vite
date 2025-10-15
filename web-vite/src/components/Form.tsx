@@ -149,7 +149,7 @@ export function Form({ fields, resource }: Readonly<Props>) {
           })}
 
 
-          <div className="row gap-2">
+          <div className="row gap-2 border-t border-gray-600 pt-[2.1em]">
             <button
               className="button-primary"
               type="submit"
