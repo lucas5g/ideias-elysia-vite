@@ -14,6 +14,7 @@ export const diet = new Elysia({ prefix: '/diets' })
   .get('/', ({ query }) => DietService.findAll(query), {
     query: DietModel.findAllQuery
   })
+  .get('/group-by-meal', () => DietService.findAllGroupByMeal())
   .get('/report', () => DietService.report())
   .guard({ params: paramsSchema })
   .get('/:id', ({ params }) => DietService.findOne(params.id))

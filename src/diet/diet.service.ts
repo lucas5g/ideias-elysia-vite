@@ -43,64 +43,48 @@ export abstract class DietService {
       fiber: quantity(diet.food.fiber, diet.quantity),
       calorie: quantity(diet.food.calorie, diet.quantity),
     }));
-    // .sort((a, b) => a.positionMeal > b.positionMeal ? true : false);
   }
 
-  static async findAllAggregate() {
+  static async findAllGroupByMeal() {
     const res = await this.findAll();
 
-    // const groupByMeal: Record<Meal, { protein: number; fat: number; carbo: number; fiber: number; calorie: number; quantity: number; foodId: number; count: number }> 
-    const group: Record<Meal | 'ALL', { foods: Omit<Food, 'createdAt' | 'updatedAt'>[], total: Omit<Food, 'id' | 'createdAt' | 'updatedAt' | 'name'> }> = {};
-    for (const diet of res) {
-      const meal = diet.meal;
-      if (!group[meal]) {
-        group[meal] = {
+    return res.reduce((acc, curr) => {
+      const meal = curr.meal;
+      if (!acc[meal]) {
+        acc[meal] = { 
           foods: [],
-          total: { protein: 0, fat: 0, carbo: 0, fiber: 0, calorie: 0 }          
+          total: {
+            protein: 0, fat: 0, carbo: 0, fiber: 0, calorie: 0, quantity: 0
+          }
         };
       }
 
-      if (!group['ALL']) {
-        group['ALL'] = {
-          foods: [],
-          total: { protein: 0, fat: 0, carbo: 0, fiber: 0, calorie: 0 }          
-        };
-      }
-
-
-      const protein = group[meal].total.protein + diet.protein;
-      const fat = group[meal].total.fat + diet.fat;
-      const carbo = group[meal].total.carbo + diet.carbo;
-      const fiber = group[meal].total.fiber + diet.fiber;
-      const calorie = group[meal].total.calorie + diet.calorie; 
-
-
-      group[meal].total.protein = protein;
-      group[meal].total.fat = fat;
-      group[meal].total.carbo = carbo;
-      group[meal].total.fiber = fiber;
-      group[meal].total.calorie = calorie;
-
-      group.ALL.total.protein = group.ALL?.total.protein + protein;
-      group.ALL.total.fat = group.ALL?.total.fat + fat;
-      group.ALL.total.carbo = group.ALL?.total.carbo + carbo;
-      group.ALL.total.fiber = group.ALL?.total.fiber + fiber;
-      group.ALL.total.calorie = group.ALL?.total.calorie + calorie;
-
-
-      group[meal].foods.push({
-        id: diet.foodId,
-        name: diet.food,
-        protein: diet.protein,
-        fat: diet.fat,
-        carbo: diet.carbo,
-        fiber: diet.fiber,
-        calorie: diet.calorie,
+      acc[meal].foods.push({
+        id: curr.id,
+        foodId: curr.foodId,
+        name: curr.food,
+        calorie: curr.calorie,
+        protein: curr.protein,
+        fat: curr.fat,
+        carbo: curr.carbo,
+        fiber: curr.fiber,
       });
+      acc[meal].total = {
+        protein: acc[meal].total.protein  + curr.protein,
+        fat: acc[meal].total.fat  + curr.fat,
+        carbo: acc[meal].total.carbo  + curr.carbo,
+        fiber: acc[meal].total.fiber  + curr.fiber,
+        calorie: acc[meal].total.calorie  + curr.calorie,
+        quantity: acc[meal].total.quantity  + curr.quantity,
 
-    }
+      };
 
-    return group;
+      return acc;
+    }, {} as Record<Meal, {
+      foods: (Omit<Food, 'createdAt' | 'updatedAt'> & { foodId: number })[];
+      total: Omit<Food, 'createdAt' | 'updatedAt' | 'id' | 'name'> & { quantity: number };
+    }>);
+
 
   }
 
@@ -130,22 +114,21 @@ export abstract class DietService {
     ]);
 
     const toFixed = (num: number) => Number(num.toFixed(2));
-    //fazer reduce com os macros
 
     const macros = diets.reduce((acc, curr) => {
-
       acc.protein += curr.protein;
       acc.fat += curr.fat;
       acc.carbo += curr.carbo;
       acc.fiber += curr.fiber;
       acc.calorie += curr.calorie;
       return acc;
-      // }, []);
-    }, { protein: 0, fat: 0, carbo: 0, fiber: 0, calorie: 0 });
+    }, { protein: 0, fat: 0, carbo: 0, fiber: 0, calorie: 0, weight: 0 });
 
+    macros.weight = user.weight;
 
     // Definir metas padrão baseadas no peso (você pode ajustar essas fórmulas)
     const goals = {
+      weight: 76.5, // Exemplo: meta de peso
       protein: user.weight * 2, // 2g por kg
       fat: user.weight * 1.0,     // 1g por kg
       carbo: user.weight * 4.0,   // 4g por kg

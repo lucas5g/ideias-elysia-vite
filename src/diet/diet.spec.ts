@@ -21,19 +21,27 @@ describe('DietService', () => {
     await DietService.delete(id);
   });
 
-   it('findAllAggregate', async () => {
-    const res = await DietService.findAllAggregate();
-    // console.log(res.ALL);
-    // console.log('BREAKFAST', res.BREAKFAST);
-    // console.log(JSON.stringify(res, null, 2));
-    expect(res).toHaveProperty('ALL');
+  it('findAllGroupByMeal', async () => {
+    const res = await DietService.findAllGroupByMeal();
+    expect(Object.keys(res)).toEqual(Object.values(Meal));
+
+    const properties = ['protein', 'fat', 'carbo', 'fiber', 'calorie', 'quantity'];
+    expect(Object.keys(res.BREAKFAST.total)).toEqual(properties);
   });
-  return;
+
+
+  it('report', async () => {
+    const res = await DietService.report();
+
+    const weight = res.find(item => item.name === 'weight');
+    expect(weight).toHaveProperty('total');
+
+  });
 
   it('findAll', async () => {
     const res = await DietService.findAll();
     expect(res).toBeArray();
-  }); 
+  });
 
   it('findOne', async () => {
     const record = await DietService.findOne(id);
@@ -48,11 +56,7 @@ describe('DietService', () => {
     expect(res).toMatchObject(payload);
   });
 
-  it('report', async () => {
-    const res = await DietService.report();
 
-    expect(res).toBeObject();
-  });
 
   // it.only('report')
 });

@@ -139,7 +139,7 @@ export function Form({ fields, resource }: Readonly<Props>) {
       })}
 
 
-      <div className="row">
+      <div className="row gap-2">
         <button
           className="button-primary"
           type="submit"

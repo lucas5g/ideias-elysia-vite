@@ -11,7 +11,6 @@ export function Diet() {
 
   const { data: meals } = fetcher<string[]>('/meals')
   const { data: foods } = fetcher<{ id: number, name: string }[]>('/foods')
-  const { data: report } = fetcher<Record<string, number>>('/diets/report')
 
   const fields: FieldInterface = {
     Meal: {
@@ -31,42 +30,29 @@ export function Diet() {
 
   const headers = [...Object.keys(fields), 'Protein', 'Fat', 'Carbo', 'Fiber', 'Calorie']
 
-  if (!meals || !foods || !report) {
+  if (!meals || !foods) {
     return <Loading />
   }
 
   return (
-    <>
-      <Form
-        fields={fields}
-        resource={resource}
-      />
+    <div className='w-full space-y-1'>
 
+      <div className="row">
+        <Form
+          fields={fields}
+          resource={resource}
+        />
+
+        <List
+          headers={['Name', 'Total', 'Goal', 'diff']}
+          resource={'diets/report'}
+        />
+      </div>
 
       <List
         headers={headers}
         resource={resource}
       />
-
-      <div className="card lg:w-1/3">
-        <h1>Report</h1>
-        <table>
-          <thead>
-            <tr>
-              <th>Macro</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Object.entries(report).map(([key, value]) => (
-              <tr key={key}>
-                <td className="font-bold">{key}</td>
-                <td>{value}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </>
+    </div>
   )
 }
