@@ -1,7 +1,7 @@
 import type { FieldInterface } from '@/utils/interfaces';
 import { Input } from "./Input";
 import { useSearchParams } from 'react-router';
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { api } from '@/utils/api';
 import { PlusIcon, TrashIcon } from '@phosphor-icons/react'
 import { Select } from '@/components/Select';
@@ -16,9 +16,11 @@ export function Form({ fields, resource }: Readonly<Props>) {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [isLoadingButton, setIsLoadingButton] = useState(false)
+  const [showForm, setShowForm] = useState(false)
 
   const id = searchParams.get('id')
   const action = searchParams.get('action')
+
   const headers = Object.keys(fields).map(field => field)
 
 
@@ -39,6 +41,13 @@ export function Form({ fields, resource }: Readonly<Props>) {
     })
 
   }, [id])
+
+  useEffect(() => {
+    if (id || action) {
+      return setShowForm(true)
+    }
+    setShowForm(false)
+  }, [id, action])
 
   function cleanFields() {
     for (const header of headers) {
@@ -96,66 +105,69 @@ export function Form({ fields, resource }: Readonly<Props>) {
     setIsLoadingButton(false)
   }
 
-  if (!id && !action) {
-    return (
-      <button
-        onClick={() => setSearchParams({ action: 'create' })}
-        className='fixed bottom-5 w-10 h-10 right-3  bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-900 border border-gray-200'>
-        <PlusIcon size={20} />
-      </button>
-    )
-  }
-
   return (
-    <form className="card" onSubmit={handleSubmit}>
-      <div className='row justify-between border-b border-gray-600'>
-        <h2>
-          Form
-        </h2>
-        {id &&
-          <TrashIcon
-            size={20}
-            className='cursor-pointer rounded-full hover:bg-red-500'
-            onClick={handleDelete}
-          />
-        }
-      </div>
-      {headers.map((field) => {
-
-        if (fields[field].type === 'hidden') {
-          return
-        }
-
-        if (fields[field].type === 'select') {
-          return <Select
-            key={field}
-            name={field}
-            {...fields[field]} />
-        }
-
-        return <Input
-          key={field}
-          name={field} {...fields[field]} />
-      })}
-
-
-      <div className="row gap-2">
+    <>
+      {!showForm &&
         <button
-          className="button-primary"
-          type="submit"
-          disabled={isLoadingButton}
-        >
-          {id ? 'Update' : 'Create'}
+          onClick={() => setSearchParams({ action: 'create' })}
+          className='fixed bottom-5 w-10 h-10 right-3  bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-900 border border-gray-200'>
+          <PlusIcon size={20} />
         </button>
-        <button
-          className="button-secondary"
-          type="reset"
-          onClick={handleReset}
-        >
-          Cancel
-        </button>
+      }
+
+      <div className={`form-container ${showForm ? 'form-visible' : 'form-hidden'}`}>
+
+        <form className={'card'} onSubmit={handleSubmit}>
+          <div className='row justify-between border-b border-gray-600'>
+            <h2>
+              Form
+            </h2>
+            {id &&
+              <TrashIcon
+                size={20}
+                className='cursor-pointer rounded-full hover:bg-red-500'
+                onClick={handleDelete}
+              />
+            }
+          </div>
+          {headers.map((field) => {
+
+            if (fields[field].type === 'hidden') {
+              return
+            }
+
+            if (fields[field].type === 'select') {
+              return <Select
+                key={field}
+                name={field}
+                {...fields[field]} />
+            }
+
+            return <Input
+              key={field}
+              name={field} {...fields[field]} />
+          })}
+
+
+          <div className="row gap-2">
+            <button
+              className="button-primary"
+              type="submit"
+              disabled={isLoadingButton}
+            >
+              {id ? 'Update' : 'Create'}
+            </button>
+            <button
+              className="button-secondary"
+              type="reset"
+              onClick={handleReset}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
       </div>
 
-    </form>
+    </>
   )
 }

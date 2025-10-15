@@ -5,7 +5,7 @@ import { fetcher } from "@/utils/fetcher"
 import type { FieldInterface } from "@/utils/interfaces"
 
 
-export function Diet() {
+export function DietNew() {
   const resource = '/diets'
 
 
@@ -41,13 +41,12 @@ export function Diet() {
         <Form
           fields={fields}
           resource={resource}
-          isFullHeight
+          
         />
 
         <List
-          headers={['Name', 'Total', 'Goal', 'Diff']}
+          headers={['Name', 'Total', 'Goal', 'diff']}
           resource={'diets/report'}
-          hideSearch
         />
       </div>
 

@@ -22,11 +22,11 @@
     @apply bg-gray-800 text-white h-full
   }
 
-  .layout{
+  .layout {
     @apply flex flex-col gap-1
   }
 
-  main{
+  main {
     @apply p-1 flex flex-col gap-1 lg:flex-row w-full
   }
 
@@ -66,6 +66,10 @@
     @apply text-right
   }
 
+  tbody>tr:has('BREAKFAST') {
+    @apply bg-yellow-900
+  }
+
   button {
     @apply cursor-pointer w-full
   }
@@ -85,10 +89,22 @@
   }
 
   nav ul {
-    @apply flex gap-3 bg-gray-950 p-5 text-gray-500  font-bold text-2xl border-b border-black
+    @apply flex gap-3 bg-gray-950 p-5 text-gray-500 font-bold text-2xl border-b border-black
   }
 
-  a.active{
+  a.active {
     @apply text-white
+  }
+
+  .form-container {
+    @apply transition-all duration-300 ease-in-out overflow-hidden w-full;
+  }
+
+  .form-visible {
+    @apply opacity-100 max-h-screen transform translate-y-0;
+  }
+
+  .form-hidden {
+    @apply opacity-0 max-h-0 transform -translate-y-4 pointer-events-none w-0;
   }
 }

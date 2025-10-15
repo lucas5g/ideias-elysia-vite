@@ -10,9 +10,10 @@ interface Props {
   headers: string[]
   resource: string
   list?: ItemInterface[]
+  hideSearch?: boolean
 }
 
-export function List({ headers, resource }: Readonly<Props>) {
+export function List({ headers, resource, hideSearch }: Readonly<Props>) {
 
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -42,18 +43,20 @@ export function List({ headers, resource }: Readonly<Props>) {
       <h1>
         List
       </h1>
+      {!hideSearch &&
 
-      <Input
-        name='Search'
-        value={searchParams.get('search') || ''}
-        doesntHaveLabel
-        onChange={(e) => {
-          if (id) {
-            return setSearchParams({ id: String(id), search: e.target.value });
-          }
-          setSearchParams({ search: e.target.value });
-        }}
-      />
+        <Input
+          name='Search'
+          value={searchParams.get('search') || ''}
+          doesntHaveLabel
+          onChange={(e) => {
+            if (id) {
+              return setSearchParams({ id: String(id), search: e.target.value });
+            }
+            setSearchParams({ search: e.target.value });
+          }}
+        />
+      }
       {isLoading &&
         <Loading />
       }
@@ -67,22 +70,25 @@ export function List({ headers, resource }: Readonly<Props>) {
             </tr>
           </thead>
           <tbody>
-            {filteredList?.map((row) => (
+            {filteredList?.map((row) => {
+              return (
+                <tr
+                  onClick={() => {
+                    if (hideSearch) return;
+                    handleSelect(row.id)
+                  }}
+                  key={row.id}
+                  className={row.id === Number(id) ? 'bg-gray-600' : ''}
+                >
+                  {headers.map((head) => (
+                    <td key={head}>
 
-              <tr
-                onClick={() => handleSelect(row.id)}
-                key={row.id}
-                className={row.id === Number(id) ? 'bg-gray-600' : ''}
-              >
-                {headers.map((head) => (
-                  <td key={head}>
-
-                    {row[head.toLowerCase()]}
-                  </td>
-                ))}
-              </tr>
-            ))}
-
+                      {row[head.toLowerCase()]}
+                    </td>
+                  ))}
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       }
