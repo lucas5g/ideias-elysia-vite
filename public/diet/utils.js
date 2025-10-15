@@ -138,6 +138,9 @@ export async function getReport() {
     `
     document.querySelector('#report-table>tbody').innerHTML += html
   }
+
+  document.querySelector('#card-loading-report').classList.add('hidden')
+  document.querySelector('#report-table').parentElement.classList.remove('hidden')
 }
 
 export async function getFoods() {

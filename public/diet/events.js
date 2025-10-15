@@ -62,8 +62,8 @@ document.addEventListener('reset', () => {
 
 buttonDelete.addEventListener('click', async () => {
 
-  const confirm = window.confirm('Are you sure you want to delete this item?')
-  if (!confirm) return
+  // const confirm = window.confirm('Are you sure you want to delete this item?')
+  // if (!confirm) return
 
   const id = document.querySelector('#id').value
 
