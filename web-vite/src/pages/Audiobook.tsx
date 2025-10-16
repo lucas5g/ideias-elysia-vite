@@ -7,6 +7,7 @@ export function Audiobook() {
   const timeoutRef = useRef<number | null>(null)
   const pauseMinutesRef = useRef<number>(1)
   const [pauseMinutes, setPauseMinutes] = useState<number>(1)
+  const [useSeconds, setUseSeconds] = useState<boolean>(false)
 
   useEffect(() => {
     // Só carregar se houver videoId
@@ -123,8 +124,9 @@ export function Audiobook() {
                 // Se o vídeo começou a tocar
                 if (event.data === (window as any).YT.PlayerState.PLAYING) {
                   const currentMinutes = pauseMinutesRef.current
-                  const timeInMs = currentMinutes * 60 * 1000
-                  console.log(`Vídeo começou a tocar - pausará em ${currentMinutes} minutos`)
+                  const timeInMs = useSeconds ? currentMinutes * 1000 : currentMinutes * 60 * 1000
+                  const unit = useSeconds ? 'segundos' : 'minutos'
+                  console.log(`Vídeo começou a tocar - pausará em ${currentMinutes} ${unit}`)
                   
                   // Limpar timer anterior se existir
                   if (timeoutRef.current) {
@@ -133,7 +135,7 @@ export function Audiobook() {
                   
                   // Criar novo timer para pausar
                   timeoutRef.current = setTimeout(() => {
-                    console.log(`Pausando vídeo após ${currentMinutes} minutos`)
+                    console.log(`Pausando vídeo após ${currentMinutes} ${unit}`)
                     if (playerRef.current) {
                       playerRef.current.pauseVideo()
                     }
@@ -182,13 +184,14 @@ export function Audiobook() {
         const playerState = playerRef.current.getPlayerState()
         if (playerState === 1) { // 1 = PLAYING
           clearTimeout(timeoutRef.current)
-          const timeInMs = value * 60 * 1000
+          const timeInMs = useSeconds ? value * 1000 : value * 60 * 1000
           timeoutRef.current = setTimeout(() => {
             if (playerRef.current) {
               playerRef.current.pauseVideo()
             }
           }, timeInMs)
-          console.log(`Timer atualizado para ${value} minutos`)
+          const unit = useSeconds ? 'segundos' : 'minutos'
+          console.log(`Timer atualizado para ${value} ${unit}`)
         }
       }
     }
@@ -268,22 +271,54 @@ export function Audiobook() {
 
         <div style={{ marginBottom: '20px' }}>
           <label htmlFor="pause-minutes" style={{ display: 'block', marginBottom: '5px' }}>
-            Pausar vídeo após (minutos):
+            Pausar vídeo após:
           </label>
-          <input
-            id="pause-minutes"
-            type="number"
-            min="1"
-            value={pauseMinutes}
-            onChange={handleMinutesChange}
-            style={{
-              padding: '8px',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              width: '100px'
-            }}
-          />
-          <span style={{ marginLeft: '10px' }}>minutos</span>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+            <input
+              id="pause-minutes"
+              type="number"
+              min="1"
+              value={pauseMinutes}
+              onChange={handleMinutesChange}
+              style={{
+                padding: '8px',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                width: '100px'
+              }}
+            />
+            
+            <div style={{ display: 'flex', gap: '15px' }}>
+              <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                <input
+                  type="radio"
+                  name="timeUnit"
+                  checked={!useSeconds}
+                  onChange={() => setUseSeconds(false)}
+                  style={{ marginRight: '5px' }}
+                />
+                minutos
+              </label>
+              
+              <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                <input
+                  type="radio"
+                  name="timeUnit"
+                  checked={useSeconds}
+                  onChange={() => setUseSeconds(true)}
+                  style={{ marginRight: '5px' }}
+                />
+                segundos
+              </label>
+            </div>
+          </div>
+          
+          {useSeconds && (
+            <small style={{ color: '#e67e22', fontWeight: 'bold' }}>
+              ⚡ Modo de teste ativo - para testar rapidamente
+            </small>
+          )}
         </div>
 
         {videoId ? (
@@ -295,7 +330,7 @@ export function Audiobook() {
               </p>
               <p style={{ margin: '5px 0', fontSize: '14px' }}>
                 🎵 Vídeo atual: {videoId}<br/>
-                ⏰ Pausa automática após {pauseMinutes} minuto{pauseMinutes > 1 ? 's' : ''}
+                ⏰ Pausa automática após {pauseMinutes} {useSeconds ? 'segundo' : 'minuto'}{pauseMinutes > 1 ? 's' : ''}
               </p>
             </div>
           </>
