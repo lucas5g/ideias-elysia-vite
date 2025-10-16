@@ -6,6 +6,7 @@ import { Modelo } from '@/pages/modelo/Modelo'
 import { Login } from '@/pages/modelo/Login'
 import { User } from './pages/Users'
 import { DietNew } from './pages/Diet-new'
+import { Audiobook } from './pages/Audiobook'
 export function App() {
 
   return (
@@ -20,6 +21,7 @@ export function App() {
         </Route>
         <Route path="/modelos" element={<Modelo />} />
         <Route path="/modelos/login" element={<Login />} />
+        <Route path="/audiobooks" element={<Audiobook />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
