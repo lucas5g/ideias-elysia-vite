@@ -1,12 +1,47 @@
 import { useEffect, useRef, useState } from 'react'
 
+interface SavedVideo {
+  id: string
+  title: string
+  url: string
+  addedAt: number
+  lastPlayed?: number
+}
+
 export function Audiobook() {
   const [videoId, setVideoId] = useState<string>('')
   const [videoInput, setVideoInput] = useState('')
+  const [videoTitle, setVideoTitle] = useState<string>('')
+  const [savedVideos, setSavedVideos] = useState<SavedVideo[]>([])
+  const [showLibrary, setShowLibrary] = useState<boolean>(false)
+  const [isLibraryLoaded, setIsLibraryLoaded] = useState<boolean>(false)
   const playerRef = useRef<any>(null)
   const timeoutRef = useRef<number | null>(null)
   const pauseMinutesRef = useRef<number>(1)
   const [pauseMinutes, setPauseMinutes] = useState<number>(1)
+
+  // Carregar vídeos salvos do localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('audiobook_library')
+    if (saved) {
+      try {
+        const parsedVideos = JSON.parse(saved)
+        setSavedVideos(parsedVideos)
+        console.log('Biblioteca carregada:', parsedVideos.length, 'vídeos')
+      } catch (error) {
+        console.error('Erro ao carregar biblioteca:', error)
+      }
+    }
+    setIsLibraryLoaded(true)
+  }, [])
+
+  // Salvar vídeos no localStorage apenas depois que a biblioteca foi carregada
+  useEffect(() => {
+    if (isLibraryLoaded) {
+      localStorage.setItem('audiobook_library', JSON.stringify(savedVideos))
+      console.log('Biblioteca salva:', savedVideos.length, 'vídeos')
+    }
+  }, [savedVideos, isLibraryLoaded])
 
   useEffect(() => {
     // Só carregar se houver videoId
@@ -98,6 +133,15 @@ export function Audiobook() {
             events: {
               onReady: (event: any) => {
                 console.log('Player ready')
+                
+                // Capturar título do vídeo
+                try {
+                  const title = event.target.getVideoData().title
+                  setVideoTitle(title || videoId)
+                } catch (error) {
+                  console.log('Erro ao capturar título:', error)
+                  setVideoTitle(videoId)
+                }
                 
                 // Recuperar estado salvo se existir
                 try {
@@ -230,9 +274,81 @@ export function Audiobook() {
     }
   }
 
+  const saveCurrentVideo = () => {
+    if (videoId && videoTitle) {
+      const newVideo: SavedVideo = {
+        id: videoId,
+        title: videoTitle,
+        url: videoInput || `https://youtube.com/watch?v=${videoId}`,
+        addedAt: Date.now(),
+        lastPlayed: Date.now()
+      }
+
+      setSavedVideos(prev => {
+        // Remover duplicatas baseado no ID
+        const filtered = prev.filter(v => v.id !== videoId)
+        // Adicionar no início da lista
+        const newList = [newVideo, ...filtered]
+        console.log('Vídeo salvo na biblioteca:', newVideo.title)
+        return newList
+      })
+      
+      // Feedback visual temporário
+      const button = document.querySelector('[data-save-button]') as HTMLButtonElement
+      if (button) {
+        const originalText = button.innerHTML
+        button.innerHTML = '<span>✅</span><span>Salvo!</span>'
+        button.disabled = true
+        setTimeout(() => {
+          button.innerHTML = originalText
+          button.disabled = false
+        }, 2000)
+      }
+    }
+  }
+
+  const loadVideo = (savedVideo: SavedVideo) => {
+    console.log('Carregando vídeo da biblioteca:', savedVideo.title)
+    setVideoId(savedVideo.id)
+    setVideoInput(savedVideo.url)
+    setVideoTitle(savedVideo.title)
+    setShowLibrary(false)
+    
+    // Atualizar lastPlayed
+    setSavedVideos(prev => 
+      prev.map(v => 
+        v.id === savedVideo.id 
+          ? { ...v, lastPlayed: Date.now() }
+          : v
+      )
+    )
+  }
+
+  const removeVideo = (videoIdToRemove: string) => {
+    console.log('Removendo vídeo da biblioteca:', videoIdToRemove)
+    setSavedVideos(prev => prev.filter(v => v.id !== videoIdToRemove))
+  }
+
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp)
+    const now = new Date()
+    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60)
+    
+    if (diffInHours < 1) return 'Agora há pouco'
+    if (diffInHours < 24) return `${Math.floor(diffInHours)}h atrás`
+    if (diffInHours < 48) return 'Ontem'
+    return date.toLocaleDateString('pt-BR')
+  }
+
+  const getLibraryDescription = () => {
+    if (savedVideos.length === 0) return 'Nenhum vídeo salvo ainda'
+    if (savedVideos.length === 1) return '1 vídeo salvo'
+    return `${savedVideos.length} vídeos salvos`
+  }
+
   return (
     <main className="min-h-screen bg-gray-900 p-4 font-sans">
-      <div className="mx-auto max-w-lg bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
+      <div className="mx-auto h-fit w-full  bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
         <h1 className="text-center text-2xl font-semibold text-white mb-6 flex items-center justify-center gap-2">
           <span>🎧</span>
           <span>Audiobook Player</span>
@@ -278,11 +394,108 @@ export function Audiobook() {
               min="1"
               value={pauseMinutes}
               onChange={handleMinutesChange}
-              className="w-20 p-4 bg-gray-700 border-2 border-gray-600 rounded-lg text-white text-base text-center focus:border-blue-500 focus:outline-none transition-colors"
+              className="w-16 h-15 pl-4 pr-1 bg-gray-700 border-2 border-gray-600 rounded-lg text-white text-base text-center focus:border-blue-500 focus:outline-none transition-colors"
             />
             <span className="text-gray-300 font-medium">minutos</span>
           </div>
         </div>
+
+        {/* Botões de Biblioteca */}
+        <div className="mb-6 flex gap-3">
+          <button
+            onClick={() => setShowLibrary(!showLibrary)}
+            className="flex-1 p-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+          >
+            <span>📚</span>
+            <span>Minha Biblioteca ({savedVideos.length})</span>
+          </button>
+          
+          {videoId && videoTitle && (
+            <button
+              onClick={saveCurrentVideo}
+              data-save-button
+              className="p-3 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+            >
+              <span>⭐</span>
+              <span>Salvar</span>
+            </button>
+          )}
+        </div>
+
+        {/* Biblioteca de Vídeos */}
+        {showLibrary && (
+          <div className="mb-6 bg-gray-800/80 rounded-xl border border-gray-600 overflow-hidden">
+            <div className="p-4 bg-gray-700/50 border-b border-gray-600">
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                <span>📚</span>
+                <span>Minha Biblioteca</span>
+              </h3>
+              <p className="text-gray-400 text-sm mt-1">
+                {getLibraryDescription()}
+              </p>
+            </div>
+            
+            {savedVideos.length > 0 ? (
+              <div className="max-h-80 overflow-y-auto">
+                {savedVideos.map((video) => (
+                  <div
+                    key={video.id}
+                    className="p-4 border-b border-gray-700 last:border-b-0 hover:bg-gray-700/30 transition-colors"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0">
+                        <img
+                          src={`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`}
+                          alt={video.title}
+                          className="w-16 h-12 object-cover rounded-lg bg-gray-700"
+                          loading="lazy"
+                        />
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-white font-medium text-sm leading-tight mb-1 truncate">
+                          {video.title}
+                        </h4>
+                        <p className="text-gray-400 text-xs mb-2">
+                          Adicionado {formatDate(video.addedAt)}
+                          {video.lastPlayed && video.lastPlayed !== video.addedAt && (
+                            <span> • Reproduzido {formatDate(video.lastPlayed)}</span>
+                          )}
+                        </p>
+                        
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => loadVideo(video)}
+                            className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-md transition-colors flex items-center gap-1"
+                          >
+                            <span>▶️</span>
+                            <span>Carregar</span>
+                          </button>
+                          
+                          <button
+                            onClick={() => removeVideo(video.id)}
+                            className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded-md transition-colors flex items-center gap-1"
+                          >
+                            <span>🗑️</span>
+                            <span>Remover</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-8 text-center">
+                <div className="text-4xl mb-3">📺</div>
+                <p className="text-gray-400 mb-2">Sua biblioteca está vazia</p>
+                <p className="text-gray-500 text-sm">
+                  Carregue um vídeo e clique em "Salvar" para adicioná-lo aqui
+                </p>
+              </div>
+            )}
+          </div>
+        )}
 
         {videoId ? (
           <div className="text-center">
