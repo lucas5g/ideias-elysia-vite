@@ -1,21 +1,49 @@
 @import "tailwindcss";
 
-/* @layer base {
-
-  html,
-  body {
-    @apply h-full m-0 p-0 overflow-hidden;
-  }
-
-  body {
-    height: calc(var(--vh, 1vh) * 100);
-  }
-
-  .layout {
-    @apply h-full overflow-y-auto;
+@layer base {
+  /* Otimizações para mobile */
+  html {
+    -webkit-text-size-adjust: 100%;
     -webkit-overflow-scrolling: touch;
+    touch-action: manipulation;
   }
-} */
+  
+  body {
+    @apply bg-gray-900 text-white font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Remove zoom no iOS quando focar inputs */
+  @media screen and (-webkit-min-device-pixel-ratio: 0) {
+    input[type="text"], 
+    input[type="number"] {
+      font-size: 16px !important;
+    }
+  }
+  
+  /* Remove highlights de tap no iOS */
+  * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
+  
+  /* Permite seleção de texto em inputs */
+  input, textarea {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+  
+  /* Remove aparência padrão dos inputs no iOS */
+  input {
+    -webkit-appearance: none;
+    -webkit-border-radius: 0;
+  }
+  
+  button {
+    -webkit-appearance: none;
+  }
+}
 
 @layer components {
   body {
@@ -64,10 +92,6 @@
 
   tbody>tr>td:last-child {
     @apply text-right
-  }
-
-  tbody>tr:has('BREAKFAST') {
-    @apply bg-yellow-900
   }
 
   button {

@@ -7,7 +7,6 @@ export function Audiobook() {
   const timeoutRef = useRef<number | null>(null)
   const pauseMinutesRef = useRef<number>(1)
   const [pauseMinutes, setPauseMinutes] = useState<number>(1)
-  const [useSeconds, setUseSeconds] = useState<boolean>(false)
 
   useEffect(() => {
     // Só carregar se houver videoId
@@ -80,14 +79,21 @@ export function Audiobook() {
       // Função chamada quando a API está pronta
       ;(window as any).onYouTubeIframeAPIReady = () => {
         if (document.getElementById('youtube-player')) {
+          const container = document.getElementById('youtube-player')
+          const containerWidth = container?.parentElement?.offsetWidth || 320
+          const containerHeight = Math.round(containerWidth * 0.5625) // 16:9 ratio
+          
           playerRef.current = new (window as any).YT.Player('youtube-player', {
-            height: window.innerWidth < 600 ? '250' : '315',
-            width: window.innerWidth < 600 ? '350' : '560',
+            height: containerHeight,
+            width: containerWidth,
             videoId: videoId,
             playerVars: {
               autoplay: 0,
               playsinline: 1, // Importante para iOS - permite tocar inline sem fullscreen
               rel: 0, // Não mostrar vídeos relacionados
+              modestbranding: 1, // Remove logo YouTube
+              fs: 1, // Permite fullscreen
+              controls: 1 // Mostra controles
             },
             events: {
               onReady: (event: any) => {
@@ -124,9 +130,8 @@ export function Audiobook() {
                 // Se o vídeo começou a tocar
                 if (event.data === (window as any).YT.PlayerState.PLAYING) {
                   const currentMinutes = pauseMinutesRef.current
-                  const timeInMs = useSeconds ? currentMinutes * 1000 : currentMinutes * 60 * 1000
-                  const unit = useSeconds ? 'segundos' : 'minutos'
-                  console.log(`Vídeo começou a tocar - pausará em ${currentMinutes} ${unit}`)
+                  const timeInMs = currentMinutes * 60 * 1000
+                  console.log(`Vídeo começou a tocar - pausará em ${currentMinutes} minutos`)
                   
                   // Limpar timer anterior se existir
                   if (timeoutRef.current) {
@@ -135,7 +140,7 @@ export function Audiobook() {
                   
                   // Criar novo timer para pausar
                   timeoutRef.current = setTimeout(() => {
-                    console.log(`Pausando vídeo após ${currentMinutes} ${unit}`)
+                    console.log(`Pausando vídeo após ${currentMinutes} minutos`)
                     if (playerRef.current) {
                       playerRef.current.pauseVideo()
                     }
@@ -184,14 +189,13 @@ export function Audiobook() {
         const playerState = playerRef.current.getPlayerState()
         if (playerState === 1) { // 1 = PLAYING
           clearTimeout(timeoutRef.current)
-          const timeInMs = useSeconds ? value * 1000 : value * 60 * 1000
+          const timeInMs = value * 60 * 1000
           timeoutRef.current = setTimeout(() => {
             if (playerRef.current) {
               playerRef.current.pauseVideo()
             }
           }, timeInMs)
-          const unit = useSeconds ? 'segundos' : 'minutos'
-          console.log(`Timer atualizado para ${value} ${unit}`)
+          console.log(`Timer atualizado para ${value} minutos`)
         }
       }
     }
@@ -227,123 +231,98 @@ export function Audiobook() {
   }
 
   return (
-    <main>
-      <div className="card">
-        <h1>Audio</h1>
+    <main className="min-h-screen bg-gray-900 p-4 font-sans">
+      <div className="mx-auto max-w-lg bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
+        <h1 className="text-center text-2xl font-semibold text-white mb-6 flex items-center justify-center gap-2">
+          <span>🎧</span>
+          <span>Audiobook Player</span>
+        </h1>
         
-        <div style={{ marginBottom: '20px' }}>
-          <label htmlFor="video-input" style={{ display: 'block', marginBottom: '5px' }}>
-            URL ou ID do vídeo do YouTube:
+        <div className="mb-6">
+          <label htmlFor="video-input" className="flex items-center gap-2 mb-2 text-base font-medium text-gray-200">
+            <span>📺</span>
+            <span>URL ou ID do YouTube:</span>
           </label>
-          <form onSubmit={handleVideoSubmit} style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+          <form onSubmit={handleVideoSubmit} className="space-y-3">
             <input
               id="video-input"
               type="text"
               value={videoInput}
               onChange={handleVideoChange}
-              placeholder="Cole a URL ou ID do vídeo aqui"
-              style={{
-                padding: '8px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                flex: 1,
-                minWidth: '300px'
-              }}
+              placeholder="Cole aqui: youtube.com/watch?v=..."
+              className="w-full p-4 bg-gray-700 border-2 border-gray-600 rounded-lg text-white placeholder-gray-400 text-base focus:border-blue-500 focus:outline-none transition-colors"
             />
             <button 
               type="submit"
-              style={{
-                padding: '8px 16px',
-                backgroundColor: '#007cba',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
+              className="w-full p-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-lg text-base font-semibold transition-colors flex items-center justify-center gap-2"
             >
-              Carregar
+              <span>🚀</span>
+              <span>Carregar Vídeo</span>
             </button>
           </form>
-          <small style={{ color: '#666' }}>
-            Exemplos: https://www.youtube.com/watch?v=RyBTJTCmd0A ou apenas RyBTJTCmd0A
-          </small>
+          <p className="text-gray-400 text-sm mt-2 flex items-center gap-1">
+            <span>💡</span>
+            <span>Exemplo: https://youtube.com/watch?v=ABC123</span>
+          </p>
         </div>
 
-        <div style={{ marginBottom: '20px' }}>
-          <label htmlFor="pause-minutes" style={{ display: 'block', marginBottom: '5px' }}>
-            Pausar vídeo após:
+        <div className="mb-6">
+          <label htmlFor="pause-minutes" className="flex items-center gap-2 mb-2 text-base font-medium text-gray-200">
+            <span>⏰</span>
+            <span>Pausar após (minutos):</span>
           </label>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+          <div className="flex items-center gap-3">
             <input
               id="pause-minutes"
               type="number"
               min="1"
               value={pauseMinutes}
               onChange={handleMinutesChange}
-              style={{
-                padding: '8px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                width: '100px'
-              }}
+              className="w-20 p-4 bg-gray-700 border-2 border-gray-600 rounded-lg text-white text-base text-center focus:border-blue-500 focus:outline-none transition-colors"
             />
-            
-            <div style={{ display: 'flex', gap: '15px' }}>
-              <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                <input
-                  type="radio"
-                  name="timeUnit"
-                  checked={!useSeconds}
-                  onChange={() => setUseSeconds(false)}
-                  style={{ marginRight: '5px' }}
-                />
-                minutos
-              </label>
-              
-              <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                <input
-                  type="radio"
-                  name="timeUnit"
-                  checked={useSeconds}
-                  onChange={() => setUseSeconds(true)}
-                  style={{ marginRight: '5px' }}
-                />
-                segundos
-              </label>
-            </div>
+            <span className="text-gray-300 font-medium">minutos</span>
           </div>
-          
-          {useSeconds && (
-            <small style={{ color: '#e67e22', fontWeight: 'bold' }}>
-              ⚡ Modo de teste ativo - para testar rapidamente
-            </small>
-          )}
         </div>
 
         {videoId ? (
-          <>
-            <div id="youtube-player"></div>
-            <div style={{ marginTop: '10px', padding: '10px', backgroundColor: '#f0f8ff', borderRadius: '6px' }}>
-              <p style={{ margin: '5px 0', fontSize: '14px' }}>
-                📱 <strong>Dica para Mobile:</strong> O vídeo continuará onde parou mesmo se você fechar o navegador
-              </p>
-              <p style={{ margin: '5px 0', fontSize: '14px' }}>
-                🎵 Vídeo atual: {videoId}<br/>
-                ⏰ Pausa automática após {pauseMinutes} {useSeconds ? 'segundo' : 'minuto'}{pauseMinutes > 1 ? 's' : ''}
-              </p>
+          <div className="text-center">
+            <div className="relative w-full pb-[56.25%] h-0 overflow-hidden rounded-xl shadow-2xl mb-5 bg-gray-900 border border-gray-700">
+              <div 
+                id="youtube-player" 
+                className="absolute top-0 left-0 w-full h-full rounded-xl"
+              ></div>
             </div>
-          </>
+            
+            <div className="p-4 bg-gray-800/80 rounded-xl border border-gray-600 backdrop-blur-sm">
+              <div className="flex items-center justify-center mb-3">
+                <span className="text-2xl mr-2">📱</span>
+                <span className="text-sm font-semibold text-gray-200">
+                  Otimizado para Mobile
+                </span>
+              </div>
+              
+              <div className="text-sm text-gray-300 leading-relaxed text-center space-y-2">
+                <div className="flex items-center justify-center gap-2">
+                  <span className="font-semibold text-gray-200">🎵 Vídeo:</span> 
+                  <span className="text-gray-400 font-mono text-xs bg-gray-800 px-2 py-1 rounded">{videoId}</span>
+                </div>
+                <div className="flex items-center justify-center gap-2">
+                  <span className="font-semibold text-gray-200">⏰ Auto-pausa:</span> 
+                  <span className="text-blue-400 font-medium">{pauseMinutes} minuto{pauseMinutes > 1 ? 's' : ''}</span>
+                </div>
+                <div className="text-xs text-blue-300 italic mt-3 p-2 bg-blue-900/20 rounded-lg border border-blue-800/30">
+                  <span className="mr-1">💡</span>
+                  Continua tocando mesmo se fechar o app
+                </div>
+              </div>
+            </div>
+          </div>
         ) : (
-          <div style={{ 
-            padding: '60px', 
-            textAlign: 'center', 
-            border: '2px dashed #ccc', 
-            borderRadius: '8px',
-            backgroundColor: '#f9f9f9'
-          }}>
-            <p style={{ color: '#666', fontSize: '18px' }}>
-              Cole uma URL ou ID do YouTube acima para carregar um vídeo
+          <div className="p-10 text-center border-2 border-dashed border-gray-600 rounded-xl bg-gray-800/50 my-5">
+            <div className="text-5xl mb-4">🎧</div>
+            <p className="text-gray-400 text-base leading-relaxed">
+              Cole uma URL do YouTube acima<br/>
+              <span className="text-gray-500">para começar a ouvir</span>
             </p>
           </div>
         )}
