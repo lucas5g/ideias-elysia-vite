@@ -1,3 +1,4 @@
+import { MealCard } from '@/components/Diet/Meal-Card'
 import { Form } from "@/components/Form"
 import { List } from "@/components/List"
 import { Loading } from "@/components/Loading"
@@ -28,7 +29,7 @@ export function DietNew() {
     },
   }
 
-  const headers = [...Object.keys(fields), 'Protein', 'Fat', 'Carbo', 'Fiber', 'Calorie']
+  // const headers = [...Object.keys(fields), 'Protein', 'Fat', 'Carbo', 'Fiber', 'Calorie']
 
   if (!meals || !foods) {
     return <Loading />
@@ -38,21 +39,19 @@ export function DietNew() {
     <div className='w-full space-y-1'>
 
       <div className="row">
-        <Form
-          fields={fields}
-          resource={resource}
-          
-        />
+        <MealCard />
+
 
         <List
           headers={['Name', 'Total', 'Goal', 'diff']}
           resource={'diets/report'}
+          hideSearch={true}
         />
       </div>
-
-      <List
-        headers={headers}
+      <Form
+        fields={fields}
         resource={resource}
+
       />
     </div>
   )

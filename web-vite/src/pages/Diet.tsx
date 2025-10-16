@@ -41,13 +41,12 @@ export function Diet() {
         <Form
           fields={fields}
           resource={resource}
-          isFullHeight
         />
 
         <List
           headers={['Name', 'Total', 'Goal', 'Diff']}
           resource={'diets/report'}
-          hideSearch
+          hideSearch={true}
         />
       </div>
 

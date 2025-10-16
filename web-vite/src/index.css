@@ -97,14 +97,16 @@
   }
 
   .form-container {
-    @apply transition-all duration-300 ease-in-out overflow-hidden w-full;
+    @apply transition-all duration-300 ease-in-out overflow-hidden;
   }
 
   .form-visible {
-    @apply opacity-100 max-h-screen transform translate-y-0;
+    @apply opacity-100 w-full transform translate-y-0;
+    max-height: 1000px;
   }
 
   .form-hidden {
-    @apply opacity-0 max-h-0 transform -translate-y-4 pointer-events-none w-0;
+    @apply opacity-0 -translate-y-4 hidden;   
   }
+
 }

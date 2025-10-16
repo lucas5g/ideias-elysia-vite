@@ -1,7 +1,7 @@
 import type { FieldInterface } from '@/utils/interfaces';
 import { Input } from "./Input";
 import { useSearchParams } from 'react-router';
-import { use, useEffect, useState } from 'react';
+import {  useEffect, useState } from 'react';
 import { api } from '@/utils/api';
 import { PlusIcon, TrashIcon } from '@phosphor-icons/react'
 import { Select } from '@/components/Select';
@@ -105,6 +105,7 @@ export function Form({ fields, resource }: Readonly<Props>) {
     setIsLoadingButton(false)
   }
 
+
   return (
     <>
       {!showForm &&
@@ -114,8 +115,7 @@ export function Form({ fields, resource }: Readonly<Props>) {
           <PlusIcon size={20} />
         </button>
       }
-
-      <div className={`form-container ${showForm ? 'form-visible' : 'form-hidden'}`}>
+      {showForm &&
 
         <form className={'card'} onSubmit={handleSubmit}>
           <div className='row justify-between border-b border-gray-600'>
@@ -166,8 +166,7 @@ export function Form({ fields, resource }: Readonly<Props>) {
             </button>
           </div>
         </form>
-      </div>
-
+      }
     </>
   )
 }

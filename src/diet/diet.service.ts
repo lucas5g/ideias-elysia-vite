@@ -63,6 +63,7 @@ export abstract class DietService {
         id: curr.id,
         foodId: curr.foodId,
         name: curr.food,
+        quantity: curr.quantity,
         calorie: curr.calorie,
         protein: curr.protein,
         fat: curr.fat,
@@ -81,7 +82,7 @@ export abstract class DietService {
 
       return acc;
     }, {} as Record<Meal, {
-      foods: (Omit<Food, 'createdAt' | 'updatedAt'> & { foodId: number })[];
+      foods: (Omit<Food, 'createdAt' | 'updatedAt'> & { foodId: number, quantity: number })[];
       total: Omit<Food, 'createdAt' | 'updatedAt' | 'id' | 'name'> & { quantity: number };
     }>);
 

@@ -7,13 +7,15 @@ describe('FoodService', () => {
   beforeAll(async () => {
     const payload = {
       name: 'Test name',
-  protein: 123,
-  fat: 123,
-  carbo: 123,
-  fiber: 123,
-  calorie: 123,
+      protein: 123,
+      fat: 123,
+      carbo: 123,
+      fiber: 123,
+      calorie: 123,
     };
     const created = await FoodService.create(payload);
+
+
     id = created.id;
   });
 
