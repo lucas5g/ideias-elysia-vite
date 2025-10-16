@@ -19,6 +19,55 @@ export function Audiobook() {
       playerRef.current = null
     }
 
+    // Sistema para manter áudio tocando no mobile
+    const setupMobileAudio = () => {
+      // Prevenir sleep no mobile quando possível
+      if ('wakeLock' in navigator) {
+        navigator.wakeLock.request('screen').catch(() => {
+          console.log('Wake lock não disponível')
+        })
+      }
+
+      // Salvar estado do vídeo para recuperar depois
+      const saveVideoState = () => {
+        if (playerRef.current) {
+          try {
+            const currentTime = playerRef.current.getCurrentTime()
+            const isPlaying = playerRef.current.getPlayerState() === 1
+            localStorage.setItem('audiobook_state', JSON.stringify({
+              videoId,
+              currentTime,
+              isPlaying,
+              pauseMinutes: pauseMinutesRef.current,
+              timestamp: Date.now()
+            }))
+            console.log('Estado salvo:', { currentTime, isPlaying })
+          } catch (error) {
+            console.log('Erro ao salvar estado:', error)
+          }
+        }
+      }
+
+      // Eventos para salvar estado quando sair da página
+      const handleVisibilityChange = () => {
+        if (document.hidden) {
+          saveVideoState()
+        }
+      }
+
+      document.addEventListener('visibilitychange', handleVisibilityChange)
+      window.addEventListener('beforeunload', saveVideoState)
+      window.addEventListener('pagehide', saveVideoState)
+
+      return () => {
+        document.removeEventListener('visibilitychange', handleVisibilityChange)
+        window.removeEventListener('beforeunload', saveVideoState)
+        window.removeEventListener('pagehide', saveVideoState)
+      }
+    }
+
+    const cleanupMobile = setupMobileAudio()
+
     // Carregar a API do YouTube Player
     const loadYouTubeAPI = () => {
       if (!(window as any).YT) {
@@ -31,15 +80,42 @@ export function Audiobook() {
       ;(window as any).onYouTubeIframeAPIReady = () => {
         if (document.getElementById('youtube-player')) {
           playerRef.current = new (window as any).YT.Player('youtube-player', {
-            height: '315',
-            width: '560',
+            height: window.innerWidth < 600 ? '250' : '315',
+            width: window.innerWidth < 600 ? '350' : '560',
             videoId: videoId,
             playerVars: {
               autoplay: 0,
+              playsinline: 1, // Importante para iOS - permite tocar inline sem fullscreen
+              rel: 0, // Não mostrar vídeos relacionados
             },
             events: {
-              onReady: () => {
+              onReady: (event: any) => {
                 console.log('Player ready')
+                
+                // Recuperar estado salvo se existir
+                try {
+                  const savedState = localStorage.getItem('audiobook_state')
+                  if (savedState) {
+                    const state = JSON.parse(savedState)
+                    // Verificar se é o mesmo vídeo e se foi salvo recentemente (última hora)
+                    if (state.videoId === videoId && 
+                        state.currentTime && 
+                        (Date.now() - state.timestamp) < 3600000) {
+                      
+                      console.log('Recuperando estado:', state)
+                      event.target.seekTo(state.currentTime)
+                      
+                      if (state.isPlaying) {
+                        // Pequeno delay para garantir que o seek funcionou
+                        setTimeout(() => {
+                          event.target.playVideo()
+                        }, 1000)
+                      }
+                    }
+                  }
+                } catch (error) {
+                  console.log('Erro ao recuperar estado:', error)
+                }
               },
               onStateChange: (event: any) => {
                 console.log('Estado do vídeo:', event.data)
@@ -87,10 +163,11 @@ export function Audiobook() {
     loadYouTubeAPI()
 
     return () => {
-      // Limpar timer
+      // Limpar timer e eventos mobile
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
       }
+      cleanupMobile()
     }
   }, [videoId]) // videoId como dependência para recriar quando mudar
 
@@ -212,10 +289,15 @@ export function Audiobook() {
         {videoId ? (
           <>
             <div id="youtube-player"></div>
-            <p style={{ marginTop: '10px' }}>
-              Vídeo atual: {videoId}<br/>
-              O vídeo será pausado automaticamente após {pauseMinutes} minuto{pauseMinutes > 1 ? 's' : ''} sempre que começar a tocar
-            </p>
+            <div style={{ marginTop: '10px', padding: '10px', backgroundColor: '#f0f8ff', borderRadius: '6px' }}>
+              <p style={{ margin: '5px 0', fontSize: '14px' }}>
+                📱 <strong>Dica para Mobile:</strong> O vídeo continuará onde parou mesmo se você fechar o navegador
+              </p>
+              <p style={{ margin: '5px 0', fontSize: '14px' }}>
+                🎵 Vídeo atual: {videoId}<br/>
+                ⏰ Pausa automática após {pauseMinutes} minuto{pauseMinutes > 1 ? 's' : ''}
+              </p>
+            </div>
           </>
         ) : (
           <div style={{ 
