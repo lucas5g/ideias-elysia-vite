@@ -3,7 +3,7 @@ import { Input } from '@/components/Input'
 import { Select } from '@/components/Select'
 import { api } from '@/utils/api'
 import { fetcher } from '@/utils/fetcher'
-import { Trash } from '@phosphor-icons/react'
+import { Trash, Plus, CaretUp } from '@phosphor-icons/react'
 
 interface Food {
   id: number
@@ -64,6 +64,12 @@ export function DietNew2() {
   const [searchTerm, setSearchTerm] = useState('')
   const [showDropdown, setShowDropdown] = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const [expandedMeals, setExpandedMeals] = useState<Record<string, boolean>>({
+    BREAKFAST: true,
+    LUNCH: true,
+    SNACK: true,
+    DINNER: true
+  })
 
   // Usando SWR para cache e revalidação automática
   const { data: foods = [], isLoading: loadingFoods } = fetcher<Food[]>('/foods')
@@ -71,6 +77,16 @@ export function DietNew2() {
   const { data: report = [], isLoading: loadingReport, mutate: mutateReport } = fetcher<ReportItem[]>('/diets/report')
 
   const loading = loadingFoods || loadingDiets || loadingReport
+
+  useEffect(() => {
+    // Definir o título do navegador
+    document.title = 'Gerenciador de Dieta | Controle de Macronutrientes'
+
+    return () => {
+      // Restaurar título padrão ao sair da página (opcional)
+      document.title = 'Diet App'
+    }
+  }, [])
 
   useEffect(() => {
     // Converter DietItems para MealItems quando os dados da dieta mudarem
@@ -197,7 +213,6 @@ export function DietNew2() {
       setShowDropdown(false)
       setShowModal(false)
 
-      alert('Item adicionado com sucesso!')
     } catch (error) {
       console.error('Erro ao salvar item da dieta:', error)
       alert('Erro ao salvar item da dieta. Tente novamente.')
@@ -320,8 +335,15 @@ export function DietNew2() {
     })
   }
 
+  const toggleMealExpansion = (mealValue: string) => {
+    setExpandedMeals(prev => ({
+      ...prev,
+      [mealValue]: !prev[mealValue]
+    }))
+  }
+
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-8">
+    <div className="max-w-7xl mx-auto p-6 space-y-8">
       <div className="text-center">
         <h1 className="text-3xl font-bold text-white border-b border-gray-600 pb-2">
           Gerenciador de Dieta
@@ -468,11 +490,11 @@ export function DietNew2() {
         className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-40"
         disabled={loading}
       >
-        <span className="text-2xl font-bold">+</span>
+        <Plus size={24} weight="bold" />
       </button>
 
       {/* Layout principal: Resumo + Refeições */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-2">
         {/* Resumo diário com metas */}
         <div className="xl:col-span-4">
           <div className="card">
@@ -482,7 +504,7 @@ export function DietNew2() {
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {getReportData().map((item) => (
                 <div key={item.name} className="bg-gray-700 rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
@@ -539,7 +561,7 @@ export function DietNew2() {
 
         {/* Lista de refeições */}
         <div className="xl:col-span-8">
-          <div className="space-y-6">
+          <div className="space-y-2">
             {MEAL_OPTIONS.map(mealOption => {
               const mealItems = meals.filter(item => item.meal === mealOption.value)
               const mealTotals = getTotalsByMeal(mealOption.value)
@@ -552,62 +574,75 @@ export function DietNew2() {
                     <h3 className="text-lg font-semibold text-white">
                       {mealOption.label}
                     </h3>
-                    <div className="text-sm text-gray-400">
-                      {mealTotals.calories} cal | {mealTotals.protein.toFixed(1)}g prot |
-                      {mealTotals.fat.toFixed(1)}g gord | {mealTotals.carbo.toFixed(1)}g carb
+                    <div className="flex items-center gap-3">
+                      <div className="text-sm text-gray-400">
+                        {mealTotals.calories} cal | {mealTotals.protein.toFixed(1)}g prot | {' '}
+                        {mealTotals.fat.toFixed(1)}g gord | {mealTotals.carbo.toFixed(1)}g carb
+                      </div>
+                      <button
+                        onClick={() => toggleMealExpansion(mealOption.value)}
+                        className="text-gray-400 hover:text-white transition-all duration-200 w-3"
+                        title={expandedMeals[mealOption.value] ? 'Recolher' : 'Expandir'}
+                      >
+                        <CaretUp
+                          size={20}
+                          className={`transition-transform duration-200 ${expandedMeals[mealOption.value] ? 'rotate-0' : 'rotate-180'
+                            }`}
+                        />
+                      </button>
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    {mealItems.map(item => (
-                      <div key={item.id} className="flex justify-between items-center p-3 bg-gray-700 rounded-lg">
-                        <div className="flex-1">
-                          <div className="font-medium text-white">{item.foodName}</div>
-                          <div className="text-sm text-gray-300">
-                            {item.quantity}g | {item.totalCalories} cal |
-                            P: {item.totalProtein.toFixed(1)}g |
-                            G: {item.totalFat.toFixed(1)}g |
-                            C: {item.totalCarbo.toFixed(1)}g |
-                            F: {item.totalFiber.toFixed(1)}g
+                  {expandedMeals[mealOption.value] && (
+                    <div className="space-y-2">
+                      {mealItems.map(item => (
+                        <div key={item.id} className="flex justify-between items-center p-3 bg-gray-700 rounded-lg">
+                          <div className="flex-1">
+                            <div className="font-medium text-white">{item.foodName}</div>
+                            <div className="text-sm text-gray-300">
+                              {item.totalCalories} cal |
+                              P: {item.totalProtein.toFixed(1)}g |
+                              G: {item.totalFat.toFixed(1)}g |
+                              C: {item.totalCarbo.toFixed(1)}g |
+                              F: {item.totalFiber.toFixed(1)}g
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 ml-4">
+                            {!isNaN(parseInt(item.id)) && (
+                              <input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                defaultValue={item.quantity}
+                                className="w-20 p-1 rounded bg-gray-600 text-white text-sm"
+                                onBlur={(e) => {
+                                  const newQuantity = parseFloat(e.target.value)
+                                  if (newQuantity > 0 && newQuantity !== item.quantity) {
+                                    updateMealItem(item.id, newQuantity)
+                                  }
+                                }}
+                                disabled={saving}
+                              />
+                            )}
+                            <button
+                              onClick={() => removeMealItem(item.id)}
+                              className="text-red-400 hover:text-red-300 font-medium text-sm p-2 rounded bg-red-900/20 hover:bg-red-900/40 transition-all"
+                              disabled={saving}
+                              title={saving ? 'Removendo...' : 'Remover item'}
+                            >
+                              <Trash size={16} />
+                            </button>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 ml-4">
-                          {!isNaN(parseInt(item.id)) && (
-                            <input
-                              type="number"
-                              step="0.01"
-                              min="0"
-                              defaultValue={item.quantity}
-                              className="w-20 p-1 rounded bg-gray-600 text-white text-sm"
-                              onBlur={(e) => {
-                                const newQuantity = parseFloat(e.target.value)
-                                if (newQuantity > 0 && newQuantity !== item.quantity) {
-                                  updateMealItem(item.id, newQuantity)
-                                }
-                              }}
-                              disabled={saving}
-                            />
-                          )}
-                          <button
-                            onClick={() => removeMealItem(item.id)}
-                            className="text-red-400 hover:text-red-300 font-medium text-sm p-2 rounded bg-red-900/20 hover:bg-red-900/40 transition-all"
-                            disabled={saving}
-                            title={saving ? 'Removendo...' : 'Remover item'}
-                          >
-                            <Trash size={16} />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )
             })}
           </div>
         </div>
-      </div>
-
-      {meals.length === 0 && !loading && (
+      </div>      {meals.length === 0 && !loading && (
         <div className="text-center py-12 text-gray-400">
           <div className="text-6xl mb-4">🍽️</div>
           <p className="text-lg">Nenhuma refeição adicionada ainda.</p>
