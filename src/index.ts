@@ -1,3 +1,4 @@
+import { video } from '@/video/video';
 import { user } from '@/user/user';
 import { diet } from '@/diet/diet';
 import { food } from '@/food/food';
@@ -39,6 +40,7 @@ new Elysia()
   .use(meal)
   .use(diet)
   .use(user)
+  .use(video)
   .listen(3000);
 
 console.debug(

@@ -514,14 +514,14 @@ export function Diet() {
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-300">Atual:</span>
                       <span className={`font-bold ${item.color}`}>
-                        {item.total.toFixed(1)}{item.unit}
+                        {item.total.toFixed(2)}{item.unit}
                       </span>
                     </div>
 
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-300">Meta:</span>
                       <span className="text-white">
-                        {item.goal.toFixed(1)}{item.unit}
+                        {item.goal.toFixed(2)}{item.unit}
                       </span>
                     </div>
 
@@ -530,7 +530,7 @@ export function Diet() {
                         {item.isOverGoal ? 'Excesso:' : 'Faltam:'}
                       </span>
                       <span className={item.isOverGoal ? 'text-red-400' : 'text-yellow-400'}>
-                        {Math.abs(item.diff).toFixed(1)}{item.unit}
+                        {Math.abs(item.diff).toFixed(2)}{item.unit}
                       </span>
                     </div>
 

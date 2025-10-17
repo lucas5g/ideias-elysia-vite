@@ -82,3 +82,14 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }
+
+model Video {
+  id           Int       @id @default(autoincrement())
+  title        String
+  url          String    @unique
+  currentTime  Float     @default(0)
+  pauseMinutes Int       @default(0)
+  lastPlayed   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
+}
