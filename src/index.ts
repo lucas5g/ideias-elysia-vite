@@ -9,7 +9,7 @@ import { version } from '../package.json';
 
 import openapi from '@elysiajs/openapi';
 import { prismaException } from './utils/prisma-exception';
-import z from 'zod';
+import { z } from 'zod';
 import { phrase } from '@/phrase/phrase';
 import staticPlugin from '@elysiajs/static';
 import { meal } from '@/meal/meal';
@@ -20,7 +20,7 @@ new Elysia()
   .use(staticPlugin({
     assets: process.cwd() + '/public',
     prefix: '/',
-    
+
 
   }))
   .use(openapi({
