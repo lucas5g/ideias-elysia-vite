@@ -1,5 +1,5 @@
+import { Loading } from '@/components/Loading';
 import { fetcher } from '@/utils/fetcher';
-import { Loading } from '../Loading';
 
 // interface MealInterface {
 //   [key: string]: 'BREAKFAST' | 'LUNCH' | 'SNACK' | 'DINNER';
@@ -15,7 +15,7 @@ export function MealCard() {
   console.log(meals)
 
   return (
-    <div className='card space-y-3'>
+    <div className='card'>
       {Object.keys(meals).map((meal) => {
         return (
           <table className='border-b border-gray-500'>
@@ -44,6 +44,7 @@ export function MealCard() {
               ))}
               <tr className='bg-gray-700'>
                 <td>{meal}</td>
+                <td>{<td>{meals[meal].total.quantity}</td>}</td>
                 <td>{meals[meal].total.protein}</td>
                 <td>{meals[meal].total.fat}</td>
                 <td>{meals[meal].total.carbo}</td>

@@ -7,6 +7,7 @@ import { Login } from '@/pages/modelo/Login'
 import { User } from './pages/Users'
 import { DietNew } from './pages/Diet-new'
 import { Audiobook } from './pages/Audiobook'
+import { DietNew2 } from '@/pages/Diet-new-2'
 export function App() {
 
   return (
@@ -22,6 +23,7 @@ export function App() {
         <Route path="/modelos" element={<Modelo />} />
         <Route path="/modelos/login" element={<Login />} />
         <Route path="/audiobooks" element={<Audiobook />} />
+        <Route path="/diets-new-2" element={<DietNew2 />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
