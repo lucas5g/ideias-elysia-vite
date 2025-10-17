@@ -3,7 +3,7 @@ import { Input } from '@/components/Input'
 import { Select } from '@/components/Select'
 import { api } from '@/utils/api'
 import { fetcher } from '@/utils/fetcher'
-import { Trash, Plus, CaretUp, X } from '@phosphor-icons/react'
+import { Trash, Plus, CaretUp, X, TrashIcon, CaretUpIcon } from '@phosphor-icons/react'
 
 interface Food {
   id: number
@@ -369,10 +369,10 @@ export function Diet() {
       {showModal && (
         <div
           className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4 min-h-screen"
-         
+
         >
           <div className="bg-gray-900/95 backdrop-blur-md border border-gray-700/50 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="card border-0 bg-transparent">
+            <div className="p-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold text-white">
                   Adicionar Item à Refeição
@@ -493,7 +493,7 @@ export function Diet() {
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-2">
         {/* Resumo diário com metas */}
         <div className="xl:col-span-4">
-          <div className="card">
+          <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 shadow-xl">
             <div className="mb-6">
               <h2 className="text-xl font-semibold text-white">
                 Resumo Diário & Metas
@@ -565,28 +565,26 @@ export function Diet() {
               if (mealItems.length === 0) return null
 
               return (
-                <div key={mealOption.value} className="card">
-                  <div className="flex justify-between items-center mb-4">
+                <div key={mealOption.value} className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:border-gray-600/50">
+                  <div className="flex justify-between items-center mb-2">
                     <h3 className="text-lg font-semibold text-white">
                       {mealOption.label}
                     </h3>
-                    <div className="flex items-center gap-3">
-                      <div className="text-sm text-gray-400">
-                        {mealTotals.calories} cal | {mealTotals.protein.toFixed(1)}g prot | {' '}
-                        {mealTotals.fat.toFixed(1)}g gord | {mealTotals.carbo.toFixed(1)}g carb
-                      </div>
-                      <button
-                        onClick={() => toggleMealExpansion(mealOption.value)}
-                        className="text-gray-400 hover:text-white transition-all duration-200 w-3"
-                        title={expandedMeals[mealOption.value] ? 'Recolher' : 'Expandir'}
-                      >
-                        <CaretUp
-                          size={20}
-                          className={`transition-transform duration-200 ${expandedMeals[mealOption.value] ? 'rotate-0' : 'rotate-180'
-                            }`}
-                        />
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => toggleMealExpansion(mealOption.value)}
+                      className="text-gray-400 hover:text-white transition-all duration-200 flex-shrink-0 w-min"
+                      title={expandedMeals[mealOption.value] ? 'Recolher' : 'Expandir'}
+                    >
+                      <CaretUpIcon
+                        size={20}
+                        className={`transition-transform duration-200 ${expandedMeals[mealOption.value] ? 'rotate-0' : 'rotate-180'
+                          }`}
+                      />
+                    </button>
+                  </div>
+                  <div className="text-sm text-gray-400 leading-relaxed mb-4">
+                    {mealTotals.calories} cal | {mealTotals.protein.toFixed(1)}g prot | {' '}
+                    {mealTotals.fat.toFixed(1)}g gord | {mealTotals.carbo.toFixed(1)}g carb
                   </div>
 
                   {expandedMeals[mealOption.value] && (
@@ -626,7 +624,7 @@ export function Diet() {
                               disabled={saving}
                               title={saving ? 'Removendo...' : 'Remover item'}
                             >
-                              <Trash size={16} />
+                              <TrashIcon size={16} />
                             </button>
                           </div>
                         </div>
