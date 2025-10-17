@@ -309,13 +309,13 @@ export function Diet() {
   }
 
   const getReportData = () => {
-    const nameMap: Record<string, { label: string; color: string; unit: string }> = {
-      calorie: { label: 'Calorias', color: 'text-orange-400', unit: '' },
-      protein: { label: 'Proteínas', color: 'text-red-400', unit: 'g' },
-      fat: { label: 'Gorduras', color: 'text-yellow-400', unit: 'g' },
-      carbo: { label: 'Carboidratos', color: 'text-green-400', unit: 'g' },
-      fiber: { label: 'Fibras', color: 'text-purple-400', unit: 'g' },
-      weight: { label: 'Peso', color: 'text-blue-400', unit: 'kg' }
+    const nameMap: Record<string, { label: string; color: string; unit: string; barColor: string }> = {
+      calorie: { label: 'Calorias', color: 'text-orange-400', unit: '', barColor: 'bg-orange-400' },
+      protein: { label: 'Proteínas', color: 'text-red-400', unit: 'g', barColor: 'bg-red-400' },
+      fat: { label: 'Gorduras', color: 'text-orange-400', unit: 'g', barColor: 'bg-orange-400' },
+      carbo: { label: 'Carboidratos', color: 'text-yellow-400', unit: 'g', barColor: 'bg-yellow-400' },
+      fiber: { label: 'Fibras', color: 'text-green-400', unit: 'g', barColor: 'bg-green-400' },
+      weight: { label: 'Peso', color: 'text-blue-400', unit: 'kg', barColor: 'bg-blue-400' }
     }
 
     const mappedData = report.map(item => ({
@@ -538,12 +538,7 @@ export function Diet() {
                     <div className="mt-3">
                       <div className="w-full bg-gray-600 rounded-full h-2">
                         <div
-                          className={`h-2 rounded-full transition-all duration-500 ${item.percentage >= 100
-                            ? 'bg-red-400'
-                            : item.percentage >= 80
-                              ? 'bg-green-400'
-                              : 'bg-yellow-400'
-                            }`}
+                          className={`h-2 rounded-full transition-all duration-500 ${item.barColor}`}
                           style={{ width: `${Math.min(item.percentage, 100)}%` }}
                         />
                       </div>
@@ -609,6 +604,14 @@ export function Diet() {
                                 min="0"
                                 defaultValue={item.quantity}
                                 className="w-20 p-1 rounded bg-gray-600 text-white text-sm"
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    const newQuantity = parseFloat((e.target as HTMLInputElement).value)
+                                    if (newQuantity > 0 && newQuantity !== item.quantity) {
+                                      updateMealItem(item.id, newQuantity)
+                                    }
+                                  }
+                                }}
                                 onBlur={(e) => {
                                   const newQuantity = parseFloat(e.target.value)
                                   if (newQuantity > 0 && newQuantity !== item.quantity) {
