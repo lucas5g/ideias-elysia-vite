@@ -126,76 +126,7 @@ export function Audiobook() {
     if (videoInput.trim()) {
       const newYoutubeId = extractVideoId(videoInput.trim())
       setYoutubeId(newYoutubeId)
-      console.log('Novo YouTube ID:', newYoutubeId)
-
-      // Auto-salvar vídeo na API quando carregado
-      // Aguardar o título ser capturado pelo onReady do player
-      setTimeout(async () => {
-        if (videoTitle) {
-          try {
-            // Verificar se já existe na biblioteca
-            const existingVideo = savedVideos.find(v => v.url === videoInput.trim())
-            if (existingVideo) {
-              setCurrentVideoId(existingVideo.id)
-              console.log('Vídeo já existe na biblioteca, usando ID:', existingVideo.id)
-            } else {
-              // Criar novo vídeo na API
-              const newVideo = await saveVideoToAPI({
-                title: videoTitle,
-                url: videoInput.trim(),
-                currentTime: 0,
-                pauseMinutes: pauseMinutes,
-                lastPlayed: new Date().toISOString()
-              })
-
-              if (newVideo) {
-                setCurrentVideoId(newVideo.id)
-                setSavedVideos(prev => [newVideo, ...prev])
-                console.log('Novo vídeo auto-salvo na API:', newVideo.title, 'ID:', newVideo.id)
-              }
-            }
-          } catch (error) {
-            console.error('Erro ao auto-salvar vídeo:', error)
-          }
-        }
-      }, 3000) // Aguardar 3 segundos para o título ser capturado
-    }
-  }
-
-  const saveCurrentVideo = async () => {
-    if (youtubeId && videoTitle) {
-      try {
-        const newVideo = await saveVideoToAPI({
-          title: videoTitle,
-          url: videoInput || `https://youtube.com/watch?v=${youtubeId}`,
-          currentTime: 0,
-          pauseMinutes: pauseMinutes,
-          lastPlayed: new Date().toISOString()
-        })
-
-        if (newVideo) {
-          setSavedVideos(prev => {
-            const filtered = prev.filter(v => v.url !== newVideo.url)
-            const newList = [newVideo, ...filtered]
-            console.log('Vídeo salvo na biblioteca:', newVideo.title)
-            return newList
-          })
-
-          // Feedback visual temporário
-          const button = document.querySelector('[data-save-button]') as HTMLButtonElement
-          if (button) {
-            const originalText = button.innerHTML
-            button.innerHTML = '<span>✅</span><span>Salvo!</span>'
-            button.disabled = true
-            setTimeout(() => {
-              button.innerHTML = originalText
-              button.disabled = false
-            }, 2000)
-          }
-        }
-      } catch (error) {
-        console.error('Erro ao salvar vídeo:', error)
-      }
+      console.log('Carregando e salvando vídeo automaticamente...')
     }
   }
 
@@ -366,36 +297,92 @@ export function Audiobook() {
               controls: 1 // Mostra controles
             },
             events: {
-              onReady: (event: any) => {
+              onReady: async (event: any) => {
                 console.log('Player ready')
 
                 // Capturar título do vídeo
+                let capturedTitle = youtubeId
                 try {
                   const title = event.target.getVideoData().title
-                  setVideoTitle(title || youtubeId)
+                  capturedTitle = title || youtubeId
+                  setVideoTitle(capturedTitle)
                 } catch (error) {
                   console.log('Erro ao capturar título:', error)
                   setVideoTitle(youtubeId)
                 }
 
-                // Recuperar estado salvo se existir
+                // Auto-salvar vídeo na API quando título for capturado
+                if (!currentVideoId && videoInput.trim()) {
+                  try {
+                    // Verificar se já existe na biblioteca
+                    const existingVideo = savedVideos.find(v => v.url === videoInput.trim())
+                    if (existingVideo) {
+                      setCurrentVideoId(existingVideo.id)
+                      console.log('Vídeo já existe na biblioteca, usando ID:', existingVideo.id)
+                    } else {
+                      // Criar novo vídeo na API
+                      const newVideo = await saveVideoToAPI({
+                        title: capturedTitle,
+                        url: videoInput.trim(),
+                        currentTime: 0,
+                        pauseMinutes: pauseMinutes,
+                        lastPlayed: new Date().toISOString()
+                      })
+                      
+                      if (newVideo) {
+                        setCurrentVideoId(newVideo.id)
+                        setSavedVideos(prev => [newVideo, ...prev])
+                        console.log('✅ Vídeo salvo automaticamente na biblioteca:', newVideo.title)
+                      }
+                    }
+                  } catch (error) {
+                    console.error('Erro ao auto-salvar vídeo:', error)
+                  }
+                }
+
+                // Recuperar estado salvo da API
                 try {
-                  const savedState = localStorage.getItem('audiobook_state')
-                  if (savedState) {
-                    const state = JSON.parse(savedState)
-                    // Verificar se é o mesmo vídeo e se foi salvo recentemente (última hora)
-                    if (state.youtubeId === youtubeId &&
-                      state.currentTime &&
-                      (Date.now() - state.timestamp) < 3600000) {
+                  if (currentVideoId) {
+                    // Buscar da API usando o ID do vídeo
+                    const response = await fetch(`https://api.dizelequefez.com.br/videos`)
+                    if (response.ok) {
+                      const videos: SavedVideo[] = await response.json()
+                      const currentVideo = videos.find(v => v.id === currentVideoId)
 
-                      console.log('Recuperando estado:', state)
-                      event.target.seekTo(state.currentTime)
+                      if (currentVideo && currentVideo.currentTime > 0) {
+                        console.log('Recuperando estado da API:', {
+                          currentTime: currentVideo.currentTime,
+                          title: currentVideo.title
+                        })
 
-                      if (state.isPlaying) {
+                        event.target.seekTo(currentVideo.currentTime)
+
                         // Pequeno delay para garantir que o seek funcionou
                         setTimeout(() => {
-                          event.target.playVideo()
+                          // Não auto-play, deixar usuário decidir quando reproduzir
+                          console.log(`Vídeo posicionado em ${currentVideo.currentTime}s`)
                         }, 1000)
+                      }
+                    }
+                  } else {
+                    // Fallback para localStorage se não tiver currentVideoId
+                    const savedState = localStorage.getItem('audiobook_state')
+                    if (savedState) {
+                      const state = JSON.parse(savedState)
+                      // Verificar se é o mesmo vídeo e se foi salvo recentemente (última hora)
+                      if (state.youtubeId === youtubeId &&
+                        state.currentTime &&
+                        (Date.now() - state.timestamp) < 3600000) {
+
+                        console.log('Recuperando estado do localStorage (fallback):', state)
+                        event.target.seekTo(state.currentTime)
+
+                        if (state.isPlaying) {
+                          // Pequeno delay para garantir que o seek funcionou
+                          setTimeout(() => {
+                            event.target.playVideo()
+                          }, 1000)
+                        }
                       }
                     }
                   }
@@ -545,17 +532,6 @@ export function Audiobook() {
             <span>📚</span>
             <span>Minha Biblioteca ({savedVideos.length})</span>
           </button>
-
-          {youtubeId && videoTitle && (
-            <button
-              onClick={saveCurrentVideo}
-              data-save-button
-              className="flex items-center justify-center gap-2 p-3 text-sm font-medium text-white transition-colors bg-green-600 rounded-lg hover:bg-green-700"
-            >
-              <span>⭐</span>
-              <span>Salvar</span>
-            </button>
-          )}
         </div>
 
         {/* Biblioteca de Vídeos */}
@@ -581,7 +557,7 @@ export function Audiobook() {
                     <div className="flex items-start gap-3">
                       <div className="flex-shrink-0">
                         <img
-                          src={`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`}
+                          src={`https://img.youtube.com/vi/${extractVideoId(video.url)}/mqdefault.jpg`}
                           alt={video.title}
                           className="object-cover w-16 h-12 bg-gray-700 rounded-lg"
                           loading="lazy"
@@ -626,7 +602,7 @@ export function Audiobook() {
                 <div className="mb-3 text-4xl">📺</div>
                 <p className="mb-2 text-gray-400">Sua biblioteca está vazia</p>
                 <p className="text-sm text-gray-500">
-                  Carregue um vídeo e clique em "Salvar" para adicioná-lo aqui
+                  Carregue um vídeo para adicioná-lo automaticamente aqui
                 </p>
               </div>
             )}
