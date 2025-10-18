@@ -19,29 +19,8 @@ interface VideoPayload {
   lastPlayed: string
 }
 
-interface ApiResponse<T> {
-  data: T
-  success: boolean
-  error?: string
-}
 
 const API_BASE_URL = 'https://api.dizelequefez.com.br'
-
-// Função auxiliar para extrair YouTube ID da URL
-const extractVideoId = (url: string): string => {
-  const patterns = [
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
-    /^([a-zA-Z0-9_-]{11})$/ // ID direto
-  ]
-
-  for (const pattern of patterns) {
-    const match = url.match(pattern)
-    if (match) {
-      return match[1]
-    }
-  }
-  return url // Retorna o que foi digitado se não conseguir extrair
-}
 
 // Função para buscar vídeos da API
 const fetchVideos = async (): Promise<SavedVideo[]> => {
@@ -504,9 +483,9 @@ export function Audiobook() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-900 p-4 font-sans">
-      <div className="mx-auto h-fit w-full  bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
-        <h1 className="text-center text-2xl font-semibold text-white mb-6 flex items-center justify-center gap-2">
+    <main className="min-h-screen p-4 font-sans bg-gray-900">
+      <div className="w-full p-6 mx-auto bg-gray-800 border border-gray-700 shadow-xl h-fit rounded-2xl">
+        <h1 className="flex items-center justify-center gap-2 mb-6 text-2xl font-semibold text-center text-white">
           <span>🎧</span>
           <span>Audiobook Player</span>
         </h1>
@@ -523,17 +502,17 @@ export function Audiobook() {
               value={videoInput}
               onChange={handleVideoChange}
               placeholder="Cole aqui: youtube.com/watch?v=..."
-              className="w-full p-4 bg-gray-700 border-2 border-gray-600 rounded-lg text-white placeholder-gray-400 text-base focus:border-blue-500 focus:outline-none transition-colors"
+              className="w-full p-4 text-base text-white placeholder-gray-400 transition-colors bg-gray-700 border-2 border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
             />
             <button
               type="submit"
-              className="w-full p-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-lg text-base font-semibold transition-colors flex items-center justify-center gap-2"
+              className="flex items-center justify-center w-full gap-2 p-4 text-base font-semibold text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700 active:bg-blue-800"
             >
               <span>🚀</span>
               <span>Carregar Vídeo</span>
             </button>
           </form>
-          <p className="text-gray-400 text-sm mt-2 flex items-center gap-1">
+          <p className="flex items-center gap-1 mt-2 text-sm text-gray-400">
             <span>💡</span>
             <span>Exemplo: https://youtube.com/watch?v=ABC123</span>
           </p>
@@ -551,17 +530,17 @@ export function Audiobook() {
               min="1"
               value={pauseMinutes}
               onChange={handleMinutesChange}
-              className="w-16 h-15 pl-4 pr-1 bg-gray-700 border-2 border-gray-600 rounded-lg text-white text-base text-center focus:border-blue-500 focus:outline-none transition-colors"
+              className="w-16 pl-4 pr-1 text-base text-center text-white transition-colors bg-gray-700 border-2 border-gray-600 rounded-lg h-15 focus:border-blue-500 focus:outline-none"
             />
-            <span className="text-gray-300 font-medium">minutos</span>
+            <span className="font-medium text-gray-300">minutos</span>
           </div>
         </div>
 
         {/* Botões de Biblioteca */}
-        <div className="mb-6 flex gap-3">
+        <div className="flex gap-3 mb-6">
           <button
             onClick={() => setShowLibrary(!showLibrary)}
-            className="flex-1 p-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+            className="flex items-center justify-center flex-1 gap-2 p-3 text-sm font-medium text-white transition-colors bg-gray-700 rounded-lg hover:bg-gray-600"
           >
             <span>📚</span>
             <span>Minha Biblioteca ({savedVideos.length})</span>
@@ -571,7 +550,7 @@ export function Audiobook() {
             <button
               onClick={saveCurrentVideo}
               data-save-button
-              className="p-3 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+              className="flex items-center justify-center gap-2 p-3 text-sm font-medium text-white transition-colors bg-green-600 rounded-lg hover:bg-green-700"
             >
               <span>⭐</span>
               <span>Salvar</span>
@@ -581,39 +560,39 @@ export function Audiobook() {
 
         {/* Biblioteca de Vídeos */}
         {showLibrary && (
-          <div className="mb-6 bg-gray-800/80 rounded-xl border border-gray-600 overflow-hidden">
-            <div className="p-4 bg-gray-700/50 border-b border-gray-600">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+          <div className="mb-6 overflow-hidden border border-gray-600 bg-gray-800/80 rounded-xl">
+            <div className="p-4 border-b border-gray-600 bg-gray-700/50">
+              <h3 className="flex items-center gap-2 text-lg font-semibold text-white">
                 <span>📚</span>
                 <span>Minha Biblioteca</span>
               </h3>
-              <p className="text-gray-400 text-sm mt-1">
+              <p className="mt-1 text-sm text-gray-400">
                 {getLibraryDescription()}
               </p>
             </div>
 
             {savedVideos.length > 0 ? (
-              <div className="max-h-80 overflow-y-auto">
+              <div className="overflow-y-auto max-h-80">
                 {savedVideos.map((video) => (
                   <div
                     key={video.id}
-                    className="p-4 border-b border-gray-700 last:border-b-0 hover:bg-gray-700/30 transition-colors"
+                    className="p-4 transition-colors border-b border-gray-700 last:border-b-0 hover:bg-gray-700/30"
                   >
                     <div className="flex items-start gap-3">
                       <div className="flex-shrink-0">
                         <img
                           src={`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`}
                           alt={video.title}
-                          className="w-16 h-12 object-cover rounded-lg bg-gray-700"
+                          className="object-cover w-16 h-12 bg-gray-700 rounded-lg"
                           loading="lazy"
                         />
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-white font-medium text-sm leading-tight mb-1 truncate">
+                        <h4 className="mb-1 text-sm font-medium leading-tight text-white truncate">
                           {video.title}
                         </h4>
-                        <p className="text-gray-400 text-xs mb-2">
+                        <p className="mb-2 text-xs text-gray-400">
                           Adicionado {formatDate(video.createdAt)}
                           {video.lastPlayed && video.lastPlayed !== video.createdAt && (
                             <span> • Reproduzido {formatDate(video.lastPlayed)}</span>
@@ -623,7 +602,7 @@ export function Audiobook() {
                         <div className="flex gap-2">
                           <button
                             onClick={() => loadVideo(video)}
-                            className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-md transition-colors flex items-center gap-1"
+                            className="flex items-center gap-1 px-3 py-1 text-xs text-white transition-colors bg-blue-600 rounded-md hover:bg-blue-700"
                           >
                             <span>▶️</span>
                             <span>Carregar</span>
@@ -631,7 +610,7 @@ export function Audiobook() {
 
                           <button
                             onClick={() => removeVideo(video.id)}
-                            className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded-md transition-colors flex items-center gap-1"
+                            className="flex items-center gap-1 px-3 py-1 text-xs text-white transition-colors bg-red-600 rounded-md hover:bg-red-700"
                           >
                             <span>🗑️</span>
                             <span>Remover</span>
@@ -644,9 +623,9 @@ export function Audiobook() {
               </div>
             ) : (
               <div className="p-8 text-center">
-                <div className="text-4xl mb-3">📺</div>
-                <p className="text-gray-400 mb-2">Sua biblioteca está vazia</p>
-                <p className="text-gray-500 text-sm">
+                <div className="mb-3 text-4xl">📺</div>
+                <p className="mb-2 text-gray-400">Sua biblioteca está vazia</p>
+                <p className="text-sm text-gray-500">
                   Carregue um vídeo e clique em "Salvar" para adicioná-lo aqui
                 </p>
               </div>
@@ -663,24 +642,24 @@ export function Audiobook() {
               ></div>
             </div>
 
-            <div className="p-4 bg-gray-800/80 rounded-xl border border-gray-600 backdrop-blur-sm">
+            <div className="p-4 border border-gray-600 bg-gray-800/80 rounded-xl backdrop-blur-sm">
               <div className="flex items-center justify-center mb-3">
-                <span className="text-2xl mr-2">📱</span>
+                <span className="mr-2 text-2xl">📱</span>
                 <span className="text-sm font-semibold text-gray-200">
                   Otimizado para Mobile
                 </span>
               </div>
 
-              <div className="text-sm text-gray-300 leading-relaxed text-center space-y-2">
+              <div className="space-y-2 text-sm leading-relaxed text-center text-gray-300">
                 <div className="flex items-center justify-center gap-2">
                   <span className="font-semibold text-gray-200">🎵 Vídeo:</span>
-                  <span className="text-gray-400 font-mono text-xs bg-gray-800 px-2 py-1 rounded">{youtubeId}</span>
+                  <span className="px-2 py-1 font-mono text-xs text-gray-400 bg-gray-800 rounded">{youtubeId}</span>
                 </div>
                 <div className="flex items-center justify-center gap-2">
                   <span className="font-semibold text-gray-200">⏰ Auto-pausa:</span>
-                  <span className="text-blue-400 font-medium">{pauseMinutes} minuto{pauseMinutes > 1 ? 's' : ''}</span>
+                  <span className="font-medium text-blue-400">{pauseMinutes} minuto{pauseMinutes > 1 ? 's' : ''}</span>
                 </div>
-                <div className="text-xs text-blue-300 italic mt-3 p-2 bg-blue-900/20 rounded-lg border border-blue-800/30">
+                <div className="p-2 mt-3 text-xs italic text-blue-300 border rounded-lg bg-blue-900/20 border-blue-800/30">
                   <span className="mr-1">💡</span>
                   Continua tocando mesmo se fechar o app
                 </div>
@@ -688,9 +667,9 @@ export function Audiobook() {
             </div>
           </div>
         ) : (
-          <div className="p-10 text-center border-2 border-dashed border-gray-600 rounded-xl bg-gray-800/50 my-5">
-            <div className="text-5xl mb-4">🎧</div>
-            <p className="text-gray-400 text-base leading-relaxed">
+          <div className="p-10 my-5 text-center border-2 border-gray-600 border-dashed rounded-xl bg-gray-800/50">
+            <div className="mb-4 text-5xl">🎧</div>
+            <p className="text-base leading-relaxed text-gray-400">
               Cole uma URL do YouTube acima<br />
               <span className="text-gray-500">para começar a ouvir</span>
             </p>
