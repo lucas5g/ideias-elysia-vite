@@ -93,7 +93,6 @@ export function Audiobook() {
   const [currentVideoId, setCurrentVideoId] = useState<number | null>(null) // ID da API
   const [youtubeId, setYoutubeId] = useState<string>('') // ID do YouTube (ex: dQw4w9WgXcQ)
   const [videoInput, setVideoInput] = useState('')
-  const [videoTitle, setVideoTitle] = useState<string>('')
   const [savedVideos, setSavedVideos] = useState<SavedVideo[]>([])
   const [showLibrary, setShowLibrary] = useState<boolean>(false)
   const [isLibraryLoaded, setIsLibraryLoaded] = useState<boolean>(false)
@@ -136,7 +135,6 @@ export function Audiobook() {
     setYoutubeId(youtubeIdFromUrl)
     setCurrentVideoId(savedVideo.id)
     setVideoInput(savedVideo.url)
-    setVideoTitle(savedVideo.title)
     setShowLibrary(false)
 
     // Atualizar lastPlayed via API
@@ -305,10 +303,9 @@ export function Audiobook() {
                 try {
                   const title = event.target.getVideoData().title
                   capturedTitle = title || youtubeId
-                  setVideoTitle(capturedTitle)
                 } catch (error) {
                   console.log('Erro ao capturar título:', error)
-                  setVideoTitle(youtubeId)
+                  capturedTitle = youtubeId
                 }
 
                 // Auto-salvar vídeo na API quando título for capturado
@@ -328,7 +325,7 @@ export function Audiobook() {
                         pauseMinutes: pauseMinutes,
                         lastPlayed: new Date().toISOString()
                       })
-                      
+
                       if (newVideo) {
                         setCurrentVideoId(newVideo.id)
                         setSavedVideos(prev => [newVideo, ...prev])
