@@ -13,7 +13,6 @@ export function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/" element={<Food />} />
           <Route path="/foods" element={<Food />} />
           <Route path='/users' element={<User />} />
         </Route>
@@ -22,7 +21,7 @@ export function App() {
         <Route path="/modelos/login" element={<Login />} />
         <Route path="/audiobooks" element={<Audiobook />} />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/foods" replace />} />
       </Routes>
     </BrowserRouter>
   )

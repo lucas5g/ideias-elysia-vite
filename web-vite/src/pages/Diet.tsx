@@ -367,12 +367,12 @@ export function Diet() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-8">
+    <div className="max-w-7xl mx-auto p-4 lg:p-6 space-y-6 lg:space-y-8">
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-white border-b border-gray-600 pb-2">
+        <h1 className="text-2xl lg:text-3xl font-bold text-white border-b border-gray-600 pb-2">
           Gerenciador de Dieta
         </h1>
-        <p className="text-gray-400 mt-2">
+        <p className="text-gray-400 mt-2 text-sm lg:text-base">
           Gerencie suas refeições diárias com controle de macronutrientes
         </p>
       </div>
@@ -514,17 +514,17 @@ export function Diet() {
       </button>
 
       {/* Layout principal: Resumo + Refeições */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-2">
-        {/* Resumo diário com metas */}
-        <div className="xl:col-span-4">
-          <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 shadow-xl">
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold text-white">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        {/* Resumo diário com metas - Fixo no topo em mobile, lateral em desktop */}
+        <div className="lg:col-span-4 lg:sticky lg:top-4 lg:h-fit">
+          <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-4 lg:p-6 shadow-xl">
+            <div className="mb-4 lg:mb-6">
+              <h2 className="text-lg lg:text-xl font-semibold text-white">
                 Resumo Diário & Metas
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3 lg:gap-4">
               {getReportData().map((item) => (
                 <div key={item.name} className="bg-gray-700 rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
@@ -575,7 +575,7 @@ export function Diet() {
         </div>
 
         {/* Lista de refeições */}
-        <div className="xl:col-span-8">
+        <div className="lg:col-span-8">
           <div className="space-y-2">
             {MEAL_OPTIONS.map(mealOption => {
               const mealItems = meals.filter(item => item.meal === mealOption.value)
@@ -584,9 +584,9 @@ export function Diet() {
               if (mealItems.length === 0) return null
 
               return (
-                <div key={mealOption.value} className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:border-gray-600/50">
+                <div key={mealOption.value} className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-4 shadow-xl hover:shadow-2xl transition-all duration-300 hover:border-gray-600/50">
                   <div className="flex justify-between items-center mb-2">
-                    <h3 className="text-lg font-semibold text-white">
+                    <h3 className="text-base lg:text-lg font-semibold text-white">
                       {mealOption.label}
                     </h3>
                     <button
@@ -601,7 +601,7 @@ export function Diet() {
                       />
                     </button>
                   </div>
-                  <div className="text-sm text-gray-400 leading-relaxed mb-4">
+                  <div className="text-sm text-gray-400 leading-relaxed mb-3">
                     {mealTotals.calories} cal | {mealTotals.protein.toFixed(1)}g prot | {' '}
                     {mealTotals.fat.toFixed(1)}g gord | {mealTotals.carbo.toFixed(1)}g carb
                   </div>
@@ -609,9 +609,9 @@ export function Diet() {
                   {expandedMeals[mealOption.value] && (
                     <div className="space-y-2">
                       {mealItems.map(item => (
-                        <div key={item.id} className="flex justify-between items-center p-3 bg-gray-700 rounded-lg">
+                        <div key={item.id} className="flex justify-between items-center p-2 bg-gray-700 rounded-lg">
                           <div className="flex-1">
-                            <div className="font-medium text-white">{item.foodName}</div>
+                            <div className="font-medium text-white text-sm">{item.foodName}</div>
                             <div className="text-sm text-gray-300">
                               {item.totalCalories} cal |
                               P: {item.totalProtein.toFixed(1)}g |
