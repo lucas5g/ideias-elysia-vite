@@ -326,7 +326,7 @@ export function Diet() {
       // Definir cores baseadas no status da meta
       let color: string
       let barColor: string
-      
+
       if (percentage >= 100 && percentage <= 100) {
         // Meta atingida exatamente (100%) - Verde
         color = 'text-green-400'
@@ -339,7 +339,7 @@ export function Diet() {
         // Padrão - Azul acinzentado
         color = 'text-slate-400'
         barColor = 'bg-slate-400'
-      }      return {
+      } return {
         ...item,
         ...baseNameMap[item.name],
         color,
