@@ -3,7 +3,7 @@ import { Input } from '@/components/Input'
 import { Select } from '@/components/Select'
 import { api } from '@/utils/api'
 import { fetcher } from '@/utils/fetcher'
-import {  Plus,  X, TrashIcon, CaretUpIcon } from '@phosphor-icons/react'
+import { Plus, X, TrashIcon, CaretUpIcon } from '@phosphor-icons/react'
 
 interface Food {
   id: number
@@ -309,22 +309,46 @@ export function Diet() {
   }
 
   const getReportData = () => {
-    const nameMap: Record<string, { label: string; color: string; unit: string; barColor: string }> = {
-      calorie: { label: 'Calorias', color: 'text-orange-400', unit: '', barColor: 'bg-orange-400' },
-      protein: { label: 'Proteínas', color: 'text-red-400', unit: 'g', barColor: 'bg-red-400' },
-      fat: { label: 'Gorduras', color: 'text-orange-400', unit: 'g', barColor: 'bg-orange-400' },
-      carbo: { label: 'Carboidratos', color: 'text-yellow-400', unit: 'g', barColor: 'bg-yellow-400' },
-      fiber: { label: 'Fibras', color: 'text-green-400', unit: 'g', barColor: 'bg-green-400' },
-      weight: { label: 'Peso', color: 'text-blue-400', unit: 'kg', barColor: 'bg-blue-400' }
+    const baseNameMap: Record<string, { label: string; unit: string }> = {
+      calorie: { label: 'Calorias', unit: '' },
+      protein: { label: 'Proteínas', unit: 'g' },
+      fat: { label: 'Gorduras', unit: 'g' },
+      carbo: { label: 'Carboidratos', unit: 'g' },
+      fiber: { label: 'Fibras', unit: 'g' },
+      weight: { label: 'Peso', unit: 'kg' }
     }
 
-    const mappedData = report.map(item => ({
-      ...item,
-      ...nameMap[item.name],
-      percentage: item.goal > 0 ? (item.total / item.goal) * 100 : 0,
-      isOverGoal: item.diff < 0,
-      isUnderGoal: item.diff > 0
-    }))
+    const mappedData = report.map(item => {
+      const percentage = item.goal > 0 ? (item.total / item.goal) * 100 : 0
+      const isOverGoal = item.diff < 0
+      const isUnderGoal = item.diff > 0
+
+      // Definir cores baseadas no status da meta
+      let color: string
+      let barColor: string
+      
+      if (percentage >= 100 && percentage <= 100) {
+        // Meta atingida exatamente (100%) - Verde
+        color = 'text-green-400'
+        barColor = 'bg-green-400'
+      } else if (percentage > 100) {
+        // Ultrapassou a meta - Vermelho
+        color = 'text-red-400'
+        barColor = 'bg-red-400'
+      } else {
+        // Padrão - Azul acinzentado
+        color = 'text-slate-400'
+        barColor = 'bg-slate-400'
+      }      return {
+        ...item,
+        ...baseNameMap[item.name],
+        color,
+        barColor,
+        percentage,
+        isOverGoal,
+        isUnderGoal
+      }
+    })
 
     // Ordenar para mostrar primeiro Peso e Calorias
     const order = ['weight', 'calorie', 'protein', 'fat', 'carbo', 'fiber']
@@ -529,7 +553,7 @@ export function Diet() {
                       <span className="text-sm text-gray-300">
                         {item.isOverGoal ? 'Excesso:' : 'Faltam:'}
                       </span>
-                      <span className={item.isOverGoal ? 'text-red-400' : 'text-yellow-400'}>
+                      <span className={item.color}>
                         {Math.abs(item.diff).toFixed(2)}{item.unit}
                       </span>
                     </div>
