@@ -11,5 +11,8 @@ export default defineConfig({
     alias: {
       '@': '/src'
     }
+  },
+  server: {
+    allowedHosts: ['ten-fans-serve.loca.lt']
   }
 })

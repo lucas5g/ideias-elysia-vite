@@ -100,6 +100,8 @@ export function Audiobook() {
   const timeoutRef = useRef<number | null>(null)
   const pauseMinutesRef = useRef<number>(1)
   const [pauseMinutes, setPauseMinutes] = useState<number>(1)
+  const [timeRemaining, setTimeRemaining] = useState<number>(0) // Segundos restantes
+  const [isPlaying, setIsPlaying] = useState<boolean>(false) // Se o vídeo está tocando
 
   const extractVideoId = (url: string): string => {
     const patterns = [
@@ -279,8 +281,12 @@ export function Audiobook() {
       ; (window as any).onYouTubeIframeAPIReady = () => {
         if (document.getElementById('youtube-player')) {
           const container = document.getElementById('youtube-player')
-          const containerWidth = container?.parentElement?.offsetWidth || 320
-          const containerHeight = Math.round(containerWidth * 0.5625) // 16:9 ratio
+          const containerWidth = Math.min(container?.parentElement?.offsetWidth || 320, 640) // Limita largura máxima para 640px
+
+          // Detectar se é desktop (largura > 768px) ou mobile
+          const isDesktop = window.innerWidth > 768
+          const aspectRatio = isDesktop ? 0.30 : 0.5625 // 30% altura no desktop, 16:9 no mobile
+          const containerHeight = Math.round(containerWidth * aspectRatio)
 
           playerRef.current = new (window as any).YT.Player('youtube-player', {
             height: containerHeight,
@@ -392,8 +398,11 @@ export function Audiobook() {
 
                 // Se o vídeo começou a tocar
                 if (event.data === (window as any).YT.PlayerState.PLAYING) {
+                  setIsPlaying(true)
                   const currentMinutes = pauseMinutesRef.current
                   const timeInMs = currentMinutes * 60 * 1000
+                  const timeInSeconds = currentMinutes * 60
+                  setTimeRemaining(timeInSeconds)
                   console.log(`Vídeo começou a tocar - pausará em ${currentMinutes} minutos`)
 
                   // Limpar timer anterior se existir
@@ -412,6 +421,8 @@ export function Audiobook() {
 
                 // Se o vídeo foi pausado, limpar o timer
                 if (event.data === (window as any).YT.PlayerState.PAUSED) {
+                  setIsPlaying(false)
+                  setTimeRemaining(0)
                   console.log('Vídeo pausado - limpando timer e salvando estado')
                   if (timeoutRef.current) {
                     clearTimeout(timeoutRef.current)
@@ -443,6 +454,35 @@ export function Audiobook() {
     }
   }, [youtubeId]) // youtubeId como dependência para recriar quando mudar
 
+  // useEffect para cronômetro regressivo
+  useEffect(() => {
+    let intervalId: number | null = null
+
+    if (isPlaying && timeRemaining > 0) {
+      intervalId = setInterval(() => {
+        setTimeRemaining(prev => {
+          if (prev <= 1) {
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId)
+      }
+    }
+  }, [isPlaying, timeRemaining])
+
+  // Função para formatar tempo em mm:ss
+  const formatTime = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60)
+    const remainingSeconds = seconds % 60
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
+  }
+
   const handleMinutesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value)
     if (!isNaN(value) && value > 0) {
@@ -455,6 +495,11 @@ export function Audiobook() {
         if (playerState === 1) { // 1 = PLAYING
           clearTimeout(timeoutRef.current)
           const timeInMs = value * 60 * 1000
+          const timeInSeconds = value * 60
+
+          // Atualizar cronômetro também
+          setTimeRemaining(timeInSeconds)
+
           timeoutRef.current = setTimeout(() => {
             if (playerRef.current) {
               playerRef.current.pauseVideo()
@@ -514,7 +559,7 @@ export function Audiobook() {
               min="1"
               value={pauseMinutes}
               onChange={handleMinutesChange}
-              className="w-16 pl-4 pr-1 text-base text-center text-white transition-colors bg-gray-700 border-2 border-gray-600 rounded-lg h-15 focus:border-blue-500 focus:outline-none"
+              className="w-16 lg:pl-4 pr-1 text-base text-center text-white transition-colors bg-gray-700 border-2 border-gray-600 rounded-lg h-15 focus:border-blue-500 focus:outline-none"
             />
             <span className="font-medium text-gray-300">minutos</span>
           </div>
@@ -608,7 +653,9 @@ export function Audiobook() {
 
         {youtubeId ? (
           <div className="text-center">
-            <div className="relative w-full pb-[56.25%] h-0 overflow-hidden rounded-xl shadow-2xl mb-5 bg-gray-900 border border-gray-700">
+            <div
+              className="relative w-full max-w-2xl mx-auto pb-[56.25%] md:pb-[30%] h-0 overflow-hidden rounded-xl shadow-2xl mb-5 bg-gray-900 border border-gray-700"
+            >
               <div
                 id="youtube-player"
                 className="absolute top-0 left-0 w-full h-full rounded-xl"
@@ -630,7 +677,15 @@ export function Audiobook() {
                 </div>
                 <div className="flex items-center justify-center gap-2">
                   <span className="font-semibold text-gray-200">⏰ Auto-pausa:</span>
-                  <span className="font-medium text-blue-400">{pauseMinutes} minuto{pauseMinutes > 1 ? 's' : ''}</span>
+                  {isPlaying && timeRemaining > 0 ? (
+                    <span className="font-medium text-red-400 font-mono">
+                      {formatTime(timeRemaining)}
+                    </span>
+                  ) : (
+                    <span className="font-medium text-blue-400">
+                      {pauseMinutes} minuto{pauseMinutes > 1 ? 's' : ''}
+                    </span>
+                  )}
                 </div>
                 <div className="p-2 mt-3 text-xs italic text-blue-300 border rounded-lg bg-blue-900/20 border-blue-800/30">
                   <span className="mr-1">💡</span>
