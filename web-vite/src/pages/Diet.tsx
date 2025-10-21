@@ -3,7 +3,7 @@ import { Input } from '@/components/Input'
 import { Select } from '@/components/Select'
 import { api } from '@/utils/api'
 import { fetcher } from '@/utils/fetcher'
-import { Plus, X, TrashIcon, CaretUpIcon, PlusIcon } from '@phosphor-icons/react'
+import { X, TrashIcon, CaretUpIcon, PlusIcon } from '@phosphor-icons/react'
 
 interface Food {
   id: number
