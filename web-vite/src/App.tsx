@@ -8,6 +8,7 @@ import { Audiobook } from './pages/Audiobook'
 import { Diet } from '@/pages/Diet'
 import { version } from '../package.json'
 import { Home } from './pages/Home'
+
 export function App() {
   console.log(`Running app version: ${version}`)
   return (
