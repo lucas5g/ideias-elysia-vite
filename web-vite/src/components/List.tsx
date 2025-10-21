@@ -53,7 +53,7 @@ export function List({ headers, resource, hideSearch }: Readonly<Props>) {
             if (id) {
               return setSearchParams({ id: String(id), search: e.target.value });
             }
-            setSearchParams({ search: e.target.value });
+            setSearchParams({ search: e.target.value, action: searchParams.get('action') || 'false'});
           }}
         />
       }

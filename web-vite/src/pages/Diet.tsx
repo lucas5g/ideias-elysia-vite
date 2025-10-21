@@ -115,18 +115,18 @@ export function Diet() {
       }
     }
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && showModal) {
-        closeModal()
-      }
-    }
+    // const handleKeyDown = (event: KeyboardEvent) => {
+    //   if (event.key === 'Escape' && showModal) {
+    //     closeModal()
+    //   }
+    // }
 
     document.addEventListener('mousedown', handleClickOutside)
-    document.addEventListener('keydown', handleKeyDown)
+    // document.addEventListener('keydown', handleKeyDown)
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
-      document.removeEventListener('keydown', handleKeyDown)
+      // document.removeEventListener('keydown', handleKeyDown)
     }
   }, [showModal])
 
@@ -155,12 +155,13 @@ export function Diet() {
     // Limpar formulário ao fechar
     setSelectedMeal('')
     setSelectedFood('')
-    setQuantity('0.00')
+    setQuantity('')
     setSearchTerm('')
     setShowDropdown(false)
   }
 
-  const addMealItem = async () => {
+  const addMealItem = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
     if (!selectedMeal || !selectedFood || !quantity || parseFloat(quantity) <= 0) {
       alert('Por favor, preencha todos os campos com valores válidos!')
       return
@@ -208,7 +209,7 @@ export function Diet() {
       // Reset form e fechar modal
       setSelectedMeal('')
       setSelectedFood('')
-      setQuantity('0.00')
+      setQuantity('')
       setSearchTerm('')
       setShowDropdown(false)
       setShowModal(false)
@@ -239,8 +240,8 @@ export function Diet() {
       // Revalidar os dados automaticamente
       mutateDiets()
       mutateReport()
+      console.debug('Item removido da dieta:', id)
 
-      alert('Item removido com sucesso!')
     } catch (error) {
       console.error('Erro ao remover item da dieta:', error)
       alert('Erro ao remover item da dieta. Tente novamente.')
@@ -396,7 +397,7 @@ export function Diet() {
 
         >
           <div className="bg-gray-900/95 backdrop-blur-md border border-gray-700/50 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
+            <form onSubmit={addMealItem} className="p-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold text-white">
                   Adicionar Item à Refeição
@@ -492,14 +493,14 @@ export function Diet() {
                   Cancelar
                 </button>
                 <button
-                  onClick={addMealItem}
+                  type="submit"
                   className="button-primary flex-1"
                   disabled={loading || saving}
                 >
                   {saving ? 'Salvando...' : 'Adicionar à Refeição'}
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       )}

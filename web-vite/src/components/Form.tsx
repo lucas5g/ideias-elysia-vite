@@ -43,7 +43,7 @@ export function Form({ fields, resource }: Readonly<Props>) {
   }, [id])
 
   useEffect(() => {
-    if (id || action) {
+    if (id || action === 'create') {
       return setShowForm(true)
     }
     setShowForm(false)
@@ -110,7 +110,7 @@ export function Form({ fields, resource }: Readonly<Props>) {
     <>
       {!showForm &&
         <button
-          onClick={() => setSearchParams({ action: 'create' })}
+          onClick={() => setSearchParams({ action: 'create', search: searchParams.get('search') ?? '' })}
           className='fixed bottom-5 w-10 h-10 right-3  bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-900 border border-gray-200'>
           <PlusIcon size={20} />
         </button>
