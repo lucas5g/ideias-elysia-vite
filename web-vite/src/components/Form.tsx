@@ -6,6 +6,8 @@ import { api } from '@/utils/api';
 import { PlusIcon, TrashIcon } from '@phosphor-icons/react'
 import { Select } from '@/components/Select';
 import { mutate } from 'swr';
+import { Header } from './Header';
+import { Button } from './Button';
 
 interface Props {
   fields: FieldInterface
@@ -111,17 +113,15 @@ export function Form({ fields, resource }: Readonly<Props>) {
       {!showForm &&
         <button
           onClick={() => setSearchParams({ action: 'create', search: searchParams.get('search') ?? '' })}
-          className='fixed bottom-5 w-10 h-10 right-3  bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-900 border border-gray-200'>
+          className='fixed bottom-5 w-10 h-10 right-3  bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-900 border border-gray-200 cursor-pointer'>
           <PlusIcon size={20} />
         </button>
       }
       {showForm &&
 
-        <form className={'card'} onSubmit={handleSubmit}>
-          <div className='row justify-between border-b border-gray-600'>
-            <h2>
-              Form
-            </h2>
+        <form className='bg-gray-950 p-5 text-white border border-gray-700 rounded w-full h-fit flex flex-col gap-3' onSubmit={handleSubmit}>
+          <div className='flex justify-between border-b border-gray-600'>
+            <Header text='Form' />
             {id &&
               <TrashIcon
                 size={20}
@@ -149,21 +149,20 @@ export function Form({ fields, resource }: Readonly<Props>) {
           })}
 
 
-          <div className="row gap-2 border-t border-gray-600 pt-[2.1em]">
-            <button
+          <div className="space-y-3">
+            <Button
               className="button-primary"
               type="submit"
               disabled={isLoadingButton}
             >
               {id ? 'Update' : 'Create'}
-            </button>
-            <button
-              className="button-secondary"
+            </Button>
+            <Button 
               type="reset"
               onClick={handleReset}
             >
               Cancel
-            </button>
+            </Button>
           </div>
         </form>
       }

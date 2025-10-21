@@ -3,7 +3,7 @@ import { Input } from '@/components/Input'
 import { Select } from '@/components/Select'
 import { api } from '@/utils/api'
 import { fetcher } from '@/utils/fetcher'
-import { Plus, X, TrashIcon, CaretUpIcon } from '@phosphor-icons/react'
+import { Plus, X, TrashIcon, CaretUpIcon, PlusIcon } from '@phosphor-icons/react'
 
 interface Food {
   id: number
@@ -368,7 +368,7 @@ export function Diet() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-4 lg:p-6 space-y-6 lg:space-y-8">
+    <div className=" mx-auto p-4 lg:p-12 xl:px-40 space-y-6 lg:space-y-8 bg-gray-900 min-h-screen text-white">
       <div className="text-center">
         <h1 className="text-2xl lg:text-3xl font-bold text-white border-b border-gray-600 pb-2">
           Gerenciador de Dieta
@@ -380,7 +380,7 @@ export function Diet() {
 
       {/* Status da conexão */}
       {(loading || saving) && (
-        <div className="card bg-blue-900/20 border-blue-700">
+        <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-4">
           <div className="flex items-center gap-3">
             <div className="animate-spin w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full"></div>
             <span className="text-blue-400">
@@ -403,8 +403,9 @@ export function Diet() {
                   Adicionar Item à Refeição
                 </h2>
                 <button
+                  type="button"
                   onClick={closeModal}
-                  className="text-gray-400 hover:text-white text-2xl font-bold w-min"
+                  className="cursor-pointer text-gray-400 hover:text-white text-2xl font-bold w-min"
                 >
                   <X />
                 </button>
@@ -441,8 +442,9 @@ export function Diet() {
                     />
                     {selectedFood && (
                       <button
+                        type="button"
                         onClick={clearFoodSelection}
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                        className="cursor-pointer absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
                       >
                         ✕
                       </button>
@@ -455,8 +457,9 @@ export function Diet() {
                         filteredFoods.map((food) => (
                           <button
                             key={food.id}
+                            type="button"
                             onClick={() => selectFood(food)}
-                            className="w-full text-left px-4 py-2 hover:bg-gray-600 text-white border-b border-gray-600 last:border-b-0"
+                            className="cursor-pointer w-full text-left px-4 py-2 hover:bg-gray-600 text-white border-b border-gray-600 last:border-b-0"
                           >
                             <div className="font-medium">{food.name}</div>
                             <div className="text-sm text-gray-400">
@@ -486,15 +489,16 @@ export function Diet() {
 
               <div className="flex gap-3">
                 <button
+                  type="button"
                   onClick={closeModal}
-                  className="button-secondary flex-1"
+                  className="cursor-pointer flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:bg-gray-500 disabled:cursor-not-allowed"
                   disabled={saving}
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="button-primary flex-1"
+                  className="cursor-pointer flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-blue-400 disabled:cursor-not-allowed"
                   disabled={loading || saving}
                 >
                   {saving ? 'Salvando...' : 'Adicionar à Refeição'}
@@ -508,10 +512,10 @@ export function Diet() {
       {/* Botão Flutuante para abrir modal */}
       <button
         onClick={openModal}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-40"
+        className="cursor-pointer fixed bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-40"
         disabled={loading}
       >
-        <Plus size={24} weight="bold" />
+        <PlusIcon size={24} weight="bold" />
       </button>
 
       {/* Layout principal: Resumo + Refeições */}
@@ -592,7 +596,7 @@ export function Diet() {
                     </h3>
                     <button
                       onClick={() => toggleMealExpansion(mealOption.value)}
-                      className="text-gray-400 hover:text-white transition-all duration-200 flex-shrink-0 w-min"
+                      className="cursor-pointer text-gray-400 hover:text-white transition-all duration-200 flex-shrink-0 w-min"
                       title={expandedMeals[mealOption.value] ? 'Recolher' : 'Expandir'}
                     >
                       <CaretUpIcon
@@ -648,7 +652,7 @@ export function Diet() {
                             )}
                             <button
                               onClick={() => removeMealItem(item.id)}
-                              className="text-red-400 hover:text-red-300 font-medium text-sm p-2 rounded bg-red-900/20 hover:bg-red-900/40 transition-all"
+                              className="cursor-pointer text-red-400 hover:text-red-300 font-medium text-sm p-2 rounded bg-red-900/20 hover:bg-red-900/40 transition-all"
                               disabled={saving}
                               title={saving ? 'Removendo...' : 'Remover item'}
                             >

@@ -9,7 +9,7 @@ export function Select({ doesntHaveLabel, options = [], ...props }: Readonly<Sel
       {!doesntHaveLabel && (
         <label
           htmlFor={props.name?.toLowerCase()}
-          className='text-sm'
+          className="block text-sm font-medium text-white mb-2"
         >
           {props.name}
         </label>
@@ -17,16 +17,17 @@ export function Select({ doesntHaveLabel, options = [], ...props }: Readonly<Sel
 
       <select
         {...props}
-        className="input cursor-pointer"
+        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 cursor-pointer"
         required
         id={props.id ?? props.name?.toLowerCase()}
         name={props.name?.toLowerCase()}
       >
-        <option value="">Selecione {props.name}</option>
+        <option value="" className="text-gray-400">Selecione {props.name}</option>
         {options.map((option) => (
           <option
             key={option.value}
             value={option.value}
+            className="bg-gray-700 text-white"
           >
             {option.label}
           </option>

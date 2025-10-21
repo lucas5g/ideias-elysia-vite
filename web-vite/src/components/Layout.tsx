@@ -10,18 +10,19 @@ export function Layout() {
   ]
 
   useEffect(() => {
-    const currentPath = window.location.pathname
+    const currentPath = globalThis.location.pathname
     const currentLink = links.find(link => `/${link.toLowerCase()}` === currentPath)
     document.title = `Ideias - ${currentLink}`
   }, [])
 
   return (
-    <div className="">
+    <div className="bg-gray-800 min-h-screen text-white flex flex-col gap-1">
       <nav>
-        <ul>
+        <ul className='flex gap-3 bg-gray-950 p-5 text-gray-500 font-bold text-2xl border-b border-black'>
           {links.map(link => (
             <li key={link}>
               <NavLink
+                className={({ isActive }) => isActive ? 'text-white' : ''}
                 to={`/${link.toLowerCase()}`}
                 onClick={() => document.title = `Ideias - ${link}`}
               >
@@ -31,7 +32,7 @@ export function Layout() {
           ))}
         </ul>
       </nav>
-      <main>
+      <main className='p-1 flex flex-col gap-1 lg:flex-row w-full'>
         <Outlet />
       </main>
     </div>

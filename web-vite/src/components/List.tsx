@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router';
 import { Loading } from './Loading';
 import { Input } from './Input';
 import { fetcher } from "@/utils/fetcher";
+import { Header } from './Header';
 
 
 interface Props {
@@ -39,10 +40,8 @@ export function List({ headers, resource, hideSearch }: Readonly<Props>) {
   }
 
   return (
-    <div className="card">
-      <h1>
-        List
-      </h1>
+    <div className="bg-gray-950 p-5 text-white border border-gray-700 rounded w-full h-fit flex flex-col gap-3">
+      <Header text='List' />
       {!hideSearch &&
 
         <Input
@@ -63,9 +62,9 @@ export function List({ headers, resource, hideSearch }: Readonly<Props>) {
       {list &&
         <table>
           <thead>
-            <tr>
+            <tr className='border-b border-gray-600 text-left h-10 '>
               {headers.map((head) => (
-                <th key={head}>{head}</th>
+                <th className='last:text-right' key={head}>{head}</th>
               ))}
             </tr>
           </thead>
@@ -78,11 +77,10 @@ export function List({ headers, resource, hideSearch }: Readonly<Props>) {
                     handleSelect(row.id)
                   }}
                   key={row.id}
-                  className={row.id === Number(id) ? 'bg-gray-600' : ''}
+                  className={'border-b border-gray-700 h-12 hover:bg-gray-700 hover:cursor-pointer hover:transition-all ' + (row.id === Number(id) ? 'bg-gray-600' : '')}
                 >
                   {headers.map((head) => (
-                    <td key={head}>
-
+                    <td className='last:text-right' key={head}>
                       {row[head.toLowerCase()]}
                     </td>
                   ))}
