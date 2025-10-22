@@ -5,6 +5,9 @@ import type { FieldInterface } from '@/utils/interfaces';
 export function User() {
   const resource = 'users'
   const fields: FieldInterface = {
+    Name: {
+      type: 'text',
+    },
     Weight: {
       type: 'number',
     },
