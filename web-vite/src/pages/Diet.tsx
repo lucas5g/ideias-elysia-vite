@@ -3,7 +3,7 @@ import { Input } from '@/components/Input'
 import { Select } from '@/components/Select'
 import { api } from '@/utils/api'
 import { fetcher } from '@/utils/fetcher'
-import { X, TrashIcon, CaretUpIcon, PlusIcon } from '@phosphor-icons/react'
+import { TrashIcon, CaretUpIcon, PlusIcon, CalendarDotsIcon } from '@phosphor-icons/react'
 
 interface Food {
   id: number
@@ -26,6 +26,7 @@ interface DietItem {
   carbo: number
   fiber: number
   calorie: number
+  date: string
 }
 
 interface MealItem {
@@ -60,10 +61,13 @@ export function Diet() {
   const [selectedMeal, setSelectedMeal] = useState('')
   const [selectedFood, setSelectedFood] = useState('')
   const [quantity, setQuantity] = useState('')
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]) // Data atual como padrão
+  const [filterDate, setFilterDate] = useState(new Date().toISOString().split('T')[0]) // Data para filtrar as refeições
   const [saving, setSaving] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [showDropdown, setShowDropdown] = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const [showDateFilter, setShowDateFilter] = useState(false)
   const [expandedMeals, setExpandedMeals] = useState<Record<string, boolean>>({
     BREAKFAST: true,
     LUNCH: true,
@@ -73,8 +77,14 @@ export function Diet() {
 
   // Usando SWR para cache e revalidação automática
   const { data: foods = [], isLoading: loadingFoods } = fetcher<Food[]>('/foods')
-  const { data: diets = [], isLoading: loadingDiets, mutate: mutateDiets } = fetcher<DietItem[]>('/diets')
-  const { data: report = [], isLoading: loadingReport, mutate: mutateReport } = fetcher<ReportItem[]>('/diets/report')
+  const { data: diets = [], isLoading: loadingDiets, mutate: mutateDiets } = fetcher<DietItem[]>(`/diets?date=${filterDate}`)
+  const { data: report = [], isLoading: loadingReport, mutate: mutateReport } = fetcher<ReportItem[]>(`/diets/report?date=${filterDate}`)
+
+  // Funções para revalidar dados com a data específica
+  const revalidateData = () => {
+    mutateDiets() // Revalida com a chave atual que já inclui a data
+    mutateReport() // Revalida com a chave atual que já inclui a data
+  }
 
   const loading = loadingFoods || loadingDiets || loadingReport
 
@@ -104,6 +114,9 @@ export function Diet() {
         totalFiber: Math.round(item.fiber * 10) / 10,
       }))
       setMeals(convertedMeals)
+    } else {
+      // Se não há dados para a data filtrada, limpar a lista
+      setMeals([])
     }
   }, [diets])
 
@@ -113,20 +126,15 @@ export function Diet() {
       if (!target.closest('.search-dropdown-container')) {
         setShowDropdown(false)
       }
+      if (!target.closest('.date-filter-container') && !target.closest('.date-filter-button')) {
+        setShowDateFilter(false)
+      }
     }
 
-    // const handleKeyDown = (event: KeyboardEvent) => {
-    //   if (event.key === 'Escape' && showModal) {
-    //     closeModal()
-    //   }
-    // }
-
     document.addEventListener('mousedown', handleClickOutside)
-    // document.addEventListener('keydown', handleKeyDown)
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
-      // document.removeEventListener('keydown', handleKeyDown)
     }
   }, [showModal])
 
@@ -147,6 +155,8 @@ export function Diet() {
   }
 
   const openModal = () => {
+    // Definir a data do formulário como a data do filtro atual
+    setSelectedDate(filterDate)
     setShowModal(true)
   }
 
@@ -156,21 +166,22 @@ export function Diet() {
     setSelectedMeal('')
     setSelectedFood('')
     setQuantity('')
+    setSelectedDate(new Date().toISOString().split('T')[0]) // Reset para data atual
     setSearchTerm('')
     setShowDropdown(false)
   }
 
   const addMealItem = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if (!selectedMeal || !selectedFood || !quantity || parseFloat(quantity) <= 0) {
+    if (!selectedMeal || !selectedFood || !quantity || !selectedDate || Number.parseFloat(quantity) <= 0) {
       alert('Por favor, preencha todos os campos com valores válidos!')
       return
     }
 
-    const food = foods.find(f => f.id === parseInt(selectedFood))
+    const food = foods.find(f => f.id === Number.parseInt(selectedFood))
     if (!food) return
 
-    const quantityNum = parseFloat(quantity)
+    const quantityNum = Number.parseFloat(quantity)
     const multiplier = quantityNum / 100 // A API retorna valores para 100g
 
     try {
@@ -180,36 +191,39 @@ export function Diet() {
       const dietData = {
         meal: selectedMeal,
         foodId: food.id,
-        quantity: quantityNum
+        quantity: quantityNum,
+        date: selectedDate
       }
 
       // Salvar na API
       const response = await api.post('/diets', dietData)
 
-      // Adicionar à lista local se foi salvo com sucesso
-      const newMealItem: MealItem = {
-        id: response.data.id?.toString() || Date.now().toString(),
-        meal: selectedMeal,
-        foodId: food.id,
-        foodName: food.name,
-        quantity: quantityNum,
-        totalCalories: Math.round(food.calorie * multiplier),
-        totalProtein: Math.round(food.protein * multiplier * 10) / 10,
-        totalFat: Math.round(food.fat * multiplier * 10) / 10,
-        totalCarbo: Math.round(food.carbo * multiplier * 10) / 10,
-        totalFiber: Math.round(food.fiber * multiplier * 10) / 10,
+      // Só adicionar à lista local se a data do item for igual à data do filtro atual
+      if (selectedDate === filterDate) {
+        const newMealItem: MealItem = {
+          id: response.data.id?.toString() || Date.now().toString(),
+          meal: selectedMeal,
+          foodId: food.id,
+          foodName: food.name,
+          quantity: quantityNum,
+          totalCalories: Math.round(food.calorie * multiplier),
+          totalProtein: Math.round(food.protein * multiplier * 10) / 10,
+          totalFat: Math.round(food.fat * multiplier * 10) / 10,
+          totalCarbo: Math.round(food.carbo * multiplier * 10) / 10,
+          totalFiber: Math.round(food.fiber * multiplier * 10) / 10,
+        }
+
+        setMeals([...meals, newMealItem])
       }
 
-      setMeals([...meals, newMealItem])
-
       // Revalidar os dados automaticamente
-      mutateDiets()
-      mutateReport()
+      revalidateData()
 
       // Reset form e fechar modal
       setSelectedMeal('')
       setSelectedFood('')
       setQuantity('')
+      setSelectedDate(new Date().toISOString().split('T')[0]) // Reset para data atual
       setSearchTerm('')
       setShowDropdown(false)
       setShowModal(false)
@@ -230,7 +244,7 @@ export function Diet() {
       setSaving(true)
 
       // Remover da API se tem ID numérico (item salvo)
-      if (!isNaN(parseInt(id))) {
+      if (!Number.isNaN(Number.parseInt(id))) {
         await api.delete(`/diets/${id}`)
       }
 
@@ -238,8 +252,7 @@ export function Diet() {
       setMeals(meals.filter(meal => meal.id !== id))
 
       // Revalidar os dados automaticamente
-      mutateDiets()
-      mutateReport()
+      revalidateData()
       console.debug('Item removido da dieta:', id)
 
     } catch (error) {
@@ -252,7 +265,7 @@ export function Diet() {
 
   const updateMealItem = async (id: string, newQuantity: number) => {
     const mealItem = meals.find(meal => meal.id === id)
-    if (!mealItem || isNaN(parseInt(id))) return // Só atualiza itens salvos na API
+    if (!mealItem || Number.isNaN(Number.parseInt(id))) return // Só atualiza itens salvos na API
 
     const food = foods.find(f => f.id === mealItem.foodId)
     if (!food) return
@@ -284,8 +297,7 @@ export function Diet() {
       setMeals(updatedMeals)
 
       // Revalidar os dados automaticamente
-      mutateDiets()
-      mutateReport()
+      revalidateData()
 
     } catch (error) {
       console.error('Erro ao atualizar item da dieta:', error)
@@ -340,7 +352,9 @@ export function Diet() {
         // Padrão - Azul acinzentado
         color = 'text-slate-400'
         barColor = 'bg-slate-400'
-      } return {
+      } 
+      
+      return {
         ...item,
         ...baseNameMap[item.name],
         color,
@@ -407,11 +421,18 @@ export function Diet() {
                   onClick={closeModal}
                   className="cursor-pointer text-gray-400 hover:text-white text-2xl font-bold w-min"
                 >
-                  <X />
+                  ✕
                 </button>
               </div>
 
               <div className="grid grid-cols-1 gap-4 mb-4">
+                <Input
+                  type="date"
+                  name="Data"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                />
+
                 <Select
                   name="Refeição"
                   value={selectedMeal}
@@ -420,9 +441,10 @@ export function Diet() {
                 />
 
                 <div className="relative search-dropdown-container">
-                  <label className="text-sm text-white">Buscar Alimento</label>
+                  <label htmlFor="food-search" className="text-sm text-white">Buscar Alimento</label>
                   <div className="relative">
                     <Input
+                      id="food-search"
                       type="text"
                       placeholder="Digite para buscar alimentos..."
                       value={searchTerm}
@@ -517,6 +539,80 @@ export function Diet() {
       >
         <PlusIcon size={24} weight="bold" />
       </button>
+
+      {/* Botão Filtro de Data */}
+      <button
+        onClick={() => setShowDateFilter(!showDateFilter)}
+        className="cursor-pointer date-filter-button fixed bottom-6 left-6 w-14 h-14 bg-gray-700 hover:bg-gray-600 hover:scale-110 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-40 group"
+        title="Filtrar por data"
+      >
+        <CalendarDotsIcon 
+          size={24} 
+          className="transition-transform duration-200 group-hover:scale-110" 
+        />
+      </button>
+
+      {/* Card de Filtro por Data */}
+      {showDateFilter && (
+        <div className="date-filter-container fixed bottom-24 left-6 right-6 sm:right-auto sm:left-6 bg-gray-800/95 backdrop-blur-sm border border-gray-700 rounded-xl shadow-2xl p-4 z-50 sm:min-w-[280px] sm:max-w-[320px]">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-white font-semibold">Filtrar por Data</h3>
+            <button
+              onClick={() => setShowDateFilter(false)}
+              className="cursor-pointer text-gray-400 hover:text-white text-xl"
+            >
+              ✕
+            </button>
+          </div>
+          
+          <div className="space-y-3">
+            <div>
+              <label htmlFor="filter-date-input" className="block text-sm text-gray-300 mb-1">
+                Selecionar data:
+              </label>
+              <input
+                id="filter-date-input"
+                type="date"
+                value={filterDate}
+                onChange={(e) => setFilterDate(e.target.value)}
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-300">Data selecionada:</span>
+              {filterDate === new Date().toISOString().split('T')[0] ? (
+                <span className="text-green-400 font-medium">Hoje</span>
+              ) : (
+                <span className="text-blue-400 font-medium">
+                  {new Date(filterDate + 'T00:00:00').toLocaleDateString('pt-BR')}
+                </span>
+              )}
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setFilterDate(new Date().toISOString().split('T')[0])
+                }}
+                className="cursor-pointer flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 px-3 rounded transition-all duration-200"
+              >
+                Hoje
+              </button>
+              <button
+                onClick={() => {
+                  const yesterday = new Date()
+                  yesterday.setDate(yesterday.getDate() - 1)
+                  setFilterDate(yesterday.toISOString().split('T')[0])
+                }}
+                className="cursor-pointer flex-1 bg-gray-600 hover:bg-gray-700 text-white text-sm py-2 px-3 rounded transition-all duration-200"
+              >
+                Ontem
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Layout principal: Resumo + Refeições */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
@@ -626,7 +722,7 @@ export function Diet() {
                             </div>
                           </div>
                           <div className="flex items-center gap-2 ml-4">
-                            {!isNaN(parseInt(item.id)) && (
+                            {!Number.isNaN(Number.parseInt(item.id)) && (
                               <input
                                 type="number"
                                 step="0.01"
@@ -635,14 +731,14 @@ export function Diet() {
                                 className="w-20 p-1 rounded bg-gray-600 text-white text-sm"
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter') {
-                                    const newQuantity = parseFloat((e.target as HTMLInputElement).value)
+                                    const newQuantity = Number.parseFloat((e.target as HTMLInputElement).value)
                                     if (newQuantity > 0 && newQuantity !== item.quantity) {
                                       updateMealItem(item.id, newQuantity)
                                     }
                                   }
                                 }}
                                 onBlur={(e) => {
-                                  const newQuantity = parseFloat(e.target.value)
+                                  const newQuantity = Number.parseFloat(e.target.value)
                                   if (newQuantity > 0 && newQuantity !== item.quantity) {
                                     updateMealItem(item.id, newQuantity)
                                   }

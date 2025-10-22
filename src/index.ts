@@ -13,20 +13,20 @@ import { z } from 'zod';
 import { phrase } from '@/phrase/phrase';
 import staticPlugin from '@elysiajs/static';
 import { meal } from '@/meal/meal';
-import { auth } from './auth/auth';
 
+// console.log(auth.handler());
 new Elysia()
-  .use(prismaException)
-  .use(cors())
-  .use(staticPlugin({
-    assets: process.cwd() + '/public',
-    prefix: '/',
-
-
-  }))
-  .use(openapi({
-    mapJsonSchema: {
-      zod: z.toJSONSchema
+.use(prismaException)
+.use(cors())
+.use(staticPlugin({
+  assets: process.cwd() + '/public',
+  prefix: '/',
+  
+  
+}))
+.use(openapi({
+  mapJsonSchema: {
+    zod: z.toJSONSchema
     },
     documentation: {
       info: {
@@ -42,10 +42,11 @@ new Elysia()
   .use(diet)
   .use(user)
   .use(video)
-  .mount(auth.handler)
+  // .mount('/auth',auth.handler)
   .listen(3000);
-
-console.debug(
-  `🦊 Elysia is running at ${env.BASE_URL_API} v${version}`
-);
-
+  
+  console.debug(
+    `🦊 Elysia is running at ${env.BASE_URL_API} v${version}`
+  );
+  
+  

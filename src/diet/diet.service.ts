@@ -109,11 +109,10 @@ export abstract class DietService {
     return prisma.diet.delete({ where: { id } });
   }
 
-  static async report() {
+  static async report(where: DietModel.findAllQuery) {
     const [user, diets] = await Promise.all([
       prisma.user.findFirstOrThrow(),
-      this.findAll(),
-
+      this.findAll(where),
     ]);
 
     const toFixed = (num: number) => Number(num.toFixed(2));
