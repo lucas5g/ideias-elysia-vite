@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export namespace UserModel {
   export const createBody = z.object({
+    name: z.string().min(2).max(100),
     weight: z.number(),
     calorie: z.number(),
   });

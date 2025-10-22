@@ -14,7 +14,6 @@ import { phrase } from '@/phrase/phrase';
 import staticPlugin from '@elysiajs/static';
 import { meal } from '@/meal/meal';
 
-// console.log(auth.handler());
 new Elysia()
 .use(prismaException)
 .use(cors())
