@@ -13,6 +13,7 @@ import { z } from 'zod';
 import { phrase } from '@/phrase/phrase';
 import staticPlugin from '@elysiajs/static';
 import { meal } from '@/meal/meal';
+import { auth } from './auth/auth';
 
 new Elysia()
   .use(prismaException)
@@ -41,6 +42,7 @@ new Elysia()
   .use(diet)
   .use(user)
   .use(video)
+  .mount(auth.handler)
   .listen(3000);
 
 console.debug(

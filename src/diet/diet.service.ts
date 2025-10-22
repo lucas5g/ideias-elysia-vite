@@ -13,6 +13,7 @@ export abstract class DietService {
         id: true,
         meal: true,
         quantity: true,
+        date: true,
         food: {
           select: {
             id: true,
@@ -33,6 +34,7 @@ export abstract class DietService {
 
     return res.map(diet => ({
       id: diet.id,
+      date: diet.date,
       meal: diet.meal,
       foodId: diet.food.id,
       food: diet.food.name,

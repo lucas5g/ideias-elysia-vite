@@ -6,11 +6,9 @@ export namespace DietModel {
     meal: z.enum(Meal),
     foodId: z.number(),
     quantity: z.number(),
-    // protein: z.number(),
-    // fat: z.number(),
-    // carbo: z.number(),
-    // fiber: z.number(),
-    // calorie: z.number(),
+    date: z.string().refine((date) => !isNaN(Date.parse(date)), {
+      message: 'Invalid date format',
+    }),  
   });
 
   export const updateBody = createBody.partial();
