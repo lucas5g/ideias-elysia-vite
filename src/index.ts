@@ -13,8 +13,6 @@ import { z } from 'zod';
 import { phrase } from '@/phrase/phrase';
 import staticPlugin from '@elysiajs/static';
 import { meal } from '@/meal/meal';
-import { betterAuth } from './auth/better-auth';
-import { OpenAPI } from './auth/open-api';
 
 new Elysia()
   .use(prismaException)
@@ -31,9 +29,7 @@ new Elysia()
       info: {
         title: 'Ideias API',
         version
-      },
-      components: await OpenAPI.components,
-      paths: await OpenAPI.getPaths()
+      },    
     }
   }))
   .get('/', () => redirect('/openapi'))
@@ -43,7 +39,6 @@ new Elysia()
   .use(diet)
   .use(user)
   .use(video)
-  .use(betterAuth)
   .listen(3000);
 
 console.debug(

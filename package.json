@@ -16,7 +16,6 @@
     "@google/genai": "^1.19.0",
     "@prisma/client": "^6.17.1",
     "axios": "^1.12.2",
-    "better-auth": "^1.3.28",
     "cheerio": "^1.1.2",
     "elysia": "latest",
     "zod": "^4.1.8"

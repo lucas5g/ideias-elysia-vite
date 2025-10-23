@@ -2,7 +2,7 @@ import Elysia from 'elysia';
 import { auth } from './auth';
 
 
-export const betterAuth = new Elysia({ name: "better-auth" })
+export const betterAuth = new Elysia({ name: 'better-auth' })
   // .mount(auth.handler)
   .mount('/auth', auth.handler)
   .macro({
