@@ -56,13 +56,21 @@ const MEAL_OPTIONS = [
   { value: 'DINNER', label: 'Jantar' }
 ]
 
+// Função para obter a data no timezone local no formato YYYY-MM-DD
+const getLocalDateString = (date: Date = new Date()): string => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 export function Diet() {
   const [meals, setMeals] = useState<MealItem[]>([])
   const [selectedMeal, setSelectedMeal] = useState('')
   const [selectedFood, setSelectedFood] = useState('')
   const [quantity, setQuantity] = useState('')
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]) // Data atual como padrão
-  const [filterDate, setFilterDate] = useState(new Date().toISOString().split('T')[0]) // Data para filtrar as refeições
+  const [selectedDate, setSelectedDate] = useState(getLocalDateString()) // Data atual como padrão
+  const [filterDate, setFilterDate] = useState(getLocalDateString()) // Data para filtrar as refeições
   const [saving, setSaving] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [showDropdown, setShowDropdown] = useState(false)
@@ -166,7 +174,7 @@ export function Diet() {
     setSelectedMeal('')
     setSelectedFood('')
     setQuantity('')
-    setSelectedDate(new Date().toISOString().split('T')[0]) // Reset para data atual
+    setSelectedDate(getLocalDateString()) // Reset para data atual
     setSearchTerm('')
     setShowDropdown(false)
   }
@@ -223,7 +231,7 @@ export function Diet() {
       setSelectedMeal('')
       setSelectedFood('')
       setQuantity('')
-      setSelectedDate(new Date().toISOString().split('T')[0]) // Reset para data atual
+      setSelectedDate(getLocalDateString()) // Reset para data atual
       setSearchTerm('')
       setShowDropdown(false)
       setShowModal(false)
@@ -581,7 +589,7 @@ export function Diet() {
             
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-300">Data selecionada:</span>
-              {filterDate === new Date().toISOString().split('T')[0] ? (
+              {filterDate === getLocalDateString() ? (
                 <span className="text-green-400 font-medium">Hoje</span>
               ) : (
                 <span className="text-blue-400 font-medium">
@@ -593,7 +601,7 @@ export function Diet() {
             <div className="flex gap-2">
               <button
                 onClick={() => {
-                  setFilterDate(new Date().toISOString().split('T')[0])
+                  setFilterDate(getLocalDateString())
                 }}
                 className="cursor-pointer flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 px-3 rounded transition-all duration-200"
               >
@@ -603,7 +611,7 @@ export function Diet() {
                 onClick={() => {
                   const yesterday = new Date()
                   yesterday.setDate(yesterday.getDate() - 1)
-                  setFilterDate(yesterday.toISOString().split('T')[0])
+                  setFilterDate(getLocalDateString(yesterday))
                 }}
                 className="cursor-pointer flex-1 bg-gray-600 hover:bg-gray-700 text-white text-sm py-2 px-3 rounded transition-all duration-200"
               >
@@ -615,9 +623,18 @@ export function Diet() {
       )}
 
       {/* Layout principal: Resumo + Refeições */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        {/* Resumo diário com metas - Fixo no topo em mobile, lateral em desktop */}
-        <div className="lg:col-span-4 lg:sticky lg:top-4 lg:h-fit">
+      {meals.length === 0 && !loading ? (
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="text-center py-12 text-gray-400">
+            <div className="text-6xl mb-4">🍽️</div>
+            <p className="text-lg font-semibold">Nenhuma refeição adicionada ainda.</p>
+            <p className="text-sm mt-2">Comece adicionando alimentos às suas refeições!</p>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          {/* Resumo diário com metas - Fixo no topo em mobile, lateral em desktop */}
+          <div className="lg:col-span-4 lg:sticky lg:top-4 lg:h-fit">
           <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-4 lg:p-6 shadow-xl">
             <div className="mb-4 lg:mb-6">
               <h2 className="text-lg lg:text-xl font-semibold text-white">
@@ -764,12 +781,7 @@ export function Diet() {
             })}
           </div>
         </div>
-      </div>      {meals.length === 0 && !loading && (
-        <div className="text-center py-12 text-gray-400">
-          <div className="text-6xl mb-4">🍽️</div>
-          <p className="text-lg">Nenhuma refeição adicionada ainda.</p>
-          <p className="text-sm">Comece adicionando alimentos às suas refeições!</p>
-        </div>
+      </div>
       )}
     </div>
   )

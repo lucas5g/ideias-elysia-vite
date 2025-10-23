@@ -36,6 +36,7 @@ export function Home() {
   const pupilRadius = 25;
 
   useEffect(() => {
+    document.title = `Game Veiny`;
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -499,7 +500,7 @@ export function Home() {
     }}>
       {/* Título do jogo */}
       <h1 style={{ color: 'white', marginBottom: '20px' }}>
-        👁️ Jogo do Olho Diabólico
+        👁️ Game Veiny
       </h1>
 
       {/* Interface do jogo */}

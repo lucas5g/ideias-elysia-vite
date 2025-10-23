@@ -8,6 +8,8 @@ import { Audiobook } from './pages/Audiobook'
 import { Diet } from '@/pages/Diet'
 import { version } from '../package.json'
 import { Home } from './pages/Home'
+import { Google } from './pages/Google'
+import { Auth0 } from './pages/auth0'
 
 export function App() {
   console.log(`Running app version: ${version}`)
@@ -23,8 +25,10 @@ export function App() {
         <Route path="/modelos" element={<Modelo />} />
         <Route path="/modelos/login" element={<Login />} />
         <Route path="/audiobooks" element={<Audiobook />} />
+        <Route path="/google" element={<Google />} />
+        <Route path="/auth0" element={<Auth0 />} />
 
-        <Route path="*" element={<Navigate to="/foods" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   )
