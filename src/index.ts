@@ -13,25 +13,27 @@ import { z } from 'zod';
 import { phrase } from '@/phrase/phrase';
 import staticPlugin from '@elysiajs/static';
 import { meal } from '@/meal/meal';
+import { betterAuth } from './auth/better-auth';
+import { OpenAPI } from './auth/open-api';
 
 new Elysia()
-.use(prismaException)
-.use(cors())
-.use(staticPlugin({
-  assets: process.cwd() + '/public',
-  prefix: '/',
-  
-  
-}))
-.use(openapi({
-  mapJsonSchema: {
-    zod: z.toJSONSchema
+  .use(prismaException)
+  .use(cors())
+  .use(staticPlugin({
+    assets: process.cwd() + '/public',
+    prefix: '/',
+  }))
+  .use(openapi({
+    mapJsonSchema: {
+      zod: z.toJSONSchema
     },
     documentation: {
       info: {
         title: 'Ideias API',
         version
-      }
+      },
+      components: await OpenAPI.components,
+      paths: await OpenAPI.getPaths()
     }
   }))
   .get('/', () => redirect('/openapi'))
@@ -41,11 +43,10 @@ new Elysia()
   .use(diet)
   .use(user)
   .use(video)
-  // .mount('/auth',auth.handler)
+  .use(betterAuth)
   .listen(3000);
-  
-  console.debug(
-    `🦊 Elysia is running at ${env.BASE_URL_API} v${version}`
-  );
-  
-  
+
+console.debug(
+  `🦊 Elysia is running at ${env.BASE_URL_API} v${version}`
+);
+

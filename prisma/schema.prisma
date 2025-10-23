@@ -78,7 +78,7 @@ model Diet {
 
 model User {
   id            Int       @id @default(autoincrement())
-  weight        Float
+  weight        Float?
   calorie       Float?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now()) @updatedAt
@@ -105,7 +105,7 @@ model Video {
 }
 
 model Session {
-  id        String   @id
+  id        String   @id  @default(uuid())
   expiresAt DateTime
   token     String
   createdAt DateTime @default(now())
@@ -120,7 +120,7 @@ model Session {
 }
 
 model Account {
-  id                    String    @id
+  id                    String    @id @default(uuid())
   accountId             String
   providerId            String
   userId                Int
@@ -139,7 +139,7 @@ model Account {
 }
 
 model Verification {
-  id         String   @id
+  id         String   @id @default(uuid())
   identifier String
   value      String
   expiresAt  DateTime
