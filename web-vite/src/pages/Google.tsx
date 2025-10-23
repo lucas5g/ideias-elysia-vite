@@ -1,12 +1,12 @@
 import { createAuthClient } from 'better-auth/client'
-export function Google(){
-  
+export function Google() {
+
   const authClient = createAuthClient()
   const signIn = async () => {
-    const data = await authClient.signIn.social({
+    await authClient.signIn.social({
       provider: 'google',
       callbackURL: 'http://localhost:5173/google',
-      fetchOptions:{
+      fetchOptions: {
         baseURL: 'http://localhost:3000/auth/api',
       }
     })
@@ -16,11 +16,11 @@ export function Google(){
     <div>
       <h1>Login Google</h1>
 
-      <button 
+      <button
         className='bg-gray-500 p-2 rounded cursor-pointer text-white'
         onClick={signIn}>
-          Sign in with Google
-          </button>
+        Sign in with Google
+      </button>
 
     </div>
   )
