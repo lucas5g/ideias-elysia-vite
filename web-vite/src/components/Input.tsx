@@ -18,7 +18,7 @@ export function Input({doesntHaveLabel, ...props}: Readonly<InputProps>) {
 
       <input
         {...props}
-        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none [-webkit-appearance:none] [color-scheme:dark]"
         required
         id={props.name?.toLowerCase()}
         name={props.name?.toLowerCase()}
