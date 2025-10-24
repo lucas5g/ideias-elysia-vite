@@ -26,26 +26,16 @@ export function App() {
             <Route path="/foods" element={<Food />} />
             <Route path='/users' element={<User />} />
           </Route>
-          <Route
-            path="/diets"
-            element={
-              <ProtectedRoute>
-                <Diet />
-              </ProtectedRoute>
-            }
-          />
           <Route path="/modelos" element={<Modelo />} />
           <Route path="/modelos/login" element={<Login />} />
           <Route path="/audiobooks" element={<Audiobook />} />
           <Route path="/google" element={<Google />} />
-          <Route
-            path="/me"
-            element={
-              <ProtectedRoute>
-                <Me />
-              </ProtectedRoute>
-            }
-          />
+
+          {/* Rotas Protegidas */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/diets" element={<Diet />} />
+            <Route path="/me" element={<Me />} />
+          </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

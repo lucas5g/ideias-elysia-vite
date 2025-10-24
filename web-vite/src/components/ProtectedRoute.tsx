@@ -1,9 +1,9 @@
-import { useLocation } from 'react-router'
+import { useLocation, Outlet } from 'react-router'
 import type { ReactNode } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 
 interface ProtectedRouteProps {
-  children: ReactNode
+  children?: ReactNode
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
@@ -43,5 +43,5 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
 
   // Se está autenticado, renderizar o conteúdo
-  return <>{children}</>
+  return <>{children || <Outlet />}</>
 }
