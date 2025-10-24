@@ -535,7 +535,7 @@ export function Audiobook() {
             />
             <button
               type="submit"
-              className="flex items-center justify-center w-full gap-2 p-4 text-base font-semibold text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700 active:bg-blue-800"
+              className="flex items-center justify-center w-full gap-2 p-4 text-base font-semibold text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700 active:bg-blue-800 cursor-pointer"
             >
               <span>🚀</span>
               <span>Carregar Vídeo</span>
@@ -569,7 +569,7 @@ export function Audiobook() {
         <div className="flex gap-3 mb-6">
           <button
             onClick={() => setShowLibrary(!showLibrary)}
-            className="flex items-center justify-center flex-1 gap-2 p-3 text-sm font-medium text-white transition-colors bg-gray-700 rounded-lg hover:bg-gray-600"
+            className="flex items-center justify-center flex-1 gap-2 p-3 text-sm font-medium text-white transition-colors bg-gray-700 rounded-lg hover:bg-gray-600 cursor-pointer"
           >
             <span>📚</span>
             <span>Minha Biblioteca ({savedVideos.length})</span>
@@ -620,7 +620,7 @@ export function Audiobook() {
                         <div className="flex gap-2">
                           <button
                             onClick={() => loadVideo(video)}
-                            className="flex items-center gap-1 px-3 py-1 text-xs text-white transition-colors bg-blue-600 rounded-md hover:bg-blue-700"
+                            className="flex items-center gap-1 px-3 py-1 text-xs text-white transition-colors bg-blue-600 rounded-md hover:bg-blue-700 cursor-pointer"
                           >
                             <span>▶️</span>
                             <span>Carregar</span>
@@ -628,7 +628,7 @@ export function Audiobook() {
 
                           <button
                             onClick={() => removeVideo(video.id)}
-                            className="flex items-center gap-1 px-3 py-1 text-xs text-white transition-colors bg-red-600 rounded-md hover:bg-red-700"
+                            className="flex items-center gap-1 px-3 py-1 text-xs text-white transition-colors bg-red-600 rounded-md hover:bg-red-700 cursor-pointer"
                           >
                             <span>🗑️</span>
                             <span>Remover</span>

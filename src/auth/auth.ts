@@ -4,10 +4,10 @@ import axios from 'axios';
 import Elysia from 'elysia';
 import { jwtPlugin, jwtGuard } from '@/auth/jwt-guard';
 
-export const login = new Elysia({ 'prefix': '/login' })
+export const login = new Elysia({ 'prefix': '/auth' })
   .use(jwtPlugin)  
   .get('/google', ({ redirect }) => {
-    const redirectUri = 'http://localhost:3000/login/google/callback';
+    const redirectUri = env.BASE_URL_API + '/auth/google/callback';
     const clientId = env.GOOGLE_CLIENT_ID;
     const scope = 'openid profile email';
 

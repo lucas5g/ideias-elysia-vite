@@ -13,7 +13,7 @@ import { z } from 'zod';
 import { phrase } from '@/phrase/phrase';
 import staticPlugin from '@elysiajs/static';
 import { meal } from '@/meal/meal';
-import { login } from './login/login';
+import { login } from './auth/auth';
 
 new Elysia()
   .use(prismaException)
