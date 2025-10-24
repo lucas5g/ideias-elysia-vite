@@ -9,7 +9,9 @@ RUN npm install
 
 COPY . .
 
-
+# Aceitar variáveis de ambiente como build args
+ARG VITE_BASE_URL_API
+ENV VITE_BASE_URL_API=$VITE_BASE_URL_API
 
 RUN npm run build
 
