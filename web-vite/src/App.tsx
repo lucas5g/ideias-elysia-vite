@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
+import { BrowserRouter, Route, Routes } from 'react-router'
 import { Food } from './pages/Food'
 import { Layout } from '@/components/Layout'
 import { Modelo } from '@/pages/modelo/Modelo'
@@ -13,6 +13,7 @@ import { Google } from './pages/Google'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { Me } from './pages/Me'
+import { NotFound } from './pages/NotFound'
 
 export function App() {
   console.log(`Running app version: ${version}`)
@@ -37,7 +38,7 @@ export function App() {
             <Route path="/me" element={<Me />} />
           </Route>
 
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
