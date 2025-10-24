@@ -5,6 +5,7 @@ export namespace UserModel {
     name: z.string().min(2).max(100),
     weight: z.number(),
     calorie: z.number(),
+    email: z.email(),
   });
 
   export const updateBody = createBody.partial();

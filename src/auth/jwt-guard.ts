@@ -1,7 +1,7 @@
 import Elysia from 'elysia';
 import jwt from '@elysiajs/jwt';
 
-export type UserJWT = {
+export type UserAuthType = {
   id: number;
   email: string;
 };
@@ -15,18 +15,24 @@ export const jwtPlugin = new Elysia({ name: 'jwt-plugin' })
     })
   );
 
-// Guard que injeta o user no contexto (para rotas protegidas)
-export const jwtGuard = new Elysia({ name: 'jwt-guard' })
+// Auth middleware similar ao better-auth
+export const authMiddleware = new Elysia({ name: 'auth-middleware' })
   .use(jwtPlugin)
-  .derive(async ({ headers, jwt, set }) => {
-    const token = headers['authorization']?.replace('Bearer ', '');
+  .macro({
+    auth: {
+      async resolve({ set, headers, jwt }) {
+        const token = headers['authorization']?.replace('Bearer ', '');
+        const message = JSON.stringify({ error: 'Unauthorized' });
 
-    const user = await jwt.verify(token);
-    
-    if (!user) {
-      set.status = 401;
-      throw new Error(JSON.stringify({ message: 'Token inválido' }));
-    }
+        const user = await jwt.verify(token) as UserAuthType | false;
+        if (!user) {
+          set.status = 401;
+          throw new Error(message);
+        }
 
-    return { user };
+        return {
+          user,
+        };
+      },
+    },
   });

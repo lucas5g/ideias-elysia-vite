@@ -10,7 +10,7 @@ export function Google() {
   const [loading, setLoading] = useState(true);
 
   const signIn = () => {
-    window.location.href = 'http://localhost:3000/login/google';
+    window.location.href = import.meta.env.VITE_BASE_URL_API + '/auth/google';
   };
 
   const logout = () => {
@@ -20,7 +20,7 @@ export function Google() {
 
   const fetchUserData = async () => {
     const token = localStorage.getItem('authToken');
-    
+
     if (!token) {
       setLoading(false);
       return;
@@ -51,14 +51,14 @@ export function Google() {
     // Captura o token quando volta do callback
     const params = new URLSearchParams(window.location.search);
     const token = params.get('token');
-    
+
     if (token) {
       // Salva o token no localStorage
       localStorage.setItem('authToken', token);
-      
+
       // Limpa o token da URL
       window.history.replaceState({}, document.title, window.location.pathname);
-      
+
       // Busca dados do usuário
       fetchUserData();
     } else {
@@ -82,7 +82,7 @@ export function Google() {
             <p>ID: {user.id}</p>
             <p>Email: {user.email}</p>
           </div>
-          
+
           <button
             className='bg-red-500 p-2 rounded cursor-pointer text-white'
             onClick={logout}>

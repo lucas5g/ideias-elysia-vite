@@ -2,12 +2,13 @@ import { env } from '@/utils/env';
 import { prisma } from '@/utils/prisma';
 import axios from 'axios';
 import Elysia from 'elysia';
-import { jwtPlugin, jwtGuard } from '@/auth/jwt-guard';
+import { jwtPlugin, authMiddleware } from '@/auth/jwt-guard';
+import z from 'zod';
 
-export const login = new Elysia({ 'prefix': '/auth' })
-  .use(jwtPlugin)  
-  .get('/google', ({ redirect }) => {
-    const redirectUri = env.BASE_URL_API + '/auth/google/callback';
+export const auth = new Elysia({ prefix: '/auth' })
+  .use(jwtPlugin)
+  .get('/google', ({ redirect, query }) => {
+    const redirectUri = `${env.BASE_URL_API}/auth/google/callback`;
     const clientId = env.GOOGLE_CLIENT_ID;
     const scope = 'openid profile email';
 
@@ -18,8 +19,13 @@ export const login = new Elysia({ 'prefix': '/auth' })
     url.searchParams.set('scope', scope);
     url.searchParams.set('access_type', 'offline');
     url.searchParams.set('prompt', 'consent');
+    url.searchParams.set('state', query.redirect);
 
     return redirect(url.toString());
+  }, {
+    query: z.object({
+      redirect: z.string().startsWith('/')
+    })
   })
   .get('/google/callback', async ({ query, redirect, jwt }) => {
     const { data } = await axios.post('https://oauth2.googleapis.com/token', {
@@ -50,28 +56,30 @@ export const login = new Elysia({ 'prefix': '/auth' })
 
     const token = await jwt.sign({
       id: user.id,
+      name: user.name,
       email: user.email,
     });
 
-    return redirect(env.BASE_URL_WEB + `/${query.path}?token=${token}`);
+    const url = env.BASE_URL_WEB + `/auth/callback?token=${token}&redirect=${query.state}`;
+    return redirect(url);
   })
-  .derive(async ({ headers, jwt, set }) => {
-    const token = headers['authorization']?.replace('Bearer ', '');
-
-
-    const user = await jwt.verify(token);
-    if (!user) {
-      set.status = 401;
-      const message = JSON.stringify({ message: 'Token invalido' });
-      throw new Error(message);
-    }
-
-    return { user };
-  })
-  .use(jwtGuard)
+  .use(authMiddleware)
+  .guard({ auth: true })
   .get('/me', ({ user }) => {
-    return user;
+    return prisma.user.findUniqueOrThrow({ where: { id: user.id } });
   })
-  .get('/rota-privada', () => ({ message: 'privada' }));
-
-
+  .patch('/me', ({ user, body }) => {
+    return prisma.user.update({
+      where: {
+        id: user.id
+      },
+      data: body
+    });
+  }, {
+    body: z.object({
+      name: z.string().min(2).max(100).optional(),
+      weight: z.number().optional(),
+      calorie: z.number().optional(),
+      weightGoal: z.number().optional(),
+    })
+  });

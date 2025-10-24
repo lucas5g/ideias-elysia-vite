@@ -8,6 +8,9 @@ export function User() {
     Name: {
       type: 'text',
     },
+    Email: {
+      type: 'email'
+    },
     Weight: {
       type: 'number',
     },

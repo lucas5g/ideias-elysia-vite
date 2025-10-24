@@ -1,14 +1,18 @@
 import { prisma } from '@/utils/prisma';
 import { DietModel } from '@/diet/diet.model';
-import { Food, Meal } from '@prisma/client';
+import { Food, Meal, User } from '@prisma/client';
+import { UserAuthType } from '@/auth/jwt-guard';
 
 export abstract class DietService {
-  static async findAll(where?: DietModel.findAllQuery) {
+  static async findAll(where?: DietModel.findAllQuery, user: UserAuthType = {} as User) {
 
     const quantity = (macro: number, qty: number) => Number((macro * qty).toFixed(2));
 
     const res = await prisma.diet.findMany({
-      where,
+      where: {
+        ...where,
+        userId: user.id
+      },
       select: {
         id: true,
         meal: true,
@@ -53,7 +57,7 @@ export abstract class DietService {
     return res.reduce((acc, curr) => {
       const meal = curr.meal;
       if (!acc[meal]) {
-        acc[meal] = { 
+        acc[meal] = {
           foods: [],
           total: {
             protein: 0, fat: 0, carbo: 0, fiber: 0, calorie: 0, quantity: 0
@@ -73,12 +77,12 @@ export abstract class DietService {
         fiber: curr.fiber,
       });
       acc[meal].total = {
-        protein: acc[meal].total.protein  + curr.protein,
-        fat: acc[meal].total.fat  + curr.fat,
-        carbo: acc[meal].total.carbo  + curr.carbo,
-        fiber: acc[meal].total.fiber  + curr.fiber,
-        calorie: acc[meal].total.calorie  + curr.calorie,
-        quantity: acc[meal].total.quantity  + curr.quantity,
+        protein: acc[meal].total.protein + curr.protein,
+        fat: acc[meal].total.fat + curr.fat,
+        carbo: acc[meal].total.carbo + curr.carbo,
+        fiber: acc[meal].total.fiber + curr.fiber,
+        calorie: acc[meal].total.calorie + curr.calorie,
+        quantity: acc[meal].total.quantity + curr.quantity,
 
       };
 
@@ -95,9 +99,12 @@ export abstract class DietService {
     return prisma.diet.findUniqueOrThrow({ where: { id } });
   }
 
-  static create(data: DietModel.createBody) {
+  static create(data: DietModel.createBody, user: UserAuthType) {
     return prisma.diet.create({
-      data
+      data: {
+        ...data,
+        userId: user.id,
+      }
     });
   }
 
@@ -109,11 +116,12 @@ export abstract class DietService {
     return prisma.diet.delete({ where: { id } });
   }
 
-  static async report(where: DietModel.findAllQuery) {
+  static async report(where: DietModel.findAllQuery, userAuth: UserAuthType) {
     const [user, diets] = await Promise.all([
-      prisma.user.findFirstOrThrow(),
-      this.findAll(where),
+      prisma.user.findUniqueOrThrow({ where: { id: userAuth.id } }),
+      this.findAll(where, userAuth),
     ]);
+
 
     const toFixed = (num: number) => Number(num.toFixed(2));
 
@@ -126,16 +134,17 @@ export abstract class DietService {
       return acc;
     }, { protein: 0, fat: 0, carbo: 0, fiber: 0, calorie: 0, weight: 0 });
 
-    macros.weight = user.weight;
+    const weight = user.weight ?? 0;
+    macros.weight = weight;
 
     // Definir metas padrão baseadas no peso (você pode ajustar essas fórmulas)
     const goals = {
-      weight: 76.5, // Exemplo: meta de peso
-      protein: user.weight * 2, // 2g por kg
-      fat: user.weight * 1.0,     // 1g por kg
-      carbo: user.weight * 4.0,   // 4g por kg
-      fiber: user.weight * 1,                  // 25g fixo
-      calorie: user.calorie  // 30 kcal por kg
+      weight: user.weightGoal ?? 0,
+      protein: weight * 2, // 2g por kg
+      fat: weight * 1.0,     // 1g por kg
+      carbo: weight * 4.0,   // 4g por kg
+      fiber: weight * 1,                  // 25g fixo
+      calorie: user.calorie ?? 0  // 30 kcal por kg
     };
 
     return Object.entries(macros).map(([name, total]) => ({
