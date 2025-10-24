@@ -17,7 +17,7 @@ export const prismaException = () =>
 
       if (error.code === 'P2025') { // Record not found
         return status(404, {
-          message: 'not found.',
+          message: error.meta?.modelName + ' not found.',
           status: 404
         });
       }

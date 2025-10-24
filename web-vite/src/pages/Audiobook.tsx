@@ -1,4 +1,51 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
+
+// Tipagens para a API do YouTube
+interface YouTubePlayer {
+  destroy(): void
+  playVideo(): void
+  pauseVideo(): void
+  getCurrentTime(): number
+  seekTo(seconds: number): void
+  getPlayerState(): number
+  getVideoData(): { title: string }
+}
+
+interface YouTubePlayerConfig {
+  height: number
+  width: number
+  videoId: string
+  playerVars: {
+    autoplay: number
+    playsinline: number
+    rel: number
+    modestbranding: number
+    fs: number
+    controls: number
+  }
+  events: {
+    onReady: (event: YouTubePlayerEvent) => void
+    onStateChange: (event: YouTubePlayerEvent) => void
+  }
+}
+
+interface YouTubePlayerEvent {
+  target: YouTubePlayer
+  data: number
+}
+
+interface Window {
+  YT?: {
+    Player: new (elementId: string, config: YouTubePlayerConfig) => YouTubePlayer
+    PlayerState: {
+      PLAYING: number
+      PAUSED: number
+    }
+  }
+  onYouTubeIframeAPIReady?: () => void
+}
+
+declare const window: Window & typeof globalThis
 
 interface SavedVideo {
   id: number // ID do backend (autoincrement)
@@ -96,7 +143,7 @@ export function Audiobook() {
   const [savedVideos, setSavedVideos] = useState<SavedVideo[]>([])
   const [showLibrary, setShowLibrary] = useState<boolean>(false)
   const [isLibraryLoaded, setIsLibraryLoaded] = useState<boolean>(false)
-  const playerRef = useRef<any>(null)
+  const playerRef = useRef<YouTubePlayer | null>(null)
   const timeoutRef = useRef<number | null>(null)
   const pauseMinutesRef = useRef<number>(1)
   const [pauseMinutes, setPauseMinutes] = useState<number>(1)
@@ -171,7 +218,7 @@ export function Audiobook() {
   }
 
   // Função para salvar estado do vídeo (localStorage + API)
-  const saveVideoState = async () => {
+  const saveVideoState = useCallback(async () => {
     if (playerRef.current) {
       try {
         const currentTime = playerRef.current.getCurrentTime()
@@ -204,7 +251,7 @@ export function Audiobook() {
         console.log('Erro ao salvar estado:', error)
       }
     }
-  }
+  }, [youtubeId, currentVideoId])
 
   // Carregar vídeos salvos da API
   useEffect(() => {
@@ -271,15 +318,15 @@ export function Audiobook() {
 
     // Carregar a API do YouTube Player
     const loadYouTubeAPI = () => {
-      if (!(window as any).YT) {
+      if (!window.YT) {
         const tag = document.createElement('script')
         tag.src = 'https://www.youtube.com/iframe_api'
         document.head.appendChild(tag)
       }
 
       // Função chamada quando a API está pronta
-      ; (window as any).onYouTubeIframeAPIReady = () => {
-        if (document.getElementById('youtube-player')) {
+      window.onYouTubeIframeAPIReady = () => {
+        if (document.getElementById('youtube-player') && window.YT) {
           const container = document.getElementById('youtube-player')
           const containerWidth = Math.min(container?.parentElement?.offsetWidth || 320, 640) // Limita largura máxima para 640px
 
@@ -288,7 +335,7 @@ export function Audiobook() {
           const aspectRatio = isDesktop ? 0.30 : 0.5625 // 30% altura no desktop, 16:9 no mobile
           const containerHeight = Math.round(containerWidth * aspectRatio)
 
-          playerRef.current = new (window as any).YT.Player('youtube-player', {
+          playerRef.current = new window.YT.Player('youtube-player', {
             height: containerHeight,
             width: containerWidth,
             videoId: youtubeId,
@@ -301,7 +348,7 @@ export function Audiobook() {
               controls: 1 // Mostra controles
             },
             events: {
-              onReady: async (event: any) => {
+              onReady: async (event: YouTubePlayerEvent) => {
                 console.log('Player ready')
 
                 // Capturar título do vídeo
@@ -393,11 +440,11 @@ export function Audiobook() {
                   console.log('Erro ao recuperar estado:', error)
                 }
               },
-              onStateChange: async (event: any) => {
+              onStateChange: async (event: YouTubePlayerEvent) => {
                 console.log('Estado do vídeo:', event.data)
 
                 // Se o vídeo começou a tocar
-                if (event.data === (window as any).YT.PlayerState.PLAYING) {
+                if (event.data === window.YT?.PlayerState.PLAYING) {
                   setIsPlaying(true)
                   const currentMinutes = pauseMinutesRef.current
                   const timeInMs = currentMinutes * 60 * 1000
@@ -420,7 +467,7 @@ export function Audiobook() {
                 }
 
                 // Se o vídeo foi pausado, limpar o timer
-                if (event.data === (window as any).YT.PlayerState.PAUSED) {
+                if (event.data === window.YT?.PlayerState.PAUSED) {
                   setIsPlaying(false)
                   setTimeRemaining(0)
                   console.log('Vídeo pausado - limpando timer e salvando estado')
@@ -438,8 +485,8 @@ export function Audiobook() {
       }
 
       // Se a API já estiver carregada
-      if ((window as any).YT && (window as any).YT.Player) {
-        ; (window as any).onYouTubeIframeAPIReady()
+      if (window.YT && window.YT.Player) {
+        window.onYouTubeIframeAPIReady()
       }
     }
 
@@ -452,7 +499,7 @@ export function Audiobook() {
       }
       cleanupMobile()
     }
-  }, [youtubeId]) // youtubeId como dependência para recriar quando mudar
+  }, [youtubeId, currentVideoId, pauseMinutes, saveVideoState, savedVideos, videoInput]) // youtubeId como dependência para recriar quando mudar
 
   // useEffect para cronômetro regressivo
   useEffect(() => {

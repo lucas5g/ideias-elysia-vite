@@ -1,19 +1,19 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { NavLink, Outlet } from "react-router";
 
 export function Layout() {
 
-  const links = [
+  const links = useMemo(() => [
     'Diets',
     'Foods',
     'Users'
-  ]
+  ], [])
 
   useEffect(() => {
     const currentPath = globalThis.location.pathname
     const currentLink = links.find(link => `/${link.toLowerCase()}` === currentPath)
     document.title = `Ideias - ${currentLink}`
-  }, [])
+  }, [links])
 
   return (
     <div className="bg-gray-800 min-h-screen text-white flex flex-col gap-1">

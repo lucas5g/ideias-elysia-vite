@@ -3,8 +3,8 @@ import type { ItemInterface } from '@/utils/interfaces';
 import { useSearchParams } from 'react-router';
 import { Loading } from './Loading';
 import { Input } from './Input';
-import { fetcher } from "@/utils/fetcher";
 import { Header } from './Header';
+import { useFetcher } from '@/utils/use-fetcher';
 
 
 interface Props {
@@ -19,7 +19,7 @@ export function List({ headers, resource, hideSearch }: Readonly<Props>) {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get('id')
-  const { data: list, isLoading } = fetcher<ItemInterface[]>(resource)
+  const { data: list, isLoading } = useFetcher<ItemInterface[]>(resource)
 
   const search = searchParams.get('search') || ''
   const filteredList = list?.filter(item =>
@@ -52,7 +52,7 @@ export function List({ headers, resource, hideSearch }: Readonly<Props>) {
             if (id) {
               return setSearchParams({ id: String(id), search: e.target.value });
             }
-            setSearchParams({ search: e.target.value, action: searchParams.get('action') || 'false'});
+            setSearchParams({ search: e.target.value, action: searchParams.get('action') || 'false' });
           }}
         />
       }

@@ -106,7 +106,7 @@ export function Home() {
       const speed = baseSpeed + Math.random() * 2;
       
       // Sistema de tiros múltiplos e aleatórios
-      let projectilesToCreate: Array<{x: number, y: number, dx: number, dy: number, speed: number, size: number, color: string}> = [];
+      const projectilesToCreate: Array<{x: number, y: number, dx: number, dy: number, speed: number, size: number, color: string}> = [];
       
       // 1. Tiro direcionado ao mouse (sempre)
       const dx = mousePos.current.x - pupilPos.x;
@@ -453,7 +453,7 @@ export function Home() {
       canvas.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animationId);
     };
-  }, [gameOver]);
+  }, [gameOver, eyeCenter.x, eyeCenter.y]);
 
   // Função para reiniciar o jogo
   const restartGame = () => {

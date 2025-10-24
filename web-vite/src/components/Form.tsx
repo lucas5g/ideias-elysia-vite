@@ -42,7 +42,7 @@ export function Form({ fields, resource }: Readonly<Props>) {
       }
     })
 
-  }, [id])
+  }, [id, resource, headers, fields])
 
   useEffect(() => {
     if (id || action === 'create') {
@@ -83,7 +83,7 @@ export function Form({ fields, resource }: Readonly<Props>) {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    const payload = Object.keys(fields).reduce((acc: Record<string, any>, field) => {
+    const payload = Object.keys(fields).reduce((acc: Record<string, string | number>, field) => {
       const key = fields[field].id ?? field.toLowerCase()
 
       const element = document.getElementById(key) as HTMLInputElement

@@ -1,7 +1,4 @@
-  interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  
-  }
-export function Button(props: Readonly<Props>) {
+export function Button(props: Readonly<React.ButtonHTMLAttributes<HTMLButtonElement>>) {
   const baseClasses = "cursor-pointer w-full font-bold py-3 px-4 rounded-lg disabled:cursor-not-allowed transition-all duration-200 focus:outline-none focus:ring-2"
   
   const variantClasses = props.type === 'submit' 

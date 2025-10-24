@@ -2,12 +2,12 @@
 git pull
 
 
-# cd web-vite && npm run lint
-# if [ "$?" != 0 ]; then 
-#   echo "Erro no lint web"
-#   exit 
-# fi
-# cd ..
+cd web-vite && npm run lint
+if [ "$?" != 0 ]; then 
+  echo "Erro no lint web"
+  exit 
+fi
+cd ..
 
 
 bun lint 

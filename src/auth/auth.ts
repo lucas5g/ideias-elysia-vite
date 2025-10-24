@@ -26,7 +26,7 @@ export const login = new Elysia({ 'prefix': '/auth' })
       code: query.code,
       client_id: env.GOOGLE_CLIENT_ID,
       client_secret: env.GOOGLE_CLIENT_SECRET,
-      redirect_uri: 'http://localhost:3000/login/google/callback',
+      redirect_uri: env.BASE_URL_API + '/auth/google/callback',
       grant_type: 'authorization_code'
     });
 
@@ -53,7 +53,7 @@ export const login = new Elysia({ 'prefix': '/auth' })
       email: user.email,
     });
 
-    return redirect(`http://localhost:5173/google?token=${token}`);
+    return redirect(env.BASE_URL_WEB + `/${query.path}?token=${token}`);
   })
   .derive(async ({ headers, jwt, set }) => {
     const token = headers['authorization']?.replace('Bearer ', '');
