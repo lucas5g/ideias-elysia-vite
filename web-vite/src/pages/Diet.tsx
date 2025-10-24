@@ -583,11 +583,11 @@ export function Diet() {
                 type="date"
                 value={filterDate}
                 onChange={(e) => setFilterDate(e.target.value)}
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white text-base focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none [-webkit-appearance:none] [color-scheme:dark]"
               />
             </div>
 
-            <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center justify-between text-sm bg-gray-700/50 rounded-lg px-3 py-2">
               <span className="text-gray-300">Data selecionada:</span>
               {filterDate === getLocalDateString() ? (
                 <span className="text-green-400 font-medium">Hoje</span>
@@ -603,7 +603,7 @@ export function Diet() {
                 onClick={() => {
                   setFilterDate(getLocalDateString())
                 }}
-                className="cursor-pointer flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 px-3 rounded transition-all duration-200"
+                className="cursor-pointer flex-1 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-base font-medium py-3 px-4 rounded-lg transition-all duration-200"
               >
                 Hoje
               </button>
@@ -613,7 +613,7 @@ export function Diet() {
                   yesterday.setDate(yesterday.getDate() - 1)
                   setFilterDate(getLocalDateString(yesterday))
                 }}
-                className="cursor-pointer flex-1 bg-gray-600 hover:bg-gray-700 text-white text-sm py-2 px-3 rounded transition-all duration-200"
+                className="cursor-pointer flex-1 bg-gray-600 hover:bg-gray-700 active:bg-gray-800 text-white text-base font-medium py-3 px-4 rounded-lg transition-all duration-200"
               >
                 Ontem
               </button>

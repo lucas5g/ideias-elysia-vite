@@ -1,7 +1,7 @@
 {
   "name": "web-vite",
   "private": true,
-  "version": "0.10.24v19:58",
+  "version": "0.10.24v20:09",
   "type": "module",
   "scripts": {
     "dev": "vite",
