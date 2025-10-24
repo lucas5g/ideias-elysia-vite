@@ -17,8 +17,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Inicialização: verificar se há token salvo
   useEffect(() => {
-    const loadStoredAuth = () => {
+    const loadStoredAuth = async () => {
       try {
+        // Adicionar um pequeno delay para garantir que o componente esteja montado
+        await new Promise(resolve => setTimeout(resolve, 100))
+
         const storedToken = localStorage.getItem(TOKEN_KEY)
         const userInfo = getInfoUser()
 
