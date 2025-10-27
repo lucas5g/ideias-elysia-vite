@@ -64,9 +64,32 @@ const getLocalDateString = (date: Date = new Date()): string => {
   return `${year}-${month}-${day}`
 }
 
+// Função para determinar a refeição baseada no horário atual
+const getMealByTime = (): string => {
+  const now = new Date()
+  const hours = now.getHours()
+  const minutes = now.getMinutes()
+  const totalMinutes = hours * 60 + minutes
+
+  // Antes das 12:00 => Café da Manhã
+  if (totalMinutes < 12 * 60) {
+    return 'BREAKFAST'
+  }
+  // 12:00 às 14:59 => Almoço
+  if (totalMinutes >= 12 * 60 && totalMinutes < 15 * 60) {
+    return 'LUNCH'
+  }
+  // 15:00 às 17:59 => Lanche
+  if (totalMinutes >= 15 * 60 && totalMinutes < 18 * 60) {
+    return 'SNACK'
+  }
+  // 18:00 em diante => Jantar
+  return 'DINNER'
+}
+
 export function Diet() {
   const [meals, setMeals] = useState<MealItem[]>([])
-  const [selectedMeal, setSelectedMeal] = useState('')
+  const [selectedMeal, setSelectedMeal] = useState(getMealByTime())
   const [selectedFood, setSelectedFood] = useState('')
   const [quantity, setQuantity] = useState('')
   const [selectedDate, setSelectedDate] = useState(getLocalDateString()) // Data atual como padrão
@@ -165,6 +188,8 @@ export function Diet() {
   const openModal = () => {
     // Definir a data do formulário como a data do filtro atual
     setSelectedDate(filterDate)
+    // Definir a refeição baseada no horário atual
+    setSelectedMeal(getMealByTime())
     setShowModal(true)
   }
 
@@ -390,7 +415,7 @@ export function Diet() {
   }
 
   return (
-    <div className=" mx-auto p-4 lg:p-12 xl:px-40 space-y-6 lg:space-y-8 bg-gray-900 min-h-screen text-white">
+    <div className="mx-auto p-4 lg:p-12 xl:px-32 space-y-6 lg:space-y-8 bg-gray-900 min-h-screen text-white">
       <div className="text-center">
         <h1 className="text-2xl lg:text-3xl font-bold text-white border-b border-gray-600 pb-2">
           Gerenciador de Dieta

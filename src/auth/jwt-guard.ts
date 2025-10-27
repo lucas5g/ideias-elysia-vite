@@ -22,7 +22,7 @@ export const authMiddleware = new Elysia({ name: 'auth-middleware' })
     auth: {
       async resolve({ set, headers, jwt }) {
         const token = headers['authorization']?.replace('Bearer ', '');
-        const message = JSON.stringify({ error: 'Unauthorized' });
+        const message = JSON.stringify({ message: 'Unauthorized' });
 
         const user = await jwt.verify(token) as UserAuthType | false;
         if (!user) {
