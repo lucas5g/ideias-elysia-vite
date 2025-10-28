@@ -18,10 +18,11 @@ body {
 
 #character {
   width: 50px;
-  height: 100px;
+  height: 50px;
   background: green;
   bottom: 0;
   position: absolute;
+  z-index: 1;
   /* display: none; */
 }
 
@@ -33,18 +34,20 @@ body {
   background: yellow;
   position: absolute;
   border-radius: 2px;
-  bottom: 100px;
-  /* left: 22px; */
   display: none;
+  /* bottom: 30px; */
+  /* bottom: 50px; */
+  /* bottom: 600px; */
+  /* left: 22px; */
   /* animation: shootAnimation 500ms linear infinite; */
 }
 
-.shoot {
+/* .shoot {
   animation: shootAnimation 300ms linear;
-}
+} */
 
 
-@keyframes shootAnimation {
+/* @keyframes shootAnimation {
   from {
     bottom: 100px;
   }
@@ -52,4 +55,4 @@ body {
   to {
     bottom: 600px;
   }
-}
+} */

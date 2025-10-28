@@ -29,12 +29,11 @@ export const prismaException = () =>
         });
       }
 
+
       return status(500, {
-        message: error
+        message: 'Server error',
       });
 
     }
 
-    // Se não for erro do Prisma, deixa o Elysia tratar normalmente
-    // return error;
   });

@@ -36,7 +36,6 @@ export const auth = new Elysia({ prefix: '/auth' })
       grant_type: 'authorization_code'
     });
 
-
     const { data: userInfo } = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
       headers: {
         Authorization: `Bearer ${data.access_token}`
@@ -78,8 +77,8 @@ export const auth = new Elysia({ prefix: '/auth' })
   }, {
     body: z.object({
       name: z.string().min(2).max(100).optional(),
-      weight: z.number().optional(),
-      calorie: z.number().optional(),
-      weightGoal: z.number().optional(),
+      weight: z.number().nullable(),
+      calorie: z.number().nullable(),
+      weightGoal: z.number().nullable(),
     })
   });

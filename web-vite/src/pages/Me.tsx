@@ -15,6 +15,13 @@ interface UserData {
 }
 
 export function Me() {
+  // Handler para submit via Enter
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSave();
+    }
+  };
   const { logout } = useAuth()
   const [userData, setUserData] = useState<UserData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -82,17 +89,6 @@ export function Me() {
     }
   }
 
-  const handleReset = () => {
-    if (userData) {
-      setFormData({
-        name: userData.name || '',
-        weight: userData.weight !== null ? String(userData.weight) : '',
-        weightGoal: userData.weightGoal !== null ? String(userData.weightGoal) : '',
-        calorie: userData.calorie !== null ? String(userData.calorie) : ''
-      })
-    }
-    setError(null)
-  }
 
   if (loading) {
     return (
@@ -139,6 +135,7 @@ export function Me() {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onKeyDown={handleKeyDown}
                 className="bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white text-lg w-full focus:outline-none focus:border-blue-500"
               />
             </div>
@@ -154,6 +151,7 @@ export function Me() {
                 type="number"
                 value={formData.weight}
                 onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
+                onKeyDown={handleKeyDown}
                 className="bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white text-lg w-full focus:outline-none focus:border-blue-500"
                 min="0"
                 step="0.1"
@@ -167,6 +165,7 @@ export function Me() {
                 type="number"
                 value={formData.weightGoal}
                 onChange={(e) => setFormData({ ...formData, weightGoal: e.target.value })}
+                onKeyDown={handleKeyDown}
                 className="bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white text-lg w-full focus:outline-none focus:border-blue-500"
                 min="0"
                 step="0.1"
@@ -180,6 +179,7 @@ export function Me() {
                 type="number"
                 value={formData.calorie}
                 onChange={(e) => setFormData({ ...formData, calorie: e.target.value })}
+                onKeyDown={handleKeyDown}
                 className="bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white text-lg w-full focus:outline-none focus:border-blue-500"
                 min="0"
                 step="1"
@@ -213,14 +213,7 @@ export function Me() {
               className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white font-bold py-2 px-4 rounded transition-colors cursor-pointer disabled:cursor-not-allowed"
             >
               {isSaving ? 'Salvando...' : 'Salvar'}
-            </button>
-            <button
-              onClick={handleReset}
-              disabled={isSaving}
-              className="bg-gray-600 hover:bg-gray-700 disabled:bg-gray-500 text-white font-bold py-2 px-4 rounded transition-colors cursor-pointer disabled:cursor-not-allowed"
-            >
-              Resetar
-            </button>
+            </button>           
             <button
               onClick={logout}
               className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-colors cursor-pointer ml-auto"

@@ -14,6 +14,7 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { Me } from './pages/Me'
 import { NotFound } from './pages/NotFound'
+import { Shooter } from './pages/shooter'
 
 export function App() {
   console.log(`Running app version: ${version}`)
@@ -31,6 +32,7 @@ export function App() {
           <Route path="/modelos/login" element={<Login />} />
           <Route path="/audiobooks" element={<Audiobook />} />
           <Route path="/google" element={<Google />} />
+          <Route path="/shooter" element={<Shooter />} />
 
           {/* Rotas Protegidas */}
           <Route element={<ProtectedRoute />}>
