@@ -1,0 +1,55 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+
+}
+
+body {
+  background: #393939;
+}
+
+#game {
+  border: 1px solid #000;
+  height: 600px;
+  position: relative;
+  overflow: hidden;
+}
+
+#character {
+  width: 50px;
+  height: 100px;
+  background: green;
+  bottom: 0;
+  position: absolute;
+  /* display: none; */
+}
+
+
+
+.bullet {
+  width: 5px;
+  height: 20px;
+  background: yellow;
+  position: absolute;
+  border-radius: 2px;
+  bottom: 100px;
+  /* left: 22px; */
+  display: none;
+  /* animation: shootAnimation 500ms linear infinite; */
+}
+
+.shoot {
+  animation: shootAnimation 300ms linear;
+}
+
+
+@keyframes shootAnimation {
+  from {
+    bottom: 100px;
+  }
+
+  to {
+    bottom: 600px;
+  }
+}
