@@ -20,8 +20,8 @@ export const authMiddleware = new Elysia({ name: 'auth-middleware' })
   .use(jwtPlugin)
   .macro({
     auth: {
-      async resolve({ set, headers, jwt }) {
-        const token = headers['authorization']?.replace('Bearer ', '');
+      async resolve({ set, headers, jwt, query }) {
+        const token = headers['authorization']?.replace('Bearer ', '') || query.token;
         const message = JSON.stringify({ message: 'Unauthorized' });
 
         const user = await jwt.verify(token) as UserAuthType | false;

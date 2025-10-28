@@ -31,10 +31,10 @@ export function App() {
           <Route path="/modelos" element={<Modelo />} />
           <Route path="/modelos/login" element={<Login />} />
           <Route path="/audiobooks" element={<Audiobook />} />
-          <Route path="/shooter" element={<Shooter />} />
 
           {/* Rotas Protegidas */}
           <Route element={<ProtectedRoute />}>
+            <Route path="/shooter" element={<Shooter />} />
             <Route path="/diets" element={<Diet />} />
             <Route path="/me" element={<Me />} />
           </Route>

@@ -14,6 +14,7 @@ import { phrase } from '@/phrase/phrase';
 import staticPlugin from '@elysiajs/static';
 import { meal } from '@/meal/meal';
 import { auth } from '@/auth/auth';
+import { game } from './game/game';
 
 new Elysia()
   .use(prismaException)
@@ -41,6 +42,7 @@ new Elysia()
   .use(user)
   .use(video)
   .use(auth)
+  .use(game)
   .listen(3000);
 
 console.debug(
