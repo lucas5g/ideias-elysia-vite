@@ -25,13 +25,13 @@
 
     atualizar() {
       const ctx = this.context;
-      if (this.x < this.raio || this.x > ctx.canvas.width - this.raio) {
-        this.velocidadeX *= -1;
-      }
+      //if (this.x < this.raio || this.x > ctx.canvas.width - this.raio) {
+      //this.velocidadeX *= -1;
+      //}
 
-      if (this.y < this.raio || this.y > ctx.canvas.height - this.raio) {
-        this.velocidadeY *= -1;
-      }
+      //if (this.y < this.raio || this.y > ctx.canvas.height - this.raio) {
+      // this.velocidadeY *= -1;
+      // }
 
       this.x += this.velocidadeX;
       this.y += this.velocidadeY;
@@ -122,22 +122,30 @@
     }
   }
 
+
+  const DIRECAO_ESQUERDA = 1;
+  const DIRECAO_DIREITA = 2;
   class Heroi {
-    constructor(context, teclado) {
+    constructor(context, teclado, animacao) {
       this.context = context;
       this.teclado = teclado;
+      this.animacao = animacao;
 
       this.x = 0;
       this.y = 0;
 
+      this.direcao = DIRECAO_DIREITA;
+
     }
 
     atualizar() {
-      if (this.teclado.pressionada('ArrowRight') && this.x < this.context.canvas.width) {
-        this.x += 10;
-      }
       if (this.teclado.pressionada('ArrowLeft') && this.x > 0) {
         this.x -= 10;
+        this.direcao = DIRECAO_ESQUERDA;
+      }
+      if (this.teclado.pressionada('ArrowRight') && this.x < this.context.canvas.width) {
+        this.x += 10;
+        this.direcao = DIRECAO_DIREITA;
       }
 
     }
@@ -154,7 +162,8 @@
       tiro.raio = 2;
       tiro.cor = 'red';
 
-      if (this.teclado.pressionada('ArrowLeft')) {
+      //if (this.teclado.pressionada('ArrowLeft')) {
+      if (this.direcao === DIRECAO_ESQUERDA) {
         tiro.velocidadeX = -20;
       } else {
         tiro.velocidadeX = 20;
@@ -169,15 +178,21 @@
   const teclado = new Teclado(document);
   const animacao = new Animacao(context);
 
-  const heroi = new Heroi(context, teclado);
+  const heroi = new Heroi(context, teclado, animacao);
   heroi.x = 100;
   heroi.y = 100;
   animacao.novoSprinte(heroi);
 
-  // teclado.disparou(ESPACO, () => {
-  // heroi.atirar();
-  //})
 
+  teclado.disparou(' ', () => {
+    console.log('Atirou');
+    heroi.atirar();
+  })
+
+  // teclado.disparou(' ', () => {
+  //  console.log('Atirou');
+  //heroi.atirar();
+  ///}) -//->
   animacao.ligar();
 
 
