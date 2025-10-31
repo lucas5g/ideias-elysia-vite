@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <canvas id="teclado" width="300" height="300" style="border: 1px solid black;"></canvas>
+</body>
+  <script>
+    class Teclado{
+      constructor(elemento){
+        this.elemento = elemento;
+        this.pressionadas = []
+
+        this.elemento.addEventListener('keydown', (event) => {
+          this.pressionadas[event.key] = true;
+        });
+
+        this.elemento.addEventListener('keyup', (event) => {
+          this.pressionadas[event.key] = false;
+        });
+      }      
+    }
+
+    const canvas = document.querySelector('#teclado'); 
+    const context = canvas.getContext('2d');
+
+    let posicao = 0
+
+
+    const teclado = new Teclado(document);
+
+    function animar(){
+      if(teclado.pressionadas['ArrowRight']){
+        posicao += 10;
+      }
+      if(teclado.pressionadas['ArrowLeft']){
+        posicao -= 10;
+      }
+
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.fillRect(posicao, 290, 50, 10);
+
+      requestAnimationFrame(animar);
+    }
+   animar();
+
+  </script>
+</html>

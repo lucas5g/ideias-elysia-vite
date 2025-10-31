@@ -35,7 +35,7 @@ export const game = new Elysia({ prefix: '/games' })
 
     }
 
-  })
+  });
 
 function broadcastPlayers(ws) {
   const payload = JSON.stringify({

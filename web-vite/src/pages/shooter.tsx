@@ -31,7 +31,7 @@ export function Shooter() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [player, setPlayer] = useState<Position>({ x: 400, y: 500 });
   const [bullets, setBullets] = useState<Bullet[]>([]);
-  const [opponent, setOpponent] = useState<Position | null>(null);
+  const [, setOpponent] = useState<Position | null>(null);
   const [players, setPlayers] = useState<Array<{ id: string; positionX: number; positionY: number }>>([]);
   const ws = useRef<WebSocket | null>(null);
   // Centralizar blocos com gap de 50px em todas as direções
@@ -109,7 +109,7 @@ export function Shooter() {
 
   // Tiro automático ao segurar espaço (sempre para frente, independente do movimento)
   useEffect(() => {
-    let shootInterval: any = null;
+    let shootInterval: number | null = null;
     shootInterval = setInterval(() => {
       if (keysPressed.current.has(' ')) {
         setBullets((prev) => [
@@ -152,7 +152,7 @@ export function Shooter() {
     return () => {
       globalThis.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, n = []);
 
   // Movimento do jogador
   useEffect(() => {
@@ -278,7 +278,7 @@ export function Shooter() {
       // Opcional: console.log('❌ Conexão fechada');
     };
     ws.current.onerror = (err) => {
-      // Opcional: console.error('⚠️ Erro:', err);
+      console.error('⚠️ Erro:', err);
     };
     return () => {
       ws.current?.close();
@@ -333,7 +333,7 @@ export function Shooter() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#0f0f1e] p-5">
-      <h1 className="text-white mb-5 text-2xl font-bold">Game</h1>
+      <h1 className="mb-5 text-2xl font-bold text-white">Game</h1>
       <ul className="mb-4 text-white">
         {players.map((p) => (
           <li key={p.id}>

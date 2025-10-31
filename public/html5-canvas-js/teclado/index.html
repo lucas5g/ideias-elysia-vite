@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <canvas id="teclado" width="300" height="300" style="border: 1px solid black;"></canvas>
+</body>
+<script>
+  const canvas = document.querySelector('#teclado');
+  const ctx = canvas.getContext('2d');
+
+  let posicao = 0
+  let altura = 290
+  ctx.fillRect(posicao, altura, 50, 10);
+
+
+  document.addEventListener('keydown', (event) => {
+    const keyName = event.key;
+
+    if (keyName === 'ArrowRight') {
+      posicao += 10;
+    }
+    if (keyName === 'ArrowLeft') {
+      posicao -= 10;
+    }
+
+    if (keyName === 'ArrowUp') {
+      altura -= 10;
+    }
+    if (keyName === 'ArrowDown') {
+      altura += 10;
+    }
+
+    //esenharCirculo(posicao);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(posicao, altura, 50, 10);
+  });
+</script>
+
+</html>

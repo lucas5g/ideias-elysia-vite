@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Um herói que atira</title>
+</head>
+
+<body>
+  <canvas id="heroCanvas" width="500" height="500" style="border: 1px black solid"></canvas>
+</body>
+<script>
+  class Bola {
+    constructor(context) {
+      this.context = context;
+      this.x = 0;
+      this.y = 0;
+      this.velocidadeX = 0;
+      this.velocidadeY = 0;
+
+      this.cor = 'black';
+      this.raio = 10;
+    }
+
+    atualizar() {
+      const ctx = this.context;
+      if (this.x < this.raio || this.x > ctx.canvas.width - this.raio) {
+        this.velocidadeX *= -1;
+      }
+
+      if (this.y < this.raio || this.y > ctx.canvas.height - this.raio) {
+        this.velocidadeY *= -1;
+      }
+
+      this.x += this.velocidadeX;
+      this.y += this.velocidadeY;
+    }
+
+    desenhar() {
+      const ctx = this.context;
+
+      ctx.save();
+
+      ctx.fillStyle = this.cor;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.raio, 0, Math.PI * 2, false);
+      ctx.fill();
+
+      ctx.restore();
+    }
+  }
+  class Animacao {
+
+    constructor(context) {
+      this.context = context;
+      this.sprites = [];
+      this.ligado = false;
+    }
+
+    novoSprinte(sprite) {
+      this.sprites.push(sprite);
+    }
+
+    ligar() {
+      this.ligado = true;
+      this.proximoFrame();
+    }
+
+    desligar() {
+      this.ligado = false;
+    }
+
+    proximoFrame() {
+      if (!this.ligado) return;
+
+      this.limparTela();
+
+      for (const sprite in this.sprites) {
+        this.sprites[sprite].atualizar();
+        this.sprites[sprite].desenhar();
+        // sprite.atualizar();
+        // sprite.desenhar();
+      }
+      requestAnimationFrame(() => this.proximoFrame());
+    }
+
+    limparTela() {
+      const ctx = this.context
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
+
+  }
+
+  class Teclado {
+    constructor(elemento) {
+      this.elemento = elemento;
+      this.pressionadas = []
+      this.disparadas = []
+      this.funcoesDisparo = []
+
+      this.elemento.addEventListener('keydown', (event) => {
+        this.pressionadas[event.key] = true;
+
+        if (this.funcoesDisparo[event.key] && !this.disparadas[event.key]) {
+          this.disparadas[event.key] = true;
+          this.funcoesDisparo[event.key]();
+
+        }
+      });
+
+      this.elemento.addEventListener('keyup', (event) => {
+        this.pressionadas[event.key] = false;
+        this.disparadas[event.key] = false;
+      });
+    }
+    pressionada(tecla) {
+      return this.pressionadas[tecla];
+    }
+    disparou(tecla, funcao) {
+      this.funcoesDisparo[tecla] = funcao;
+    }
+  }
+
+  class Heroi {
+    constructor(context, teclado) {
+      this.context = context;
+      this.teclado = teclado;
+
+      this.x = 0;
+      this.y = 0;
+
+    }
+
+    atualizar() {
+      if (this.teclado.pressionada('ArrowRight') && this.x < this.context.canvas.width) {
+        this.x += 10;
+      }
+      if (this.teclado.pressionada('ArrowLeft') && this.x > 0) {
+        this.x -= 10;
+      }
+
+    }
+
+    desenhar() {
+      this.context.fillRect(this.x, this.y, 50, 50);
+    }
+
+    atirar() {
+      const tiro = new Bola(this.context);
+      tiro.x = this.x + 10;
+      tiro.y = this.y + 10;
+
+      tiro.raio = 2;
+      tiro.cor = 'red';
+
+      if (this.teclado.pressionada('ArrowLeft')) {
+        tiro.velocidadeX = -20;
+      } else {
+        tiro.velocidadeX = 20;
+      }
+
+      this.animacao.novoSprinte(tiro);
+    }
+  }
+  const canvas = document.querySelector('#heroCanvas');
+  const context = canvas.getContext('2d');
+
+  const teclado = new Teclado(document);
+  const animacao = new Animacao(context);
+
+  const heroi = new Heroi(context, teclado);
+  heroi.x = 100;
+  heroi.y = 100;
+  animacao.novoSprinte(heroi);
+
+  // teclado.disparou(ESPACO, () => {
+  // heroi.atirar();
+  //})
+
+  animacao.ligar();
+
+
+</script>
+
+</html>
