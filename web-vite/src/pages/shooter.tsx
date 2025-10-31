@@ -152,7 +152,7 @@ export function Shooter() {
     return () => {
       globalThis.removeEventListener('keydown', handleKeyDown);
     };
-  }, n = []);
+  },  []);
 
   // Movimento do jogador
   useEffect(() => {
