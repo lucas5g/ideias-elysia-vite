@@ -3,6 +3,9 @@
   "name": "Controle de Horas",
   "version": "0.0.1",
   "description": "Extensão para controle de horas na Defensoria Pública de MG",
+  "action": {
+    "default_popup": "popup.html"
+  },
   "content_scripts": [
     {
       "matches": [
