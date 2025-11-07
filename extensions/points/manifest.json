@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Controle de Horas",
+  "version": "0.0.1",
+  "description": "Extensão para controle de horas na Defensoria Pública de MG",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://azc.defensoria.mg.def.br/*"
+      ],
+      "js": [
+        "content.js",
+        "generate-pdf.js"
+      ]
+    }
+  ]
+}
