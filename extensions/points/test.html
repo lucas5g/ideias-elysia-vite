@@ -1,0 +1,179 @@
+   <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Folha de Ponto</title>
+      <style>
+        body {
+          font-family: 'Times New Roman', Times, serif;
+          font-size: 10px;
+          padding: 20px;
+        }
+        table, th, td {
+          border: 1px solid #000;
+          border-collapse: collapse;
+          padding: 4px;
+        }
+        .header-grid {
+          display: grid;
+          grid-template-columns: 40% 60%;
+          border: 1px solid;
+          font-size: 12px;
+        }
+        .logo-section {
+          border-right: 1px solid;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px;
+        }
+        .title-section {
+          text-align: center;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .info-grid-3 {
+          display: grid;
+          grid-template-columns: auto auto auto;
+          border: 1px solid;
+          border-bottom: 1px solid;
+          border-top: 0;
+        }
+        .info-grid-2 {
+          display: grid;
+          grid-template-columns: auto 15%;
+          border: 1px solid;
+          border-top: 0;
+        }
+        .border-right {
+          border-right: 1px solid;
+        }
+        .padding-5 {
+          padding: 5px;
+        }
+        .signature-section {
+          display: flex;
+          border: 1px solid;
+          border-top: 0;
+          justify-content: center;
+        }
+        .signature-box {
+          display: flex;
+          gap: 3em;
+          padding: 25px 20px 10px;
+        }
+        .signature-line {
+          border-top: 1px solid;
+          padding: 5px 15px 0px 15px;
+        }
+        h3 {
+          margin: 0;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header-grid">
+        <div class="logo-section">
+          <strong>
+            <h3>
+              DEFENSORIA PÚBLICA DE <br> MINAS GERAIS
+            </h3>
+          </strong>
+        </div>
+        <div class="title-section">
+          <strong>
+            <h3>
+              FOLHA DE PONTO DE <br>FREQUÊNCIA
+            </h3>
+          </strong>
+        </div>
+      </div>
+
+      <div class="info-grid-3">
+        <div class="border-right padding-5">
+          UNIDADE EMITENTE: DIRETORIA DE DESENVOLVIMENTO DE SISTEMAS E PROJETOS / SEDE II
+        </div>
+        <div class="border-right padding-5">
+          <strong>MÊS: NOVEMBRO</strong>
+        </div>
+        <div class="padding-5">
+          <strong>2025</strong>
+        </div>
+      </div>
+
+      <div class="info-grid-2">
+        <div class="border-right padding-5">
+          NOME DO SERVIDOR: <strong>JOÃO DA SILVA</strong>
+        </div>
+        <div class="padding-5">
+          <strong>MASP:</strong> 123456
+        </div>
+      </div>
+
+      <table style="width: 100%;">
+        <thead>
+          <tr>
+            <th colspan="5">
+              <strong>PERÍODO DE AFASTAMENTO</strong>
+            </th>
+            <th colspan="6">
+              <strong>MOTIVO</strong>
+            </th>
+          </tr>
+          <tr>
+            <td colspan="5">
+              <strong>DE __/__/____ A __/__/____</strong>
+            </td>
+            <td colspan="6"></td>
+          </tr>
+          <tr>
+            <td rowspan="2">DIA</td>
+            <td colspan="4" style="text-align: center;">1° TURNO</td>
+            <td colspan="4" style="text-align: center;">2° TURNO</td>
+            <td rowspan="2">RUBRICA <br> DA CHEFIA</td>
+            <td rowspan="2">OBSERVAÇÕES</td>
+          </tr>
+          <tr>
+            <td>ENTRADA</td>
+            <td>RUBRICA</td>
+            <td>SAÍDA</td>
+            <td>RUBRICA</td>
+            <td>ENTRADA</td>
+            <td>RUBRICA</td>
+            <td>SAÍDA</td>
+            <td>RUBRICA</td>
+          </tr>
+        </thead>
+        <tbody>
+          ${data.map(day => `
+            <tr>
+              <td>${day.name}</td>
+              <td>${day.hours.start}</td>
+              <td></td>
+              <td>${day.hours.lunchStart}</td>
+              <td></td>
+              <td>${day.hours.lunchEnd}</td>
+              <td></td>
+              <td>${day.hours.end}</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+
+      <div class="signature-section">
+        <div class="signature-box" style="border-right: 1px solid;">
+          <span class="signature-line">DATA</span>
+          <span class="signature-line">ASSINATURA DO SERVIDOR / MASP</span>
+        </div>
+        <div class="signature-box">
+          <span class="signature-line">DATA</span>
+          <span class="signature-line">ASSINATURA DA CHEFIA / MADEP OU MASP</span>
+        </div>
+      </div>
+    </body>
+    </html>

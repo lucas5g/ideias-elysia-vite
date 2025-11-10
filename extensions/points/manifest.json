@@ -12,8 +12,9 @@
         "https://azc.defensoria.mg.def.br/*"
       ],
       "js": [
-        "content.js",
-        "generate-pdf.js"
+        "hours-worked.js",
+        "generate-pdf.js",
+        "content.js"
       ]
     }
   ]

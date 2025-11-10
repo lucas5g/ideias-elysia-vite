@@ -14,6 +14,7 @@ import { MenuHamburguer } from '@/components/MenuHamburguer'
 import { Me } from './pages/Me'
 import { NotFound } from './pages/NotFound'
 import { Shooter } from './pages/shooter'
+import { Pomodoro } from '@/pages/pomodoro'
 
 export function App() {
   console.log(`Running app version: ${version}`)
@@ -31,6 +32,7 @@ export function App() {
           <Route path="/modelos" element={<Modelo />} />
           <Route path="/modelos/login" element={<Login />} />
           <Route path="/audiobooks" element={<Audiobook />} />
+          <Route path='/pomodoro' element={<Pomodoro />} />
 
           {/* Rotas Protegidas */}
           <Route element={<ProtectedRoute />}>
