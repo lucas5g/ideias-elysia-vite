@@ -152,7 +152,7 @@ export function Shooter() {
     return () => {
       globalThis.removeEventListener('keydown', handleKeyDown);
     };
-  },  []);
+  }, []);
 
   // Movimento do jogador
   useEffect(() => {
@@ -291,7 +291,6 @@ export function Shooter() {
     ws.current.send(
       JSON.stringify({ positionX: player.x, positionY: player.y })
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player.x, player.y]);
 
   // Renderizar o jogo no canvas

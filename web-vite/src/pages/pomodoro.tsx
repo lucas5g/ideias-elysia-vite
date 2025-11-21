@@ -9,19 +9,40 @@ interface PomodoroSettings {
   sessionsUntilLongBreak: number;
 }
 
+interface SpotifyPlayerState {
+  track_window: {
+    current_track: SpotifyTrack;
+  };
+  paused: boolean;
+}
+
 interface SpotifyPlayer {
   connect: () => Promise<boolean>;
   disconnect: () => void;
   togglePlay: () => Promise<void>;
-  getCurrentState: () => Promise<any>;
-  addListener: (event: string, callback: (data: any) => void) => void;
+  getCurrentState: () => Promise<SpotifyPlayerState | null>;
+  addListener: (event: string, callback: (data: SpotifyPlayerState) => void) => void;
+}
+
+interface SpotifyTrack {
+  name: string;
+  album: {
+    images: Array<{ url: string }>;
+  };
+  artists: Array<{ name: string }>;
+}
+
+interface SpotifyPlayerOptions {
+  name: string;
+  getOAuthToken: (cb: (token: string) => void) => void;
+  volume: number;
 }
 
 declare global {
   interface Window {
     onSpotifyWebPlaybackSDKReady: () => void;
     Spotify: {
-      Player: new (options: any) => SpotifyPlayer;
+      Player: new (options: SpotifyPlayerOptions) => SpotifyPlayer;
     };
   }
 }
@@ -43,7 +64,7 @@ export function Pomodoro() {
   const [spotifyToken, setSpotifyToken] = useState<string | null>(null);
   const [spotifyPlayer, setSpotifyPlayer] = useState<SpotifyPlayer | null>(null);
   const [isSpotifyReady, setIsSpotifyReady] = useState(false);
-  const [currentTrack, setCurrentTrack] = useState<any>(null);
+  const [currentTrack, setCurrentTrack] = useState<SpotifyTrack | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const timerRef = useRef<number | null>(null);
@@ -111,11 +132,11 @@ export function Pomodoro() {
         }
       });
 
-      player.addListener('ready', ({ device_id }: any) => {
+      player.addListener('ready', ({ device_id }: { device_id: string }) => {
         console.log('Player pronto com Device ID:', device_id);
       });
 
-      player.addListener('player_state_changed', (state: any) => {
+      player.addListener('player_state_changed', (state: SpotifyPlayerState | null) => {
         if (state) {
           setCurrentTrack(state.track_window.current_track);
           setIsPlaying(!state.paused);
@@ -168,7 +189,7 @@ export function Pomodoro() {
         clearInterval(timerRef.current);
       }
     };
-  }, [isRunning, timeLeft]);
+  }, [isRunning, timeLeft, handleSessionComplete]);
 
   const handleSessionComplete = () => {
     setIsRunning(false);
@@ -307,7 +328,7 @@ export function Pomodoro() {
               <div className="flex-1">
                 <p className="font-semibold">{currentTrack.name}</p>
                 <p className="text-sm text-gray-400">
-                  {currentTrack.artists.map((artist: any) => artist.name).join(', ')}
+                  {currentTrack.artists.map((artist: { name: string }) => artist.name).join(', ')}
                 </p>
               </div>
               <div className="text-2xl">
