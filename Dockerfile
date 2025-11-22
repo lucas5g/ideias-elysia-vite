@@ -58,7 +58,7 @@ COPY ./prisma ./prisma
 COPY --from=build /app/public ./public
 
 # Criar script de inicialização
-RUN echo '#!/bin/sh\nset -e\ncd /app\n./node_modules/.bin/prisma migrate deploy\nexec ./server' > /app/start.sh && \
+RUN echo '#!/bin/sh\nset -e\ncd /app\n./node_modules/.bin/prisma db push --accept-data-loss --skip-generate\nexec ./server' > /app/start.sh && \
     chmod +x /app/start.sh
 
 ENV NODE_ENV=production
