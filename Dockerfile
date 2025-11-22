@@ -16,8 +16,8 @@ COPY ./src ./src
 COPY ./prisma ./prisma
 COPY ./public ./public
 
-# Gerar Prisma Client (com engines corretas)
-RUN bunx prisma generate
+# Gerar Prisma Client (com engines corretas) - usar versão do projeto
+RUN bun prisma generate
 
 ENV NODE_ENV=production
 
