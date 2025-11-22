@@ -48,10 +48,8 @@ RUN apt-get update -y && \
 # Copiar binário da aplicação
 COPY --from=build /app/server server
 
-# Copiar Prisma Client + engines
-COPY --from=build /app/node_modules/.prisma /app/node_modules/.prisma
-COPY --from=build /app/node_modules/@prisma /app/node_modules/@prisma
-COPY --from=build /app/node_modules/prisma /app/node_modules/prisma
+# Copiar todo node_modules (necessário para Prisma CLI)
+COPY --from=build /app/node_modules /app/node_modules
 
 # Copiar o diretório prisma (schema.prisma)
 COPY ./prisma ./prisma
@@ -60,7 +58,7 @@ COPY ./prisma ./prisma
 COPY --from=build /app/public ./public
 
 # Criar script de inicialização
-RUN echo '#!/bin/sh\nset -e\ncd /app\nnode /app/node_modules/prisma/build/index.js migrate deploy\nexec ./server' > /app/start.sh && \
+RUN echo '#!/bin/sh\nset -e\ncd /app\n./node_modules/.bin/prisma migrate deploy\nexec ./server' > /app/start.sh && \
     chmod +x /app/start.sh
 
 ENV NODE_ENV=production
