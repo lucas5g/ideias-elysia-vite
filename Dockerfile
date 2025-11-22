@@ -11,6 +11,9 @@ COPY package.json bun.lock tsconfig.json  ./
 # Instalar dependências
 RUN bun install
 
+# Desabilitar auto-install do bunx para forçar uso da versão local
+ENV BUN_RUNTIME_TRANSPILER_CACHE_PATH=0
+
 # Copiar código-fonte e diretório Prisma
 COPY ./src ./src
 COPY ./prisma ./prisma
@@ -48,6 +51,7 @@ COPY --from=build /app/server server
 # Copiar Prisma Client + engines
 COPY --from=build /app/node_modules/.prisma /app/node_modules/.prisma
 COPY --from=build /app/node_modules/@prisma /app/node_modules/@prisma
+COPY --from=build /app/node_modules/prisma /app/node_modules/prisma
 
 # Copiar o diretório prisma (schema.prisma)
 COPY ./prisma ./prisma
@@ -55,11 +59,12 @@ COPY ./prisma ./prisma
 # Copiar arquivos públicos
 COPY --from=build /app/public ./public
 
+# Criar script de inicialização
+RUN echo '#!/bin/sh\nset -e\ncd /app\nnode /app/node_modules/prisma/build/index.js migrate deploy\nexec ./server' > /app/start.sh && \
+    chmod +x /app/start.sh
 
 ENV NODE_ENV=production
 EXPOSE 3000
 
-
-
-# Rodar prisma db push antes do servidor iniciar
-CMD ["sh", "-c", "bunx prisma db push --accept-data-loss && ./server"]
+# Usar script de inicialização
+CMD ["/app/start.sh"]
