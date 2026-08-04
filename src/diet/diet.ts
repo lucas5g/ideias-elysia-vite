@@ -19,6 +19,20 @@ export const diet = new Elysia({ prefix: '/diets' })
   })
   .get('/group-by-meal', () => DietService.findAllGroupByMeal())
   .get('/report', ({ query, user }) => DietService.report(query, user))
+  .post('/clone-previous-day', async ({ body, user, status }) => {
+    const result = await DietService.clonePreviousDay(body, user);
+
+    if (result.sourceCount === 0) {
+      return status(404, {
+        message: 'No diet found on the previous day.',
+        ...result,
+      });
+    }
+
+    return status(result.createdCount > 0 ? 201 : 200, result);
+  }, {
+    body: DietModel.clonePreviousDayBody,
+  })
   .guard({ params: paramsSchema })
   .get('/:id', ({ params }) => DietService.findOne(params.id))
   .patch('/:id', ({ params, body }) => DietService.update(params.id, body), {

@@ -29,6 +29,7 @@ export const prismaException = () =>
         });
       }
 
+      console.error('Prisma known error:', error.code, error.meta);
 
       return status(500, {
         message: 'Server error',

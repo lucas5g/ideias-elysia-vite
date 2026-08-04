@@ -1,6 +1,6 @@
 import { prisma } from '@/utils/prisma';
 import { DietModel } from '@/diet/diet.model';
-import { Food, Meal, User } from '@prisma/client';
+import { Food, Meal, Prisma, User } from '@prisma/client';
 import { UserAuthType } from '@/auth/jwt-guard';
 
 export abstract class DietService {
@@ -114,6 +114,84 @@ export abstract class DietService {
 
   static delete(id: number) {
     return prisma.diet.delete({ where: { id } });
+  }
+
+  static async clonePreviousDay(data: DietModel.clonePreviousDayBody, user: UserAuthType) {
+    const targetDate = data.targetDate;
+    const source = new Date(`${targetDate}T00:00:00.000Z`);
+    source.setUTCDate(source.getUTCDate() - 1);
+    const sourceDate = source.toISOString().slice(0, 10);
+
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        return await prisma.$transaction(async (tx) => {
+          const select = {
+            meal: true,
+            foodId: true,
+            quantity: true,
+          } as const;
+
+          const [sourceItems, targetItems] = await Promise.all([
+            tx.diet.findMany({
+              where: { date: sourceDate, userId: user.id },
+              select,
+            }),
+            tx.diet.findMany({
+              where: { date: targetDate, userId: user.id },
+              select,
+            }),
+          ]);
+
+          const targetCounts = new Map<string, number>();
+          const itemKey = (item: { meal: Meal, foodId: number, quantity: number }) =>
+            `${item.meal}:${item.foodId}:${item.quantity}`;
+
+          // Consume matches individually so legitimate duplicate occurrences are preserved.
+          for (const item of targetItems) {
+            const key = itemKey(item);
+            targetCounts.set(key, (targetCounts.get(key) ?? 0) + 1);
+          }
+
+          const itemsToCreate = sourceItems.filter((item) => {
+            const key = itemKey(item);
+            const matchingItems = targetCounts.get(key) ?? 0;
+
+            if (matchingItems === 0) return true;
+
+            targetCounts.set(key, matchingItems - 1);
+            return false;
+          });
+
+          if (itemsToCreate.length > 0) {
+            await tx.diet.createMany({
+              data: itemsToCreate.map((item) => ({
+                ...item,
+                date: targetDate,
+                userId: user.id,
+              })),
+            });
+          }
+
+          return {
+            sourceDate,
+            targetDate,
+            sourceCount: sourceItems.length,
+            createdCount: itemsToCreate.length,
+            skippedCount: sourceItems.length - itemsToCreate.length,
+          };
+        }, {
+          isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+        });
+      } catch (error) {
+        const shouldRetry = error instanceof Prisma.PrismaClientKnownRequestError
+          && error.code === 'P2034'
+          && attempt < 2;
+
+        if (!shouldRetry) throw error;
+      }
+    }
+
+    throw new Error('Could not clone the previous day diet');
   }
 
   static async report(where: DietModel.findAllQuery, userAuth: UserAuthType) {

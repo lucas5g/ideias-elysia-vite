@@ -4,6 +4,7 @@ import { Select } from '@/components/Select'
 import { api } from '@/utils/api'
 import { TrashIcon, CaretUpIcon, PlusIcon, CalendarDotsIcon } from '@phosphor-icons/react'
 import { useFetcher } from '@/utils/use-fetcher'
+import { isAxiosError } from 'axios'
 
 interface Food {
   id: number
@@ -49,6 +50,14 @@ interface ReportItem {
   diff: number
 }
 
+interface ClonePreviousDayResult {
+  sourceDate: string
+  targetDate: string
+  sourceCount: number
+  createdCount: number
+  skippedCount: number
+}
+
 const MEAL_OPTIONS = [
   { value: 'BREAKFAST', label: 'Café da Manhã' },
   { value: 'LUNCH', label: 'Almoço' },
@@ -63,6 +72,15 @@ const getLocalDateString = (date: Date = new Date()): string => {
   const day = String(date.getDate()).padStart(2, '0')
   return `${year}-${month}-${day}`
 }
+
+const getPreviousDateString = (dateString: string): string => {
+  const date = new Date(`${dateString}T00:00:00.000Z`)
+  date.setUTCDate(date.getUTCDate() - 1)
+  return date.toISOString().slice(0, 10)
+}
+
+const formatDate = (dateString: string): string =>
+  new Date(`${dateString}T00:00:00`).toLocaleDateString('pt-BR')
 
 // Função para determinar a refeição baseada no horário atual
 const getMealByTime = (): string => {
@@ -335,6 +353,45 @@ export function Diet() {
     } catch (error) {
       console.error('Erro ao atualizar item da dieta:', error)
       alert('Erro ao atualizar item da dieta. Tente novamente.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const clonePreviousDay = async () => {
+    const sourceDate = getPreviousDateString(filterDate)
+    const confirmed = globalThis.confirm(
+      `Copiar as refeições de ${formatDate(sourceDate)} para ${formatDate(filterDate)}? Itens iguais já existentes serão ignorados.`
+    )
+
+    if (!confirmed) return
+
+    try {
+      setSaving(true)
+      const { data } = await api.post<ClonePreviousDayResult>('/diets/clone-previous-day', {
+        targetDate: filterDate
+      })
+
+      await Promise.all([mutateDiets(), mutateReport()])
+      setShowDateFilter(false)
+
+      if (data.createdCount === 0) {
+        alert('Todos os itens do dia anterior já existem nesta data.')
+        return
+      }
+
+      const skippedMessage = data.skippedCount > 0
+        ? ` ${data.skippedCount} item(ns) igual(is) foram ignorados.`
+        : ''
+      alert(`${data.createdCount} item(ns) copiado(s) com sucesso.${skippedMessage}`)
+    } catch (error) {
+      if (isAxiosError(error) && error.response?.status === 404) {
+        alert(`Nenhuma dieta encontrada em ${formatDate(sourceDate)}.`)
+        return
+      }
+
+      console.error('Erro ao clonar dieta do dia anterior:', error)
+      alert('Erro ao clonar a dieta do dia anterior. Tente novamente.')
     } finally {
       setSaving(false)
     }
@@ -643,6 +700,15 @@ export function Diet() {
                 Ontem
               </button>
             </div>
+
+            <button
+              type="button"
+              onClick={clonePreviousDay}
+              disabled={loading || saving}
+              className="w-full px-4 py-3 text-base font-medium text-white transition-all duration-200 bg-emerald-600 rounded-lg cursor-pointer hover:bg-emerald-700 active:bg-emerald-800 disabled:bg-gray-600 disabled:cursor-not-allowed"
+            >
+              {saving ? 'Clonando...' : 'Clonar dieta do dia anterior'}
+            </button>
           </div>
         </div>
       )}
