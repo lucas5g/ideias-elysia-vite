@@ -359,9 +359,15 @@ export function Diet() {
   }
 
   const clonePreviousDay = async () => {
-    const sourceDate = getPreviousDateString(filterDate)
+    if (!filterDate) {
+      alert('Selecione uma data válida para clonar a dieta.')
+      return
+    }
+
+    const targetDate = filterDate
+    const sourceDate = getPreviousDateString(targetDate)
     const confirmed = globalThis.confirm(
-      `Copiar as refeições de ${formatDate(sourceDate)} para ${formatDate(filterDate)}? Itens iguais já existentes serão ignorados.`
+      `Copiar as refeições de ${formatDate(sourceDate)} para ${formatDate(targetDate)}? Itens iguais já existentes serão ignorados.`
     )
 
     if (!confirmed) return
@@ -369,7 +375,7 @@ export function Diet() {
     try {
       setSaving(true)
       const { data } = await api.post<ClonePreviousDayResult>('/diets/clone-previous-day', {
-        targetDate: filterDate
+        targetDate
       })
 
       await Promise.all([mutateDiets(), mutateReport()])
@@ -664,8 +670,11 @@ export function Diet() {
                 id="filter-date-input"
                 type="date"
                 value={filterDate}
-                onChange={(e) => setFilterDate(e.target.value)}
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white text-base focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none [-webkit-appearance:none] [color-scheme:dark]"
+                onChange={(e) => {
+                  if (e.target.value) setFilterDate(e.target.value)
+                }}
+                disabled={saving}
+                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white text-base focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none [-webkit-appearance:none] [color-scheme:dark] disabled:opacity-60 disabled:cursor-not-allowed"
               />
             </div>
 
@@ -685,7 +694,8 @@ export function Diet() {
                 onClick={() => {
                   setFilterDate(getLocalDateString())
                 }}
-                className="flex-1 px-4 py-3 text-base font-medium text-white transition-all duration-200 bg-blue-600 rounded-lg cursor-pointer hover:bg-blue-700 active:bg-blue-800"
+                disabled={saving}
+                className="flex-1 px-4 py-3 text-base font-medium text-white transition-all duration-200 bg-blue-600 rounded-lg cursor-pointer hover:bg-blue-700 active:bg-blue-800 disabled:bg-gray-600 disabled:cursor-not-allowed"
               >
                 Hoje
               </button>
@@ -695,7 +705,8 @@ export function Diet() {
                   yesterday.setDate(yesterday.getDate() - 1)
                   setFilterDate(getLocalDateString(yesterday))
                 }}
-                className="flex-1 px-4 py-3 text-base font-medium text-white transition-all duration-200 bg-gray-600 rounded-lg cursor-pointer hover:bg-gray-700 active:bg-gray-800"
+                disabled={saving}
+                className="flex-1 px-4 py-3 text-base font-medium text-white transition-all duration-200 bg-gray-600 rounded-lg cursor-pointer hover:bg-gray-700 active:bg-gray-800 disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 Ontem
               </button>
