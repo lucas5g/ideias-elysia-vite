@@ -16,12 +16,17 @@ interface SpotifyPlayerState {
   paused: boolean;
 }
 
+interface SpotifyReadyEvent {
+  device_id: string;
+}
+
 interface SpotifyPlayer {
   connect: () => Promise<boolean>;
   disconnect: () => void;
   togglePlay: () => Promise<void>;
   getCurrentState: () => Promise<SpotifyPlayerState | null>;
-  addListener: (event: string, callback: (data: SpotifyPlayerState) => void) => void;
+  addListener(event: 'ready', callback: (data: SpotifyReadyEvent) => void): void;
+  addListener(event: 'player_state_changed', callback: (data: SpotifyPlayerState | null) => void): void;
 }
 
 interface SpotifyTrack {
@@ -132,7 +137,7 @@ export function Pomodoro() {
         }
       });
 
-      player.addListener('ready', ({ device_id }: { device_id: string }) => {
+      player.addListener('ready', ({ device_id }) => {
         console.log('Player pronto com Device ID:', device_id);
       });
 
@@ -176,6 +181,32 @@ export function Pomodoro() {
 
   // Timer do Pomodoro
   useEffect(() => {
+    const handleSessionComplete = () => {
+      setIsRunning(false);
+
+      if (isPlaying && spotifyPlayer) {
+        spotifyPlayer.togglePlay().catch((error) => {
+          console.error('Erro ao pausar playback:', error);
+        });
+      }
+
+      if (sessionType === 'work') {
+        const newCompletedSessions = completedSessions + 1;
+        setCompletedSessions(newCompletedSessions);
+
+        if (newCompletedSessions % settings.sessionsUntilLongBreak === 0) {
+          setSessionType('longBreak');
+          setTimeLeft(settings.longBreakDuration * 60);
+        } else {
+          setSessionType('shortBreak');
+          setTimeLeft(settings.shortBreakDuration * 60);
+        }
+      } else {
+        setSessionType('work');
+        setTimeLeft(settings.workDuration * 60);
+      }
+    };
+
     if (isRunning && timeLeft > 0) {
       timerRef.current = setInterval(() => {
         setTimeLeft((prev) => prev - 1);
@@ -189,32 +220,7 @@ export function Pomodoro() {
         clearInterval(timerRef.current);
       }
     };
-  }, [isRunning, timeLeft, handleSessionComplete]);
-
-  const handleSessionComplete = () => {
-    setIsRunning(false);
-
-    // Pausar Spotify ao completar sessão
-    if (isPlaying) {
-      toggleSpotifyPlayback();
-    }
-
-    if (sessionType === 'work') {
-      const newCompletedSessions = completedSessions + 1;
-      setCompletedSessions(newCompletedSessions);
-
-      if (newCompletedSessions % settings.sessionsUntilLongBreak === 0) {
-        setSessionType('longBreak');
-        setTimeLeft(settings.longBreakDuration * 60);
-      } else {
-        setSessionType('shortBreak');
-        setTimeLeft(settings.shortBreakDuration * 60);
-      }
-    } else {
-      setSessionType('work');
-      setTimeLeft(settings.workDuration * 60);
-    }
-  };
+  }, [completedSessions, isPlaying, isRunning, sessionType, settings, spotifyPlayer, timeLeft]);
 
   const toggleTimer = () => {
     setIsRunning(!isRunning);
